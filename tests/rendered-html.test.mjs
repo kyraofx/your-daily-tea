@@ -5,12 +5,13 @@ import test from "node:test";
 const root = new URL("../", import.meta.url);
 
 test("the homepage is the finished daily-edition experience", async () => {
-  const [page, component, layout, styles, packageJson] = await Promise.all([
+  const [page, component, layout, styles, packageJson, favicon] = await Promise.all([
     readFile(new URL("app/page.tsx", root), "utf8"),
     readFile(new URL("app/DailyEdition.tsx", root), "utf8"),
     readFile(new URL("app/layout.tsx", root), "utf8"),
     readFile(new URL("app/globals.css", root), "utf8"),
     readFile(new URL("package.json", root), "utf8"),
+    readFile(new URL("public/tea-favicon.svg", root), "utf8"),
   ]);
 
   assert.match(page, /getPublishedEdition\(\)/);
@@ -23,7 +24,11 @@ test("the homepage is the finished daily-edition experience", async () => {
   assert.match(component, /pickTopic/);
   assert.match(component, /submitSearch/);
   assert.match(component, /\/api\/search/);
+  assert.match(component, /useState\(""\)/);
+  assert.doesNotMatch(component, /AI jobs/);
   assert.match(layout, /title: "Your Daily Tea"/);
+  assert.match(layout, /tea-favicon\.svg/);
+  assert.match(favicon, /#94bce3/);
   assert.match(styles, /--steel: #94bce3/);
   assert.doesNotMatch(page + layout, /codex-preview|SkeletonPreview|Starter Project/);
   assert.doesNotMatch(packageJson, /react-loading-skeleton/);

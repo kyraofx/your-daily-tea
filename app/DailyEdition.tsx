@@ -38,7 +38,7 @@ export function DailyEdition({ edition, editions, topics }: { edition: Edition |
   const [archiveEdition, setArchiveEdition] = useState<Edition | null>(edition);
   const [topicStories, setTopicStories] = useState<TopicStory[]>([]);
   const [topicName, setTopicName] = useState("");
-  const [query, setQuery] = useState("AI jobs");
+  const [query, setQuery] = useState("");
   const [searchStories, setSearchStories] = useState<SearchStory[]>([]);
   const [searchRange, setSearchRange] = useState<SearchRange>("all");
   const [searchCategory, setSearchCategory] = useState<SectionSlug | "all">("all");
@@ -82,7 +82,10 @@ export function DailyEdition({ edition, editions, topics }: { edition: Edition |
   }
 
   async function runSearch(value = query) {
-    if (value.trim().length < 2) return;
+    if (value.trim().length < 2) {
+      setSearchStories([]);
+      return;
+    }
     setLoading(true);
     try {
       const response = await fetch(`/api/search?q=${encodeURIComponent(value.trim())}`);
@@ -95,7 +98,6 @@ export function DailyEdition({ edition, editions, topics }: { edition: Edition |
 
   function chooseView(item: View) {
     setView(item);
-    if (item === "search" && searchStories.length === 0) void runSearch("AI jobs");
   }
 
   const latestEditionTime = new Date(`${edition.editionDate}T12:00:00Z`).getTime();
@@ -214,7 +216,7 @@ export function DailyEdition({ edition, editions, topics }: { edition: Edition |
 
         {view === "search" && <section className="tea-view">
           <h1>Search the archive</h1>
-          <form className="tea-search" onSubmit={submitSearch}><label htmlFor="archive-search">Search</label><input id="archive-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="AI jobs"/><button className="tea-submit-search" type="submit">Search</button></form>
+          <form className="tea-search" onSubmit={submitSearch}><label htmlFor="archive-search">Search</label><input id="archive-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Type a topic or phrase"/><button className="tea-submit-search" type="submit">Search</button></form>
           <div className="tea-search-tools">
             <span aria-live="polite">{visibleSearchStories.length} {visibleSearchStories.length === 1 ? "story" : "stories"}</span>
             <button className={searchRange === "all" ? "is-active" : ""} onClick={() => setSearchRange("all")}>All dates</button>

@@ -18,8 +18,8 @@ export const metadata: Metadata = {
   title: "Your Daily Tea",
   description: "One frozen daily briefing, sourced and organized in 15 sections.",
   icons: {
-    icon: "/favicon.svg",
-    shortcut: "/favicon.svg",
+    icon: [{ url: "/tea-favicon.svg", type: "image/svg+xml" }],
+    shortcut: "/tea-favicon.svg",
   },
 };
 
