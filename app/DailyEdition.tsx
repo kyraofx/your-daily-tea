@@ -203,7 +203,7 @@ export function DailyEdition({ edition, editions, topics }: { edition: Edition |
         </section>}
 
         {view === "topics" && <section className="tea-view">
-          <p className="tea-kicker">Follow the threads</p><h1>Topics</h1><p className="tea-deck">Every hashtag is a thread you can pull.</p>
+          <h1>Topics</h1><p className="tea-deck">Every hashtag is a thread you can pull.</p>
           <div className="tea-choice-grid tea-topic-grid">{topics.map((topic) => <button className="tea-choice" key={topic.slug} onClick={() => pickTopic(topic)}><strong>#{topic.name.replace(/^#/, "")}</strong><span>{topic.storyCount} {topic.storyCount === 1 ? "story" : "stories"}</span></button>)}</div>
           {loading && <p className="tea-status">Loading…</p>}
           {topicName && <div className="tea-topic-backdrop"><button aria-label="Close topic" onClick={() => setTopicName("")}/><aside className="tea-topic-panel"><header><div><h2>#{topicName.replace(/^#/, "")}</h2><p>Following the story over time.</p></div><button onClick={() => setTopicName("")}>Close ✕</button></header><div className="tea-filter-row"><span>All time</span><span>Today</span><span>7 days</span><span>30 days</span></div>{loading ? <p className="tea-status">Loading…</p> : topicStories.map((story) => renderStory(story, displayDate(story.editionDate, { month: "short", day: "numeric", year: "numeric" })))}</aside></div>}

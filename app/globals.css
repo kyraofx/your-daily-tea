@@ -91,7 +91,7 @@ a { color: inherit; }
 .tea-choice span { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); }
 .tea-archive-results { margin: 44px 0 0 -86px; border-top: 1px solid var(--rule-2); padding-top: 24px; }
 .tea-archive-results > h2 { font-family: var(--font-barlow-condensed), sans-serif; font-size: 44px; font-weight: 500; }
-.tea-archive-results .tea-story { padding-left: 30px; border-top: 1px solid var(--rule); }
+.tea-archive-results .tea-story { padding-left: 116px; border-top: 1px solid var(--rule); }
 .tea-archive-section > div:first-child { display:grid; grid-template-columns:62px 1fr auto; gap:24px; align-items:baseline; padding:24px 0 14px; border-bottom:1px solid var(--rule-2); color:var(--steel) }
 .tea-archive-section > div:first-child span { font:600 34px/.8 var(--font-barlow-condensed) }.tea-archive-section h3{margin:0;font:600 26px/1 var(--font-barlow-condensed);text-transform:uppercase}.tea-archive-section small{color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase}
 .tea-search { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 16px; margin-top: 32px; padding-bottom: 14px; border-bottom: 1px solid var(--rule-2); }
@@ -125,6 +125,7 @@ a { color: inherit; }
   .tea-section-title { font-size: 24px; }
   .tea-section-count { display: none; }
   .tea-story { padding-left: 42px; }
+  .tea-archive-results .tea-story { padding-left: 42px; }
   .tea-footer { gap: 20px; font-size: 16px; }
 }
 
