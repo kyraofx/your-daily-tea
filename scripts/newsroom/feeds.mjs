@@ -30,6 +30,8 @@ function clean(value) {
     .replace(/&amp;/gi, "&")
     .replace(/&#39;|&apos;/gi, "'")
     .replace(/&quot;/gi, '"')
+    .replace(/&#(\d+);/g, (_match, code) => String.fromCodePoint(Number(code)))
+    .replace(/&#x([0-9a-f]+);/gi, (_match, code) => String.fromCodePoint(Number.parseInt(code, 16)))
     .replace(/\s+/g, " ")
     .trim();
 }

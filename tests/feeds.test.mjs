@@ -34,3 +34,8 @@ test("rejects feed GUIDs that are not HTTP URLs", () => {
   const invalid = `<rss><channel><item><title>Invalid link</title><guid>US-EN-49651586</guid><pubDate>Tue, 18 Aug 2026 08:00:00 GMT</pubDate></item></channel></rss>`;
   assert.deepEqual(parseFeed(invalid, source), []);
 });
+
+test("decodes numeric HTML entities in feed headlines", () => {
+  const encoded = `<rss><channel><item><title>Workers: &#8216;No one is coming&#8217;</title><link>https://example.com/entity</link><pubDate>Tue, 18 Aug 2026 08:00:00 GMT</pubDate></item></channel></rss>`;
+  assert.equal(parseFeed(encoded, source)[0].headline, "Workers: ‘No one is coming’");
+});
