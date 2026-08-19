@@ -100,6 +100,11 @@ export function DailyEdition({ edition, editions, topics }: { edition: Edition |
     setView(item);
   }
 
+  function chooseToday() {
+    setView("today");
+    window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "smooth" }));
+  }
+
   const latestEditionTime = new Date(`${edition.editionDate}T12:00:00Z`).getTime();
   const visibleSearchStories = searchStories.filter((story) => {
     if (searchCategory !== "all" && story.section !== searchCategory) return false;
@@ -121,7 +126,7 @@ export function DailyEdition({ edition, editions, topics }: { edition: Edition |
     <div className={`tea-site${light ? " is-light" : ""}`}>
       <header className="tea-header">
         <div className="tea-header-inner">
-          <a className="tea-wordmark" href="#top" onClick={() => chooseView("today")}>Your daily tea</a>
+          <button className="tea-wordmark" type="button" onClick={chooseToday}>Your daily tea</button>
           <nav aria-label="Primary navigation">
             {(["today", "archive", "topics", "search"] as View[]).map((item) => <button aria-current={view === item ? "page" : undefined} key={item} onClick={() => chooseView(item)}>{item}</button>)}
           </nav>

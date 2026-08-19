@@ -17,7 +17,8 @@ test("the homepage is the finished daily-edition experience", async () => {
   assert.match(page, /getPublishedEdition\(\)/);
   assert.match(component, /Morning, internet\./);
   assert.match(component, /className="tea-wordmark"/);
-  assert.match(component, /onClick=\{\(\) => chooseView\("today"\)\}/);
+  assert.match(component, /onClick=\{chooseToday\}/);
+  assert.match(component, /setView\("today"\)/);
   assert.match(component, /SECTION_ORDER\.map/);
   assert.match(component, /Internet \+ Trends/);
   assert.match(component, /story\.canonicalUrl/);

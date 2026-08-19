@@ -26,7 +26,7 @@ a { color: inherit; }
 .tea-site.is-light { --bg: #f2f2f3; --ink: #1d1f20; --ink-2: #5d5d60; --ink-3: #7a7a7d; --rule: rgba(29,31,32,.16); --rule-2: rgba(29,31,32,.3); --steel: #416180; }
 .tea-header { position: sticky; top: 0; z-index: 40; border-bottom: 1px solid var(--rule); background: color-mix(in srgb, var(--bg) 94%, transparent); backdrop-filter: blur(12px); }
 .tea-header-inner { max-width: 1240px; margin: auto; padding: 14px 40px; display: flex; align-items: center; gap: 40px; }
-.tea-wordmark { margin-right: auto; font-family: var(--font-barlow-condensed), sans-serif; font-size: 30px; font-weight: 500; line-height: 1; letter-spacing: .004em; text-decoration: none; }
+.tea-wordmark { margin-right: auto; padding: 0; border: 0; background: none; color: inherit; font-family: var(--font-barlow-condensed), sans-serif; font-size: 30px; font-weight: 500; line-height: 1; letter-spacing: .004em; text-align: left; cursor: pointer; }
 .tea-header nav { display: flex; gap: 26px; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-2); }
 .tea-header nav button { padding: 0 0 3px; border: 0; border-bottom: 1px solid transparent; background: none; color: var(--ink-2); letter-spacing: .16em; text-transform: uppercase; cursor: pointer; }
 .tea-header nav button[aria-current="page"] { border-color: var(--steel); color: var(--ink); }
