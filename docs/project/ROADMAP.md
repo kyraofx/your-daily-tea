@@ -29,6 +29,8 @@ Implementation status: the Supabase project, core schema, row-level security, im
 - Generate concise conversational summaries, attribution, and structured topics.
 - Freeze one edition per day.
 
+Implementation status: the manual runner now validates the Pacific cutoff, normalizes URLs, deduplicates exact candidates, calculates the agreed weighted score, selects up to four stories per section, emits a calibration report, and can save private drafts when server credentials are configured. Automated retrieval, archive-aware newness, AI briefing generation, and richer diversity checks remain.
+
 ## Phase 4 — Core Website
 
 - Build the Today / Daily Edition experience.
@@ -43,6 +45,8 @@ Implementation status: the Supabase project, core schema, row-level security, im
 - Add previous/next date navigation and a calendar picker.
 - Build topic/hashtag pages spanning archived stories.
 - Add all-time, today, 7-day, 30-day, and custom date filters.
+
+Implementation status: the backend endpoints and secured database views for edition lists, topic lists, and topic/date results are complete. Frontend wiring remains.
 
 ## Phase 6 — Scheduling, Reliability, and Launch
 

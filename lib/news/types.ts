@@ -44,3 +44,19 @@ export type Edition = {
   publishedAt: string;
   sections: Partial<Record<SectionSlug, Story[]>>;
 };
+
+export type EditionSummary = Pick<
+  Edition,
+  "id" | "editionDate" | "editionNumber" | "publishedAt"
+>;
+
+export type TopicSummary = Topic & {
+  storyCount: number;
+  latestEditionDate: string;
+};
+
+export type TopicStory = Omit<Story, "topics"> & {
+  editionId: string;
+  editionDate: string;
+  topic: Topic;
+};
