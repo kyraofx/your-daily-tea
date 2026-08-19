@@ -1,4 +1,5 @@
 import { readFile } from "node:fs/promises";
+import { homedir } from "node:os";
 import process from "node:process";
 
 const WEIGHTS = {
@@ -122,24 +123,31 @@ function prepare(candidates, editionDate) {
 }
 
 async function localEnvironment() {
-  try {
-    const text = await readFile(".env.local", "utf8");
-    for (const line of text.split(/\r?\n/)) {
-      const match = line.match(/^([A-Z0-9_]+)=(.*)$/);
-      if (match && !process.env[match[1]]) process.env[match[1]] = match[2];
-    }
-  } catch {}
+  const files = [
+    ".env.local",
+    `${homedir()}/.config/your-daily-tea/secrets.env`,
+  ];
+  for (const file of files) {
+    try {
+      const text = await readFile(file, "utf8");
+      for (const line of text.split(/\r?\n/)) {
+        const match = line.match(/^([A-Z0-9_]+)=(.*)$/);
+        if (match && !process.env[match[1]]) process.env[match[1]] = match[2];
+      }
+    } catch {}
+  }
 }
 
 async function rest(path, options = {}) {
   const url = process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) throw new Error("Saving requires SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.");
+  const key = process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) throw new Error("Saving requires SUPABASE_URL and SUPABASE_SECRET_KEY.");
+  const authorization = key.startsWith("sb_secret_") ? {} : { Authorization: `Bearer ${key}` };
   const response = await fetch(`${url.replace(/\/$/, "")}/rest/v1/${path}`, {
     ...options,
     headers: {
       apikey: key,
-      Authorization: `Bearer ${key}`,
+      ...authorization,
       "Content-Type": "application/json",
       Prefer: options.prefer ?? "return=representation",
       ...options.headers,
