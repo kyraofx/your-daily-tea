@@ -1,27 +1,41 @@
 [
-  {
-    "name": "NPR News",
-    "url": "https://feeds.npr.org/1001/rss.xml",
-    "categories": ["usa"]
-  },
-  {
-    "name": "The New York Times — U.S.",
-    "url": "https://rss.nytimes.com/services/xml/rss/nyt/US.xml",
-    "categories": ["usa"]
-  },
-  {
-    "name": "BBC News — US & Canada",
-    "url": "https://feeds.bbci.co.uk/news/world/us_and_canada/rss.xml",
-    "categories": ["usa"]
-  },
-  {
-    "name": "NASA News Releases",
-    "url": "https://www.nasa.gov/rss/dyn/breaking_news.rss",
-    "categories": ["science-planet"]
-  },
-  {
-    "name": "NOAA News",
-    "url": "https://www.noaa.gov/rss.xml",
-    "categories": ["science-planet"]
-  }
+  { "name": "NPR News", "url": "https://feeds.npr.org/1001/rss.xml", "categories": ["usa", "life-society", "politics-policy", "other-notable"] },
+  { "name": "NPR World", "url": "https://feeds.npr.org/1004/rss.xml", "categories": ["world"] },
+  { "name": "NPR Business", "url": "https://feeds.npr.org/1006/rss.xml", "categories": ["money-economy", "jobs-work"] },
+  { "name": "NPR Science", "url": "https://feeds.npr.org/1007/rss.xml", "categories": ["science-planet"] },
+  { "name": "NPR Arts & Life", "url": "https://feeds.npr.org/1008/rss.xml", "categories": ["life-society", "pop-culture"] },
+  { "name": "NPR Sports", "url": "https://feeds.npr.org/1055/rss.xml", "categories": ["sports"] },
+  { "name": "NPR Health", "url": "https://feeds.npr.org/1128/rss.xml", "categories": ["health-wellness"] },
+  { "name": "NPR Technology", "url": "https://feeds.npr.org/1019/rss.xml", "categories": ["tech-ai", "internet-trends"] },
+
+  { "name": "BBC News — US & Canada", "url": "https://feeds.bbci.co.uk/news/world/us_and_canada/rss.xml", "categories": ["usa", "life-society"] },
+  { "name": "BBC News — World", "url": "https://feeds.bbci.co.uk/news/world/rss.xml", "categories": ["world", "other-notable"] },
+  { "name": "BBC News — Technology", "url": "https://feeds.bbci.co.uk/news/technology/rss.xml", "categories": ["tech-ai", "internet-trends", "gaming"] },
+  { "name": "BBC News — Science & Environment", "url": "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml", "categories": ["science-planet"] },
+  { "name": "BBC News — Health", "url": "https://feeds.bbci.co.uk/news/health/rss.xml", "categories": ["health-wellness"] },
+  { "name": "BBC News — Business", "url": "https://feeds.bbci.co.uk/news/business/rss.xml", "categories": ["money-economy", "jobs-work"] },
+  { "name": "BBC News — Entertainment & Arts", "url": "https://feeds.bbci.co.uk/news/entertainment_and_arts/rss.xml", "categories": ["pop-culture"] },
+  { "name": "BBC Sport", "url": "https://feeds.bbci.co.uk/sport/rss.xml", "categories": ["sports"] },
+
+  { "name": "The New York Times — U.S.", "url": "https://rss.nytimes.com/services/xml/rss/nyt/US.xml", "categories": ["usa", "life-society"] },
+  { "name": "The New York Times — World", "url": "https://rss.nytimes.com/services/xml/rss/nyt/World.xml", "categories": ["world"] },
+  { "name": "The New York Times — Politics", "url": "https://rss.nytimes.com/services/xml/rss/nyt/Politics.xml", "categories": ["politics-policy"] },
+  { "name": "The New York Times — Technology", "url": "https://rss.nytimes.com/services/xml/rss/nyt/Technology.xml", "categories": ["tech-ai", "internet-trends"] },
+  { "name": "The New York Times — Science", "url": "https://rss.nytimes.com/services/xml/rss/nyt/Science.xml", "categories": ["science-planet"] },
+  { "name": "The New York Times — Health", "url": "https://rss.nytimes.com/services/xml/rss/nyt/Health.xml", "categories": ["health-wellness"] },
+  { "name": "The New York Times — Business", "url": "https://rss.nytimes.com/services/xml/rss/nyt/Business.xml", "categories": ["money-economy", "jobs-work"] },
+  { "name": "ESPN News", "url": "https://www.espn.com/espn/rss/news", "categories": ["sports"] },
+  { "name": "The New York Times — Arts", "url": "https://rss.nytimes.com/services/xml/rss/nyt/Arts.xml", "categories": ["pop-culture"] },
+
+  { "name": "CalMatters", "url": "https://calmatters.org/feed/", "categories": ["california"] },
+  { "name": "California Governor", "url": "https://www.gov.ca.gov/feed/", "categories": ["california", "politics-policy"] },
+  { "name": "NASA News Releases", "url": "https://www.nasa.gov/rss/dyn/breaking_news.rss", "categories": ["science-planet"] },
+  { "name": "NOAA News", "url": "https://www.noaa.gov/rss.xml", "categories": ["science-planet"] },
+  { "name": "The Verge", "url": "https://www.theverge.com/rss/index.xml", "categories": ["tech-ai", "internet-trends", "gaming"] },
+  { "name": "Wired", "url": "https://www.wired.com/feed/rss", "categories": ["tech-ai", "science-planet", "internet-trends"] },
+  { "name": "IGN Games", "url": "https://feeds.feedburner.com/ign/games-all", "categories": ["gaming"] },
+  { "name": "Polygon", "url": "https://www.polygon.com/rss/index.xml", "categories": ["gaming", "pop-culture"] },
+  { "name": "GamesIndustry.biz", "url": "https://www.gamesindustry.biz/feed", "categories": ["gaming", "jobs-work"] },
+  { "name": "HR Dive", "url": "https://www.hrdive.com/feeds/news/", "categories": ["jobs-work"] },
+  { "name": "Vox", "url": "https://www.vox.com/rss/index.xml", "categories": ["life-society", "internet-trends", "other-notable"] }
 ]
