@@ -69,4 +69,4 @@ After reviewing the final report, save that exact result with:
 
 The reviewed-report writer accepts only reports carrying final editorial-review metadata, decodes residual HTML entities in display copy, refuses to overwrite an existing edition date, and always inserts `draft`. A failed partial write marks the edition `failed`; it never approves or publishes. Approval and publication remain separate owner actions during calibration.
 
-The first verified database draft is edition `2026-08-18`: 41 reviewed placements across 14 non-empty sections. It has no approval or publication timestamps. Verification with the publishable key returned no edition or story rows, confirming that RLS keeps it private.
+The first verified database edition is `2026-08-18`: 41 reviewed placements across 14 non-empty sections. It was saved privately, confirmed invisible through the publishable key, explicitly approved by the owner, and then separately published. Post-publication verification through the publishable key returned exactly one edition and all 41 stories with matching section counts.

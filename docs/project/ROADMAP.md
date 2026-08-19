@@ -29,7 +29,7 @@ Implementation status: the Supabase project, core schema, row-level security, im
 - Generate concise conversational summaries, attribution, and structured topics.
 - Freeze one edition per day.
 
-Implementation status: a resumable full-edition command runs all 15 sections through discovery, Luna evaluation, deduplication, archive comparison, scoring, balanced selection, and a grounded final cross-section review. Applied to the first closed-window report, final review reduced 44 stories to 41, moved three miscategorized stories, removed two duplicate-event records, and rebalanced the affected sections. The Iran and Tupac duplicate issues identified in manual review were both resolved. The exact 41-story result is now stored as the private August 18 Supabase draft; privileged counts match the report and anonymous reads return no edition or stories. Material-development exceptions remain.
+Implementation status: a resumable full-edition command runs all 15 sections through discovery, Luna evaluation, deduplication, archive comparison, scoring, balanced selection, and a grounded final cross-section review. Applied to the first closed-window report, final review reduced 44 stories to 41, moved three miscategorized stories, removed two duplicate-event records, and rebalanced the affected sections. The Iran and Tupac duplicate issues identified in manual review were both resolved. The exact 41-story August 18 edition completed the guarded `draft -> approved -> published` flow. Anonymous reads were empty before publication and returned exactly one edition with 41 stories afterward. Material-development exceptions remain.
 
 ## Phase 4 — Core Website
 
@@ -47,6 +47,8 @@ Implementation status: a resumable full-edition command runs all 15 sections thr
 - Add all-time, today, 7-day, 30-day, and custom date filters.
 
 Implementation status: the backend endpoints and secured database views for edition lists, topic lists, and topic/date results are complete. Frontend wiring remains.
+
+The first published edition is now available to those endpoints, enabling end-to-end frontend integration and archive testing against real frozen data.
 
 ## Phase 6 — Scheduling, Reliability, and Launch
 

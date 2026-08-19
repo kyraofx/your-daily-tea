@@ -293,3 +293,17 @@ Save only the final cross-section review artifact through a dedicated server-sid
 - The stored edition is the exact reviewed selection rather than an earlier candidate or selection checkpoint.
 - Retrying cannot silently replace a calibration edition; partial failures are visibly marked `failed`.
 - The August 18, 2026 calibration edition is stored with 41 placements and remains invisible through anonymous Data API reads.
+
+## DEC-018 — Complete the First Publication Through Separate Owner Gates
+
+- **Status:** Accepted
+
+### Decision
+
+Use distinct owner instructions for approval and publication during calibration. For the August 18, 2026 edition, transition from `draft` to `approved` only after content review, then transition from `approved` to `published` only after a separate publication instruction.
+
+### Consequences
+
+- The first edition exercised the database-enforced state machine without skipping a gate.
+- Publishable-key reads returned no private content before publication and exactly 41 stories afterward.
+- The published edition is immutable and can now support end-to-end website and archive integration testing.
