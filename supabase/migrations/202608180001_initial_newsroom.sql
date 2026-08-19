@@ -32,7 +32,7 @@ create table public.editions (
   generated_at timestamptz,
   approved_at timestamptz,
   published_at timestamptz,
-  approved_by uuid references auth.users(id),
+  approved_by text,
   failure_reason text,
   created_at timestamptz not null default now(),
   constraint valid_coverage_window check (coverage_ends_at > coverage_starts_at),
@@ -67,7 +67,6 @@ create table public.edition_story_placements (
   story_id uuid not null references public.stories(id),
   section_slug text not null,
   rank smallint not null check (rank > 0),
-  is_top_story boolean not null default false,
   primary key (edition_id, section_slug, rank),
   unique (edition_id, story_id, section_slug)
 );
@@ -87,11 +86,15 @@ create table public.story_topics (
 );
 
 create index stories_published_at_idx on public.stories (published_at desc);
+create index stories_category_id_idx on public.stories (category_id);
+create index stories_source_id_idx on public.stories (source_id);
 create index placements_story_idx on public.edition_story_placements (story_id);
 create index story_topics_topic_idx on public.story_topics (topic_id, story_id);
 create index editions_published_idx on public.editions (edition_date desc) where status = 'published';
+create index editions_approved_by_idx on public.editions (approved_by) where approved_by is not null;
 
 insert into public.categories (slug, name, display_order) values
+  ('usa', 'USA', 1),
   ('california', 'California', 2),
   ('world', 'World', 3),
   ('tech-ai', 'Tech + AI', 4),
@@ -118,7 +121,7 @@ select
   s.published_at,
   src.name as source_name,
   p.section_slug,
-  case when p.section_slug = 'top' then 1 else c.display_order end as section_order,
+  c.display_order as section_order,
   p.rank,
   coalesce(
     jsonb_agg(jsonb_build_object('name', t.name, 'slug', t.slug))
@@ -144,36 +147,36 @@ alter table public.topics enable row level security;
 alter table public.story_topics enable row level security;
 
 create policy "published editions are public" on public.editions
-  for select using (status = 'published');
+  for select to anon, authenticated using (status = 'published');
 create policy "active categories are public" on public.categories
-  for select using (is_active);
+  for select to anon, authenticated using (is_active);
 create policy "published sources are public" on public.sources
-  for select using (exists (
+  for select to anon, authenticated using (exists (
     select 1 from public.stories s
     join public.edition_story_placements p on p.story_id = s.id
     join public.editions e on e.id = p.edition_id
     where s.source_id = sources.id and e.status = 'published'
   ));
 create policy "published stories are public" on public.stories
-  for select using (exists (
+  for select to anon, authenticated using (exists (
     select 1 from public.edition_story_placements p
     join public.editions e on e.id = p.edition_id
     where p.story_id = stories.id and e.status = 'published'
   ));
 create policy "published placements are public" on public.edition_story_placements
-  for select using (exists (
+  for select to anon, authenticated using (exists (
     select 1 from public.editions e
     where e.id = edition_story_placements.edition_id and e.status = 'published'
   ));
 create policy "published topics are public" on public.topics
-  for select using (exists (
+  for select to anon, authenticated using (exists (
     select 1 from public.story_topics st
     join public.edition_story_placements p on p.story_id = st.story_id
     join public.editions e on e.id = p.edition_id
     where st.topic_id = topics.id and e.status = 'published'
   ));
 create policy "published story topics are public" on public.story_topics
-  for select using (exists (
+  for select to anon, authenticated using (exists (
     select 1 from public.edition_story_placements p
     join public.editions e on e.id = p.edition_id
     where p.story_id = story_topics.story_id and e.status = 'published'

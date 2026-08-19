@@ -6,7 +6,7 @@
 
 ### Context
 
-The product needs to preserve immutable daily editions, place one story in its subject category and optionally Top Stories, and query archived stories by structured topic and date. The requested project documents explicitly identify PostgreSQL as DEC-001, and the earlier architecture discussion proposed Postgres/Supabase for storage.
+The product needs to preserve immutable daily editions, place stories in ranked subject sections, and query archived stories by structured topic and date. The requested project documents explicitly identify PostgreSQL as DEC-001, and the earlier architecture discussion proposed Postgres/Supabase for storage.
 
 ### Decision
 
@@ -25,7 +25,7 @@ The product's core data is relational: editions contain ranked story placements,
 
 ### Consequences
 
-- The schema must distinguish stories from their placements so Top Stories promotion does not duplicate the underlying story.
+- The schema must distinguish stories from their ranked edition placements.
 - Topics should be normalized entities with many-to-many story relationships, not a single hashtag string.
 - Edition timestamps and publication windows must preserve Pacific-time cutoff semantics.
 - Hosting provider, schema details, migrations, indexing, backups, and operational ownership remain TBD.
@@ -59,7 +59,7 @@ Frozen editions create a trustworthy day-by-day record, give all visitors the sa
 
 ## DEC-003 — Generate Top Stories from Selected Category Stories
 
-- **Status:** Accepted
+- **Status:** Superseded by DEC-010
 
 ### Context
 
@@ -161,3 +161,36 @@ This keeps the edition fast, approachable, and less prescriptive.
 - Editorial prompts and quality checks must enforce clarity, specificity, and factual neutrality.
 - Especially relevant context may appear inline only when genuinely useful.
 
+## DEC-007 — Use the Supplied 15-Section Taxonomy
+
+- **Status:** Accepted
+
+### Decision
+
+Use the confirmed section structure: USA, California, World, Tech + AI, Science + Planet, Health + Wellness, Money + Economy, Politics + Policy, Jobs + Work, Sports, Internet + Trends, Gaming, Life + Society, Pop Culture, and Other Notable.
+
+## DEC-008 — Use Supabase PostgreSQL
+
+- **Status:** Accepted
+
+### Decision
+
+Use Supabase to host PostgreSQL and expose published content through a row-level-security-protected Data API. The Sites application uses a browser-safe publishable key; newsroom credentials remain server-only.
+
+## DEC-009 — Require Approval During Calibration
+
+- **Status:** Accepted
+
+### Decision
+
+Generate editions as private drafts. During calibration, the owner reviews each edition in the private Supabase dashboard, records approval, and publishes it explicitly. Public readers can access only editions in the `published` state.
+
+Published editions are immutable, and the database rejects transitions that skip approval.
+
+## DEC-010 — Remove Top Stories
+
+- **Status:** Accepted
+
+### Decision
+
+Do not generate or display a Top Stories section. The product has 15 ranked subject sections, beginning with USA, California, and World. Each selected story appears only in its subject section.

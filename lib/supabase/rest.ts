@@ -2,10 +2,12 @@ type QueryValue = string | number | boolean;
 
 function config() {
   const url = process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_ANON_KEY;
+  const key = process.env.SUPABASE_PUBLISHABLE_KEY;
 
   if (!url || !key) {
-    throw new Error("Supabase is not configured. Set SUPABASE_URL and SUPABASE_ANON_KEY.");
+    throw new Error(
+      "Supabase is not configured. Set SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY.",
+    );
   }
 
   return { url: url.replace(/\/$/, ""), key };
@@ -36,4 +38,3 @@ export async function supabaseGet<T>(
 
   return (await response.json()) as T;
 }
-

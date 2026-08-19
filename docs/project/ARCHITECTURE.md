@@ -9,20 +9,20 @@ The product has two major parts:
 
 High-level flow:
 
-`Sources → category retrieval → validation and deduplication → scoring and editorial selection → Top Stories promotion → briefing generation and tagging → frozen edition storage → website`
+`Sources → category retrieval → validation and deduplication → scoring and editorial selection → briefing generation and tagging → frozen edition storage → website`
 
 ## Frontend
 
 Required capabilities:
 
-- Render today's frozen edition in the agreed 13-section order.
+- Render today's frozen edition in the agreed 15-section order.
 - Render archived editions by date.
 - Provide previous/next and calendar navigation.
 - Link stories to their attributed sources.
 - Make topics/hashtags interactive.
 - Show topic-filtered archive results with date filters.
 
-Framework and hosting choices are TBD. Next.js/React was discussed as an option, not locked as a decision.
+The implementation uses the Sites Vinext/React runtime and preserves the supplied HTML design. Public data is read from Supabase through server-side API routes; browser code never receives administrative credentials.
 
 ## Backend
 
@@ -35,23 +35,22 @@ Required responsibilities:
 - Compare candidates with archived stories for material newness.
 - Apply credibility checks and weighted editorial scoring.
 - Perform a final selection and diversity pass without fixed filler quotas.
-- Select 3–5 Top Stories from already-selected category stories.
 - Generate concise summaries and structured topics.
 - Save and publish an immutable daily edition.
 - Query archived editions by date and stories by topic plus date constraints.
 
-Implementation language, API shape, job orchestration, and operational tooling are TBD. Python and several scheduling services were discussed as options, not selected decisions.
+The website API is implemented in TypeScript. The newsroom engine will run as a separate scheduled worker so long-running retrieval and editorial work cannot delay reader requests. The worker runtime and scheduler remain to be finalized during calibration.
 
 ## Database
 
-PostgreSQL is the accepted database direction; see [DECISIONS.md](DECISIONS.md).
+Supabase PostgreSQL is the accepted database and managed platform direction; see [DECISIONS.md](DECISIONS.md).
 
 The logical model must support at least:
 
 - **Editions:** edition date, coverage start/end, publication time, and frozen status.
 - **Stories:** headline, summary, source metadata, original publication time, and canonical URL.
 - **Categories:** the subject taxonomy and display order.
-- **Edition story placements:** a story's section, rank, and Top Stories promotion without duplicating the underlying story.
+- **Edition story placements:** a story's section and rank within a frozen edition.
 - **Topics:** structured name, slug, and optional type, displayed as hashtags.
 - **Story-topic relationships:** many-to-many links for archive filtering.
 - **Source records or source metadata:** enough information for attribution and quality evaluation.
@@ -88,8 +87,6 @@ Specific vendors, source contracts, API plans, and licensing arrangements are TB
    - Momentum: 5%
 8. Make a category-level editorial selection, allowing 0–4 stories for most sections.
 9. Perform a cross-edition diversity check and prevent topic domination.
-10. Choose 3–5 Top Stories from the selected category stories.
-11. Write concise briefing copy and assign roughly 2–5 structured topics per story.
-12. Freeze and persist the edition.
-13. Serve the same saved edition to all readers and expose it through date/topic archive queries.
-
+10. Write concise briefing copy and assign roughly 2–5 structured topics per story.
+11. Freeze and persist the edition.
+12. Serve the same saved edition to all readers and expose it through date/topic archive queries.

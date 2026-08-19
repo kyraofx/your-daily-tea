@@ -27,8 +27,8 @@ Readers face too much repetitive, low-value news spread across many sources. Fin
 ## Core User Journey
 
 1. A reader visits the website in the morning.
-2. The reader sees that day's frozen edition, beginning with Top Stories.
-3. The reader scans concise story briefings across the 13 agreed sections.
+2. The reader sees that day's frozen edition, beginning with USA, followed by California and World.
+3. The reader scans concise story briefings across the 15 agreed sections.
 4. The reader can follow the attributed source for more detail.
 5. The reader can open an earlier edition by date.
 6. The reader can click a hashtag/topic to see matching archived stories, then narrow them by date.
@@ -53,14 +53,13 @@ Readers face too much repetitive, low-value news spread across many sources. Fin
 - Retrieve candidates separately for each subject category.
 - Verify timestamps, deduplicate, check credibility and newness, score candidates, and make a final editorial selection.
 - Publish concise story summaries with source attribution, source links, publication time, and topics/hashtags.
-- Generate Top Stories from stories already selected for the subject categories.
 - Show today's edition and permanent archived editions by date.
 - Support topic/hashtag filtering across archived stories with date filters.
 
 ## In Scope
 
 - Daily automated research, selection, summarization, tagging, storage, and publishing.
-- The agreed 13-section briefing.
+- The agreed 15-section briefing.
 - Category-specific retrieval rather than one broad search followed by categorization.
 - Short original summaries that link back to source reporting.
 - Topic entities displayed as clickable hashtags.
@@ -71,7 +70,6 @@ Readers face too much repetitive, low-value news spread across many sources. Fin
 - Reproducing source articles in full.
 - Generating an edition on every page request.
 - Filling a fixed story quota for each section.
-- Retrieving a separate pool for Top Stories.
 - Retrospectively adding post-cutoff developments to an older edition.
 - Story timelines in the MVP.
 - Personalization, email briefings, and user accounts until further decisions are made.
@@ -88,4 +86,3 @@ Readers face too much repetitive, low-value news spread across many sources. Fin
 ## Success Metrics
 
 TBD. No quantitative product success metrics have been agreed yet.
-
