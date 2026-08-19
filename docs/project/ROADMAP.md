@@ -29,7 +29,7 @@ Implementation status: the Supabase project, core schema, row-level security, im
 - Generate concise conversational summaries, attribution, and structured topics.
 - Freeze one edition per day.
 
-Implementation status: a resumable full-edition command runs all 15 sections through discovery, Luna evaluation, deduplication, archive comparison, scoring, balanced selection, and a grounded final cross-section review without saving. Applied to the first closed-window report, final review reduced 44 stories to 41, moved three miscategorized stories, removed two duplicate-event records, and rebalanced the affected sections. The Iran and Tupac duplicate issues identified in manual review were both resolved. Material-development exceptions and database draft verification remain.
+Implementation status: a resumable full-edition command runs all 15 sections through discovery, Luna evaluation, deduplication, archive comparison, scoring, balanced selection, and a grounded final cross-section review. Applied to the first closed-window report, final review reduced 44 stories to 41, moved three miscategorized stories, removed two duplicate-event records, and rebalanced the affected sections. The Iran and Tupac duplicate issues identified in manual review were both resolved. The exact 41-story result is now stored as the private August 18 Supabase draft; privileged counts match the report and anonymous reads return no edition or stories. Material-development exceptions remain.
 
 ## Phase 4 — Core Website
 

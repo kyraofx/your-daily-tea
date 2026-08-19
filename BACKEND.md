@@ -62,3 +62,11 @@ Add `--save` to the runner only after reviewing its report. Saving creates a pri
 `pnpm newsroom:dedupe -- --input file-one.json,file-two.json` performs cross-source and cross-section event deduplication, preferring the higher-scoring or higher-quality candidate. It also reads the last 30 days from Supabase's published, security-invoker archive view and rejects materially repeated coverage. Use `--archive-days N`, `--output`, and `--report` to customize the read-only comparison.
 
 `pnpm newsroom:generate-edition -- --date YYYY-MM-DD` runs the complete read-only calibration pipeline for all 15 sections and writes private checkpoints, candidates, deduplication results, initial selection, final editorial decisions, a review report, and a manifest under `work/edition-YYYY-MM-DD/`. The final grounded Luna pass makes only keep, remove, or move decisions for supplied story URLs, then deterministic balance rules run again. Add `--resume` after a transient failure to reuse completed category and final-review checkpoints without repeating Luna calls. This command never saves or publishes; use the separate runner with `--save` only after reviewing the generated report.
+
+After reviewing the final report, save that exact result with:
+
+`pnpm newsroom:save-reviewed -- --input work/edition-YYYY-MM-DD/final-review-report.json`
+
+The reviewed-report writer accepts only reports carrying final editorial-review metadata, decodes residual HTML entities in display copy, refuses to overwrite an existing edition date, and always inserts `draft`. A failed partial write marks the edition `failed`; it never approves or publishes. Approval and publication remain separate owner actions during calibration.
+
+The first verified database draft is edition `2026-08-18`: 41 reviewed placements across 14 non-empty sections. It has no approval or publication timestamps. Verification with the publishable key returned no edition or story rows, confirming that RLS keeps it private.
