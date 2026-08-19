@@ -29,7 +29,7 @@ Implementation status: the Supabase project, core schema, row-level security, im
 - Generate concise conversational summaries, attribution, and structured topics.
 - Freeze one edition per day.
 
-Implementation status: the manual runner now validates the Pacific cutoff, normalizes URLs, deduplicates exact candidates, calculates the agreed weighted score, selects up to four stories per section, emits a calibration report, and can save private drafts when server credentials are configured. The OpenAI Responses API retrieval adapter is implemented with required low-context web search, strict output, and per-section runs. Billing is active and `gpt-5.6-luna` requests now succeed, but initial USA calibration returned no candidates; deterministic feed and primary-source discovery is the next retrieval improvement. Archive-aware newness, final AI briefing generation, and richer diversity checks remain.
+Implementation status: the manual runner now validates the Pacific cutoff, normalizes URLs, deduplicates exact candidates, calculates the agreed weighted score, selects up to four stories per section, emits a calibration report, and can save private drafts when server credentials are configured. The OpenAI Responses API adapter uses required low-context web search, strict output, and per-section runs with `gpt-5.6-luna`. Deterministic RSS/Atom discovery is also implemented with source isolation, cutoff filtering, URL deduplication, and private output. The first USA feed calibration produced 58 in-window candidates from three sources with no fetch errors. AI evaluation of feed candidates, broader source coverage, archive-aware newness, final briefing generation, and richer diversity checks remain.
 
 ## Phase 4 — Core Website
 

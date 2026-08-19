@@ -15,10 +15,12 @@
     "newsroom:dry-run": "node scripts/newsroom/run.mjs --input scripts/newsroom/candidates.example.json",
     "newsroom:save": "node scripts/newsroom/run.mjs --input scripts/newsroom/candidates.example.json --save",
     "newsroom:retrieve": "node scripts/newsroom/retrieve.mjs",
-    "test:newsroom": "node --test tests/openai-newsroom.test.mjs"
+    "newsroom:feeds": "node scripts/newsroom/collect-feeds.mjs",
+    "test:newsroom": "node --test tests/openai-newsroom.test.mjs tests/feeds.test.mjs"
   },
   "dependencies": {
     "drizzle-orm": "0.45.2",
+    "fast-xml-parser": "^5.11.0",
     "react": "19.2.6",
     "react-dom": "19.2.6",
     "react-loading-skeleton": "3.5.0"

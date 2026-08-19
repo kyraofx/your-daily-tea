@@ -39,6 +39,8 @@ Use `node scripts/newsroom/run.mjs --input path/to/candidates.json --date YYYY-M
 
 ## AI-assisted retrieval
 
+`pnpm newsroom:feeds -- --category usa --date YYYY-MM-DD` performs deterministic, read-only discovery from the configured RSS/Atom registry. It normalizes headlines, canonical URLs, source names, summaries, and timestamps; filters the exact Pacific edition window; removes duplicate URLs; and writes a private candidate file under `work/`. Feed failures are isolated so one unavailable source does not discard the others.
+
 `pnpm newsroom:retrieve` uses the OpenAI Responses API with low-context web search and a strict candidate schema. It researches each of the 15 sections separately and writes the results to a private, git-ignored file under `work/`. The default model is the cost-sensitive `gpt-5.6-luna` with reasoning disabled; override the model with `OPENAI_NEWSROOM_MODEL` when needed.
 
 During calibration, retrieve one section first:
