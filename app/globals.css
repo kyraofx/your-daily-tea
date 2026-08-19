@@ -64,7 +64,9 @@ a { color: inherit; }
 .tea-tags span { color: var(--ink-3); }
 .tea-no-stories { margin: 0 0 20px 86px; padding-top: 14px; border-top: 1px solid var(--rule); font-size: 16px; font-style: italic; color: var(--ink-3); }
 .tea-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 32px; font-family: var(--font-barlow-condensed), sans-serif; font-size: 22px; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-2); }
-.tea-footer span:nth-child(2) { font-family: var(--font-barlow), sans-serif; font-size: 11px; letter-spacing: .18em; color: var(--ink-3); }
+.tea-footer-credit { display: grid; gap: 8px; text-align: center; font-family: var(--font-barlow), sans-serif; font-size: 11px; letter-spacing: .18em; color: var(--ink-3); }
+.tea-footer-credit a { color: var(--ink-2); text-underline-offset: 3px; }
+.tea-footer-credit a:hover { color: var(--steel); }
 .tea-footer span[aria-disabled] { color: var(--ink-3); }
 .tea-empty { min-height: 100vh; display: grid; place-content: center; gap: 20px; padding: 40px; background: #131416; color: #f5f5f8; font-family: var(--font-barlow), sans-serif; }
 .tea-empty h1 { white-space: normal; }
