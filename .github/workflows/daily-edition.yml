@@ -1,0 +1,71 @@
+name: Daily edition
+
+on:
+  schedule:
+    - cron: "7 6 * * *"
+      timezone: "America/Los_Angeles"
+  workflow_dispatch:
+    inputs:
+      edition_date:
+        description: "Pacific edition date (YYYY-MM-DD); leave blank for today"
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: daily-edition
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+      SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      OPENAI_NEWSROOM_MODEL: gpt-5.6-luna
+      NEWSROOM_MINIMUM_STORIES: "20"
+      NEWSROOM_MINIMUM_SECTIONS: "10"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Enable pnpm
+        run: corepack enable
+      - name: Install locked dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Resolve Pacific edition date
+        id: edition
+        env:
+          REQUESTED_DATE: ${{ inputs.edition_date }}
+        run: |
+          if [ -n "$REQUESTED_DATE" ]; then
+            EDITION_DATE="$REQUESTED_DATE"
+          else
+            EDITION_DATE="$(TZ=America/Los_Angeles date +%F)"
+          fi
+          if ! printf '%s' "$EDITION_DATE" | grep -Eq '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'; then
+            echo "Invalid edition date: $EDITION_DATE" >&2
+            exit 1
+          fi
+          echo "date=$EDITION_DATE" >> "$GITHUB_OUTPUT"
+      - name: Generate reviewed edition
+        run: pnpm newsroom:generate-edition -- --date "${{ steps.edition.outputs.date }}"
+      - name: Publish reviewed edition
+        run: pnpm newsroom:publish-reviewed -- --input "work/edition-${{ steps.edition.outputs.date }}/review-report.json"
+      - name: Preserve private run report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: newsroom-${{ steps.edition.outputs.date }}
+          path: |
+            work/edition-${{ steps.edition.outputs.date }}/manifest.json
+            work/edition-${{ steps.edition.outputs.date }}/review-report.json
+            work/edition-${{ steps.edition.outputs.date }}/dedupe-report.json
+          if-no-files-found: ignore
+          retention-days: 14

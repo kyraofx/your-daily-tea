@@ -116,3 +116,51 @@ export async function saveReviewedDraft(report, rest) {
     throw error;
   }
 }
+
+export function validateAutomaticPublication(report, {
+  minimumStories = 20,
+  minimumSections = 10,
+} = {}) {
+  validateReviewedReport(report);
+  const sections = new Set(report.selected.map((story) => story.category));
+  if (report.selected.length < minimumStories) {
+    throw new Error(`Quality gate held publication: ${report.selected.length} stories is below the minimum of ${minimumStories}.`);
+  }
+  if (sections.size < minimumSections) {
+    throw new Error(`Quality gate held publication: ${sections.size} populated sections is below the minimum of ${minimumSections}.`);
+  }
+  return { storyCount: report.selected.length, sectionCount: sections.size };
+}
+
+export async function publishReviewedEdition(report, rest, options = {}) {
+  const quality = validateAutomaticPublication(report, options);
+  const existing = await rest(`editions?edition_date=eq.${report.editionDate}&select=id,status,edition_date`);
+  let edition = existing[0];
+
+  if (edition?.status === "published") {
+    return { ...quality, id: edition.id, editionDate: edition.edition_date, status: "published", alreadyPublished: true };
+  }
+  if (edition) {
+    throw new Error(`Edition ${report.editionDate} already exists as ${edition.status}; automatic publication will not take it over.`);
+  }
+
+  edition = await saveReviewedDraft(report, rest);
+  const now = new Date().toISOString();
+  const [approved] = await rest(`editions?id=eq.${edition.id}&status=eq.draft&select=id,status,edition_date`, {
+    method: "PATCH",
+    body: JSON.stringify({ status: "approved", approved_at: now, approved_by: "github-actions-newsroom" }),
+  });
+  if (approved?.status !== "approved") throw new Error("Automatic approval did not return an approved edition.");
+
+  const [published] = await rest(`editions?id=eq.${edition.id}&status=eq.approved&select=id,status,edition_date,published_at`, {
+    method: "PATCH",
+    body: JSON.stringify({ status: "published", published_at: new Date().toISOString() }),
+  });
+  if (published?.status !== "published") throw new Error("Automatic publication did not return a published edition.");
+
+  const placements = await rest(`edition_story_placements?edition_id=eq.${edition.id}&select=story_id`);
+  if (placements.length !== report.selected.length) {
+    throw new Error(`Post-publication verification found ${placements.length} placements; expected ${report.selected.length}.`);
+  }
+  return { ...quality, id: published.id, editionDate: published.edition_date, status: published.status, alreadyPublished: false };
+}

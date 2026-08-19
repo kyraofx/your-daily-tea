@@ -60,6 +60,8 @@ The first published edition is available to those endpoints and powers Today, Ar
 - Validate archive immutability and topic/date query behavior.
 - Test editorial quality, source provenance, summary accuracy, and duplicate suppression.
 
+Implementation status: a timezone-aware GitHub Actions workflow runs at 6:07 AM Pacific and automatically publishes editions that pass the grounded editorial pipeline plus minimum story and section gates. Failed runs leave the last published edition live and retain private diagnostic reports for 14 days.
+
 ## Later Phases
 
 - Archive search.

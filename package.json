@@ -22,6 +22,7 @@
     "newsroom:generate-edition": "node scripts/newsroom/generate-edition.mjs",
     "newsroom:review-edition": "node scripts/newsroom/review-edition.mjs",
     "newsroom:save-reviewed": "node scripts/newsroom/save-reviewed-edition.mjs",
+    "newsroom:publish-reviewed": "node scripts/newsroom/publish-reviewed-edition.mjs",
     "test:newsroom": "node --test tests/openai-newsroom.test.mjs tests/feeds.test.mjs tests/source-registry.test.mjs tests/dedupe.test.mjs tests/selection.test.mjs tests/full-edition.test.mjs tests/editorial-review.test.mjs tests/persistence.test.mjs"
   },
   "dependencies": {
