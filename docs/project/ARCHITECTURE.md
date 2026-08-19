@@ -70,7 +70,7 @@ The agreed direction is a hybrid retrieval strategy:
 - Social/trend signals for discovery only, followed by credible verification.
 - An AI model/API for classification, scoring assistance, summarization, and topic extraction from retrieved source material.
 
-The OpenAI model is configurable and defaults to the cost-sensitive `gpt-5.6-luna` with reasoning disabled during retrieval calibration. The initial discovery registry uses 36 publisher and primary-source feeds, with at least two configured sources for every section and a live health audit. Source contracts, other API plans, and licensing arrangements are TBD. The system should publish original short summaries, attribution, and links rather than reproduce articles wholesale.
+The OpenAI model is configurable and defaults to the cost-sensitive `gpt-5.6-luna` with reasoning disabled during retrieval calibration. The initial discovery registry uses 36 publisher and primary-source feeds, with at least two configured sources for every section and a live health audit. Deterministic source tiers provide the source-quality score, and AI output is grounded back to supplied feed records before it can enter selection. Section- and edition-level source caps prevent one publisher from dominating the briefing. Source contracts, other API plans, and licensing arrangements are TBD. The system should publish original short summaries, attribution, and links rather than reproduce articles wholesale.
 
 ## Data Flow
 

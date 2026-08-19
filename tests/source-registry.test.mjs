@@ -16,3 +16,8 @@ test("source registry has unique names and URLs", () => {
   assert.equal(new Set(sources.map((source) => source.name)).size, sources.length);
   assert.equal(new Set(sources.map((source) => source.url)).size, sources.length);
 });
+
+test("every source has an accepted deterministic credibility tier", () => {
+  const tiers = new Set(["primary", "major", "specialist"]);
+  for (const source of sources) assert.ok(tiers.has(source.tier), `${source.name} has invalid tier`);
+});

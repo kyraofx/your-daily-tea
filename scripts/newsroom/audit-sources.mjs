@@ -12,6 +12,9 @@ for (const source of sources) {
     problems.push(`Invalid source entry: ${JSON.stringify(source)}`);
     continue;
   }
+  if (!new Set(["primary", "major", "specialist"]).has(source.tier)) {
+    problems.push(`${source.name}: invalid source tier ${source.tier}`);
+  }
   for (const category of source.categories) {
     if (!coverage[category]) problems.push(`${source.name}: unknown category ${category}`);
     else coverage[category].push(source.name);

@@ -236,3 +236,18 @@ Before final selection, merge matching canonical URLs and highly similar headlin
 - Duplicate outlet coverage and accidental cross-section repetition are reduced deterministically.
 - Only published editions establish archive precedent; drafts do not suppress future coverage.
 - The similarity threshold and material-development exception require ongoing calibration.
+
+## DEC-014 — Ground AI Output and Enforce Source Balance
+
+- **Status:** Accepted
+
+### Decision
+
+Assign source quality deterministically from a reviewed registry tier rather than accepting an AI-generated credibility score. Ground every evaluated story back to its supplied URL, headline, source, and timestamp. Allow at most two stories from one source in a section and six across a complete edition.
+
+### Consequences
+
+- Luna cannot introduce an unknown URL or silently alter source provenance.
+- Primary and established reporting sources receive consistent scoring.
+- A section may contain fewer than four stories when its shortlist lacks source diversity.
+- Registry tiers and caps require periodic editorial review.

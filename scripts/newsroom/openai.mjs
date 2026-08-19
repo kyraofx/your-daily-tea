@@ -72,6 +72,8 @@ export function evaluationRequest({ category, candidates, model = "gpt-5.6-luna"
     sourceName: candidate.sourceName,
     publishedAt: candidate.publishedAt,
     sourceSummary: candidate.sourceSummary,
+    sourceCredibilityScore: candidate.credibilityScore,
+    isPrimarySource: candidate.isPrimarySource,
   }));
   return {
     model,
@@ -98,6 +100,26 @@ export function evaluationRequest({ category, candidates, model = "gpt-5.6-luna"
   };
 }
 
+export function groundEvaluatedCandidates(evaluated, supplied, category) {
+  const byUrl = new Map(supplied.map((candidate) => [candidate.canonicalUrl, candidate]));
+  return evaluated.map((candidate) => {
+    const original = byUrl.get(candidate.canonicalUrl);
+    if (!original) throw new Error(`Evaluation returned an unknown candidate URL: ${candidate.canonicalUrl}`);
+    return {
+      ...candidate,
+      category,
+      headline: original.headline,
+      canonicalUrl: original.canonicalUrl,
+      sourceName: original.sourceName,
+      publishedAt: original.publishedAt,
+      scores: {
+        ...candidate.scores,
+        sourceQuality: original.credibilityScore,
+      },
+    };
+  });
+}
+
 export async function evaluateCandidates(options, fetchImpl = fetch) {
   const apiKey = options.apiKey ?? process.env.OPENAI_API_KEY;
   if (!apiKey) throw new Error("OPENAI_API_KEY is required for evaluation.");
@@ -113,7 +135,7 @@ export async function evaluateCandidates(options, fetchImpl = fetch) {
   }
   const output = responseText(payload);
   if (!output) throw new Error("OpenAI evaluation returned no structured text.");
-  return JSON.parse(output).candidates;
+  return groundEvaluatedCandidates(JSON.parse(output).candidates, options.candidates, options.category);
 }
 
 export function retrievalRequest({ category, coverageStartsAt, coverageEndsAt, model = "gpt-5.6-luna" }) {

@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { collectFeeds, parseFeed } from "../scripts/newsroom/feeds.mjs";
 
-const source = { name: "Test Source", url: "https://example.com/feed", categories: ["usa"] };
+const source = { name: "Test Source", url: "https://example.com/feed", tier: "major", categories: ["usa"] };
 const xml = `<?xml version="1.0"?><rss><channel>
   <item><title>Inside window</title><link>https://example.com/inside?utm_source=rss</link><pubDate>Tue, 18 Aug 2026 08:00:00 GMT</pubDate><description><![CDATA[<p>A useful summary.</p>]]></description></item>
   <item><title>Outside window</title><link>https://example.com/outside</link><pubDate>Mon, 17 Aug 2026 08:00:00 GMT</pubDate></item>
@@ -13,6 +13,8 @@ test("parses normalized RSS items", () => {
   assert.equal(item.headline, "Inside window");
   assert.equal(item.publishedAt, "2026-08-18T08:00:00.000Z");
   assert.equal(item.sourceSummary, "A useful summary.");
+  assert.equal(item.credibilityScore, 92);
+  assert.equal(item.isPrimarySource, false);
 });
 
 test("collects only in-window category candidates", async () => {

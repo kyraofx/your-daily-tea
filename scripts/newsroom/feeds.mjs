@@ -7,6 +7,12 @@ const parser = new XMLParser({
   textNodeName: "#text",
 });
 
+const SOURCE_TIERS = {
+  primary: { credibilityScore: 98, isPrimarySource: true },
+  major: { credibilityScore: 92, isPrimarySource: false },
+  specialist: { credibilityScore: 88, isPrimarySource: false },
+};
+
 function list(value) {
   return value == null ? [] : Array.isArray(value) ? value : [value];
 }
@@ -47,6 +53,8 @@ function validHttpUrl(value) {
 }
 
 export function parseFeed(xml, source) {
+  const sourcePolicy = SOURCE_TIERS[source.tier];
+  if (!sourcePolicy) throw new Error(`${source.name}: unknown source tier ${source.tier}`);
   const document = parser.parse(xml);
   const rssItems = list(document.rss?.channel?.item);
   const atomItems = list(document.feed?.entry);
@@ -60,6 +68,8 @@ export function parseFeed(xml, source) {
       headline,
       canonicalUrl,
       sourceName: source.name,
+      sourceTier: source.tier,
+      ...sourcePolicy,
       publishedAt: publishedAt.toISOString(),
       sourceCategories: source.categories,
       sourceSummary: clean(item.description ?? item.summary ?? item.content),
