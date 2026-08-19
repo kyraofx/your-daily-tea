@@ -1,13 +1,5 @@
-# ChatGPT project context
+# Project-document instructions
 
-This directory is a local mirror of the ChatGPT project “AI Projects”.
+The authoritative repository-wide agent instructions are in [`../../AGENTS.md`](../../AGENTS.md). Read and follow that file before making changes.
 
-- Treat every file under `sources/` as read-only reference material.
-- Do not edit, rename, move, or delete synced project files.
-- These files may be replaced the next time a task is created from this ChatGPT project.
-
-
-## Project instructions
-
-This project has no custom instructions.
-
+The files in this directory define the product, requirements, architecture, accepted decisions, and roadmap. Keep them aligned with production behavior. Preserve historical decisions, but mark them as superseded when a later accepted decision replaces them.

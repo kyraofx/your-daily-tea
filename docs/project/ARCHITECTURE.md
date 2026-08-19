@@ -30,7 +30,7 @@ The reader interface is connected to published data through the same public repo
 
 Required responsibilities:
 
-- Trigger the pipeline daily at 6:00 AM Pacific.
+- Trigger the pipeline daily at 6:07 AM Pacific, immediately after the 6:00 AM coverage cutoff.
 - Run multiple targeted retrievals for each subject category.
 - Normalize candidate metadata and enforce the publication cutoff.
 - Deduplicate overlapping coverage and prefer original sources.
@@ -92,6 +92,6 @@ The OpenAI model is configurable and defaults to the cost-sensitive `gpt-5.6-lun
 8. Make a category-level editorial selection, allowing 0–4 stories for most sections.
 9. Perform a cross-edition diversity check and prevent topic domination.
 10. Write concise briefing copy and assign roughly 2–5 structured topics per story.
-11. Persist the reviewed edition as a private draft.
-12. Require explicit owner approval, then a separate publication transition.
+11. Apply the automatic minimum-story and populated-section quality gates.
+12. Persist the reviewed edition as a private draft, record automated approval, publish it, and verify its placement count.
 13. Serve the same published edition to all readers and expose it through date/topic archive queries.

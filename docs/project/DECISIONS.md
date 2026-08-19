@@ -28,7 +28,7 @@ The product's core data is relational: editions contain ranked story placements,
 - The schema must distinguish stories from their ranked edition placements.
 - Topics should be normalized entities with many-to-many story relationships, not a single hashtag string.
 - Edition timestamps and publication windows must preserve Pacific-time cutoff semantics.
-- Hosting provider, schema details, migrations, indexing, backups, and operational ownership remain TBD.
+- Supabase hosts PostgreSQL; the implemented migration defines the schema, indexes, RLS policies, security-invoker views, and immutable publication trigger. Backup and long-term retention policy remains to be formalized.
 
 ## DEC-002 — Publish Frozen Daily Editions
 
@@ -133,7 +133,7 @@ The combined approach balances consequence, curiosity, relevance, credibility, a
 
 - Scores support rather than replace editorial judgment.
 - Categories may be empty.
-- Evaluation and calibration methods are TBD.
+- Deterministic validation, weighted scoring, Luna evaluation, source caps, archive deduplication, and grounded cross-section review implement the evaluation method.
 
 ## DEC-006 — Use a Concise Conversational Briefing Format
 
@@ -179,7 +179,7 @@ Use Supabase to host PostgreSQL and expose published content through a row-level
 
 ## DEC-009 — Require Approval During Calibration
 
-- **Status:** Accepted
+- **Status:** Superseded by DEC-020 for production
 
 ### Decision
 
@@ -206,7 +206,7 @@ Use the OpenAI Responses API with web search to research each section independen
 ### Consequences
 
 - Retrieval writes a private candidate file; it does not publish.
-- Existing cutoff validation, scoring, draft creation, and owner approval remain separate gates.
+- Cutoff validation, scoring, and draft creation remain separate gates. Production automation advances passing editions through the guarded approval and publication transitions under DEC-020.
 - Production use requires an OpenAI API project with active billing and quota.
 
 ## DEC-012 — Separate Deterministic Discovery from AI Evaluation
@@ -220,7 +220,7 @@ Collect timestamped candidates from a configurable RSS/Atom source registry befo
 ### Consequences
 
 - A temporary AI or web-search failure cannot make a newsworthy section appear empty.
-- Feed candidates still require category cleanup, deduplication, credibility checks, scoring, and owner review.
+- Feed candidates still require category cleanup, deduplication, credibility checks, scoring, and grounded final editorial review.
 - Source balance and publisher usage must be monitored as the registry expands.
 
 ## DEC-013 — Deduplicate Against the Current Pool and Published Archive

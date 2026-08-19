@@ -2,13 +2,13 @@
 
 ## Authentication
 
-Public reader accounts are not required for the MVP. During calibration, edition approval is performed privately by the owner through Supabase rather than through a public admin interface.
+Public reader accounts are not required. Production publication is automatic after the grounded editorial pipeline and fail-closed quality gates pass; the database still enforces separate approval and publication state transitions.
 
 ## Daily Briefing
 
 ### Edition Schedule and Window
 
-- Publish one edition daily at **6:00 AM Pacific**.
+- Freeze the coverage window at **6:00 AM Pacific** and begin the automatic publication workflow at **6:07 AM Pacific**.
 - Each edition covers **6:00 AM Pacific on the previous day through 5:59 AM Pacific on the edition date**.
 - A story published after the cutoff belongs to the following day's edition, regardless of importance.
 - Save the completed edition once and serve the same frozen edition to every visitor.

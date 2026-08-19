@@ -48,7 +48,7 @@ Readers face too much repetitive, low-value news spread across many sources. Fin
 
 ## MVP
 
-- Generate one frozen edition every day at 6:00 AM Pacific.
+- Freeze one edition every day at the 6:00 AM Pacific cutoff and run automatic publication at 6:07 AM Pacific.
 - Use the prior 24-hour window: 6:00 AM on the previous day through 5:59 AM on the edition date.
 - Retrieve candidates separately for each subject category.
 - Verify timestamps, deduplicate, check credibility and newness, score candidates, and make a final editorial selection.
@@ -76,8 +76,6 @@ Readers face too much repetitive, low-value news spread across many sources. Fin
 
 ## Future Ideas
 
-- Search across the archive.
-- Combined topic, category, and date filters.
 - Story timelines that connect an ongoing event across editions.
 - Related-topic discovery and topic overview pages.
 - Personalization, email briefings, and user accounts.

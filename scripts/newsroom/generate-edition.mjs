@@ -25,7 +25,9 @@ async function loadEnvironment() {
         const match = line.match(/^([A-Z0-9_]+)=(.*)$/);
         if (match && !process.env[match[1]]) process.env[match[1]] = match[2];
       }
-    } catch {}
+    } catch {
+      // Each local environment file is optional.
+    }
   }
 }
 
@@ -56,7 +58,9 @@ for (const [index, category] of CATEGORY_SLUGS.entries()) {
       categoryStats.push({ category, evaluated: saved.length, resumed: true });
       process.stderr.write(`[${index + 1}/15] ${category}: resumed ${saved.length}\n`);
       continue;
-    } catch {}
+    } catch {
+      // A missing or invalid checkpoint is regenerated below.
+    }
   }
   process.stderr.write(`[${index + 1}/15] ${category}: collecting feeds\n`);
   const feedResult = await collectFeeds({ sources, category, ...window });
@@ -100,7 +104,9 @@ if (resume) {
   try {
     decisions = JSON.parse(await readFile(decisionsPath, "utf8"));
     process.stderr.write(`Final editorial review: resumed ${decisions.length} decisions\n`);
-  } catch {}
+  } catch {
+    // A missing or invalid checkpoint is regenerated below.
+  }
 }
 if (!decisions) {
   process.stderr.write(`Final editorial review: evaluating ${selectionReport.selected.length} stories with Luna\n`);

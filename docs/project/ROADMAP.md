@@ -18,6 +18,8 @@ Implementation status: the Supabase project, core schema, row-level security, im
 - Keep public reader accounts out of the MVP.
 - Revisit a dedicated editor interface only after the newsroom output is calibrated.
 
+Implementation status: calibration completed with the August 18 edition. DEC-020 superseded daily manual approval with automatic fail-closed publication; no public editor interface is required.
+
 ## Phase 3 — Core Newsroom Engine
 
 - Build category-specific retrieval.
@@ -54,7 +56,7 @@ The first published edition is available to those endpoints and powers Today, Ar
 
 ## Phase 6 — Scheduling, Reliability, and Launch
 
-- Schedule the production run for 6:00 AM Pacific with correct timezone handling.
+- Schedule the production run immediately after the 6:00 AM Pacific cutoff with correct timezone handling.
 - Add failure handling, observability, and a safe publication process.
 - Verify that post-cutoff stories roll into the following edition.
 - Validate archive immutability and topic/date query behavior.
@@ -64,8 +66,6 @@ Implementation status: a timezone-aware GitHub Actions workflow runs at 6:07 AM 
 
 ## Later Phases
 
-- Archive search.
-- Combined topic, category, and date filters.
 - Story timelines and related-topic discovery.
 - Personalization and user accounts.
 - Email briefings.

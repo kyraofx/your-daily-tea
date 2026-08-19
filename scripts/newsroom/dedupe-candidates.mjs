@@ -17,7 +17,9 @@ async function loadEnvironment() {
         const match = line.match(/^([A-Z0-9_]+)=(.*)$/);
         if (match && !process.env[match[1]]) process.env[match[1]] = match[2];
       }
-    } catch {}
+    } catch {
+      // Each local environment file is optional.
+    }
   }
 }
 
