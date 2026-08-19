@@ -41,6 +41,8 @@ Required responsibilities:
 
 The website API is implemented in TypeScript. The newsroom engine will run as a separate scheduled worker so long-running retrieval and editorial work cannot delay reader requests. The worker runtime and scheduler remain to be finalized during calibration.
 
+The current calibration runner accepts normalized candidate JSON, enforces the Pacific edition window, applies hard validation and the agreed weighted score, and optionally saves a private draft through a server-only Supabase credential. Automated retrieval and AI-assisted writing are the next worker capabilities.
+
 ## Database
 
 Supabase PostgreSQL is the accepted database and managed platform direction; see [DECISIONS.md](DECISIONS.md).

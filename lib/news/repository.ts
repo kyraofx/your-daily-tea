@@ -1,5 +1,13 @@
 import { supabaseGet } from "../supabase/rest";
-import type { Edition, SectionSlug, Story, Topic } from "./types";
+import type {
+  Edition,
+  EditionSummary,
+  SectionSlug,
+  Story,
+  Topic,
+  TopicStory,
+  TopicSummary,
+} from "./types";
 
 type EditionRow = {
   id: string;
@@ -69,3 +77,90 @@ export async function getPublishedEdition(date?: string): Promise<Edition | null
   return rows[0] ? hydrateEdition(rows[0]) : null;
 }
 
+export async function listPublishedEditions(
+  limit: number,
+  before?: string,
+): Promise<EditionSummary[]> {
+  const query: Record<string, string> = {
+    select: "id,edition_date,edition_number,published_at",
+    status: "eq.published",
+    order: "edition_date.desc",
+    limit: String(limit),
+  };
+  if (before) query.edition_date = `lt.${before}`;
+
+  const rows = await supabaseGet<
+    Pick<EditionRow, "id" | "edition_date" | "edition_number" | "published_at">[]
+  >("editions", query);
+
+  return rows.map((row) => ({
+    id: row.id,
+    editionDate: row.edition_date,
+    editionNumber: row.edition_number,
+    publishedAt: row.published_at,
+  }));
+}
+
+type TopicSummaryRow = {
+  name: string;
+  slug: string;
+  story_count: number;
+  latest_edition_date: string;
+};
+
+export async function listPublishedTopics(): Promise<TopicSummary[]> {
+  const rows = await supabaseGet<TopicSummaryRow[]>("published_topics", {
+    select: "name,slug,story_count,latest_edition_date",
+    order: "name.asc",
+  });
+  return rows.map((row) => ({
+    name: row.name,
+    slug: row.slug,
+    storyCount: row.story_count,
+    latestEditionDate: row.latest_edition_date,
+  }));
+}
+
+type TopicStoryRow = {
+  edition_id: string;
+  edition_date: string;
+  story_id: string;
+  headline: string;
+  summary: string;
+  canonical_url: string;
+  published_at: string;
+  source_name: string;
+  section_slug: SectionSlug;
+  rank: number;
+  topic_name: string;
+  topic_slug: string;
+};
+
+export async function listPublishedTopicStories(
+  slug: string,
+  from?: string,
+  to?: string,
+): Promise<TopicStory[]> {
+  const query: Record<string, string> = {
+    select: "*",
+    topic_slug: `eq.${slug}`,
+    order: "edition_date.desc,rank.asc",
+  };
+  if (from) query.edition_date = `gte.${from}`;
+  if (to) query.and = `(edition_date.lte.${to}${from ? `,edition_date.gte.${from}` : ""})`;
+
+  const rows = await supabaseGet<TopicStoryRow[]>("published_topic_stories", query);
+  return rows.map((row) => ({
+    editionId: row.edition_id,
+    editionDate: row.edition_date,
+    id: row.story_id,
+    headline: row.headline,
+    summary: row.summary,
+    canonicalUrl: row.canonical_url,
+    sourceName: row.source_name,
+    publishedAt: row.published_at,
+    section: row.section_slug,
+    rank: row.rank,
+    topic: { name: row.topic_name, slug: row.topic_slug },
+  }));
+}

@@ -1,0 +1,19 @@
+[
+  {
+    "category": "tech-ai",
+    "headline": "Example AI infrastructure announcement",
+    "summary": "Replace this calibration candidate with a concise, sourced two-to-four sentence briefing.",
+    "canonicalUrl": "https://example.com/news/ai-infrastructure",
+    "sourceName": "Example Source",
+    "publishedAt": "2026-08-18T18:00:00Z",
+    "topics": ["Artificial Intelligence", "Infrastructure"],
+    "scores": {
+      "importance": 75,
+      "interestingness": 70,
+      "relevance": 80,
+      "newness": 90,
+      "sourceQuality": 75,
+      "momentum": 50
+    }
+  }
+]

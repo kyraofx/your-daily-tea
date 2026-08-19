@@ -24,7 +24,17 @@ Apply `supabase/migrations/202608180001_initial_newsroom.sql` to a new Supabase 
 
 ## Public endpoints
 
+- `GET /api/editions?limit=31&before=YYYY-MM-DD`
 - `GET /api/editions/today`
 - `GET /api/editions/YYYY-MM-DD`
+- `GET /api/topics`
+- `GET /api/topics/TOPIC-SLUG?range=all|today|7d|30d`
+- `GET /api/topics/TOPIC-SLUG?range=custom&from=YYYY-MM-DD&to=YYYY-MM-DD`
 
-The next backend increment adds topic/date queries, source ingestion, candidate scoring, and the private calibration report.
+## Manual newsroom runner
+
+`pnpm newsroom:dry-run` validates the example candidate file, enforces the exact Pacific coverage window, normalizes tracking URLs, rejects duplicate or low-scoring candidates, applies the agreed weighted score, limits each section to four stories, and prints a calibration report.
+
+Use `node scripts/newsroom/run.mjs --input path/to/candidates.json --date YYYY-MM-DD` for another candidate set. Add `--save` only after `SUPABASE_SERVICE_ROLE_KEY` has been configured securely; saving always creates a private draft.
+
+AI-assisted retrieval and summary generation remain disabled until the OpenAI API key is configured.

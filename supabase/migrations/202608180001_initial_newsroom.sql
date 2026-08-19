@@ -114,6 +114,7 @@ create view public.published_edition_stories
 with (security_invoker = true) as
 select
   e.id as edition_id,
+  e.edition_date,
   s.id,
   s.headline,
   s.summary,
@@ -137,6 +138,44 @@ left join public.story_topics st on st.story_id = s.id
 left join public.topics t on t.id = st.topic_id
 where e.status = 'published'
 group by e.id, s.id, src.name, p.section_slug, p.rank, c.display_order;
+
+create view public.published_topic_stories
+with (security_invoker = true) as
+select
+  e.id as edition_id,
+  e.edition_date,
+  s.id as story_id,
+  s.headline,
+  s.summary,
+  s.canonical_url,
+  s.published_at,
+  src.name as source_name,
+  p.section_slug,
+  c.display_order as section_order,
+  p.rank,
+  t.name as topic_name,
+  t.slug as topic_slug
+from public.editions e
+join public.edition_story_placements p on p.edition_id = e.id
+join public.stories s on s.id = p.story_id
+join public.sources src on src.id = s.source_id
+join public.categories c on c.id = s.category_id
+join public.story_topics st on st.story_id = s.id
+join public.topics t on t.id = st.topic_id
+where e.status = 'published';
+
+create view public.published_topics
+with (security_invoker = true) as
+select
+  t.name,
+  t.slug,
+  count(distinct st.story_id)::integer as story_count,
+  max(e.edition_date) as latest_edition_date
+from public.topics t
+join public.story_topics st on st.topic_id = t.id
+join public.edition_story_placements p on p.story_id = st.story_id
+join public.editions e on e.id = p.edition_id and e.status = 'published'
+group by t.id, t.name, t.slug;
 
 alter table public.categories enable row level security;
 alter table public.sources enable row level security;
@@ -185,7 +224,8 @@ create policy "published story topics are public" on public.story_topics
 grant usage on schema public to anon, authenticated;
 grant select on public.editions, public.categories, public.sources, public.stories,
   public.edition_story_placements, public.topics, public.story_topics,
-  public.published_edition_stories to anon, authenticated;
+  public.published_edition_stories, public.published_topic_stories,
+  public.published_topics to anon, authenticated;
 
 create schema if not exists private;
 revoke all on schema private from public, anon, authenticated;
