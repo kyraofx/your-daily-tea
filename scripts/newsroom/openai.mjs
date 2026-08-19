@@ -63,6 +63,59 @@ function responseText(payload) {
   return null;
 }
 
+export function evaluationRequest({ category, candidates, model = "gpt-5.6-luna" }) {
+  const brief = CATEGORY_BRIEFS[category];
+  if (!brief) throw new Error(`Unknown evaluation category: ${category}`);
+  const supplied = candidates.slice(0, 80).map((candidate) => ({
+    headline: candidate.headline,
+    canonicalUrl: candidate.canonicalUrl,
+    sourceName: candidate.sourceName,
+    publishedAt: candidate.publishedAt,
+    sourceSummary: candidate.sourceSummary,
+  }));
+  return {
+    model,
+    reasoning: { effort: "none" },
+    input: [
+      "You are the evaluation desk for a concise morning news briefing.",
+      `Evaluate only this section: ${category}. ${brief}`,
+      "Select zero to eight worthwhile, materially distinct stories from the supplied feed candidates.",
+      "Omit stories that belong more directly in another section. Merge overlapping coverage by choosing the strongest original or most informative source.",
+      "Preserve each selected candidate's headline, canonicalUrl, sourceName, and publishedAt exactly as supplied.",
+      "Write an original factual two-to-four sentence summary using only facts present in the supplied headline and sourceSummary. Do not invent details.",
+      "Assign two to five normalized topic names ordered from most central to least central. Score each dimension independently from 0 to 100. Do not select filler.",
+      `Feed candidates:\n${JSON.stringify(supplied)}`,
+    ].join("\n"),
+    text: {
+      format: {
+        type: "json_schema",
+        name: "evaluated_news_candidates",
+        strict: true,
+        schema: CANDIDATE_SCHEMA,
+      },
+    },
+    max_output_tokens: 4000,
+  };
+}
+
+export async function evaluateCandidates(options, fetchImpl = fetch) {
+  const apiKey = options.apiKey ?? process.env.OPENAI_API_KEY;
+  if (!apiKey) throw new Error("OPENAI_API_KEY is required for evaluation.");
+  const response = await fetchImpl("https://api.openai.com/v1/responses", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+    body: JSON.stringify(evaluationRequest(options)),
+  });
+  const payload = await response.json();
+  if (!response.ok) {
+    const code = payload.error?.code ?? payload.error?.type ?? `http_${response.status}`;
+    throw new Error(`OpenAI evaluation failed (${code}): ${payload.error?.message ?? "Unknown error"}`);
+  }
+  const output = responseText(payload);
+  if (!output) throw new Error("OpenAI evaluation returned no structured text.");
+  return JSON.parse(output).candidates;
+}
+
 export function retrievalRequest({ category, coverageStartsAt, coverageEndsAt, model = "gpt-5.6-luna" }) {
   const brief = CATEGORY_BRIEFS[category];
   if (!brief) throw new Error(`Unknown retrieval category: ${category}`);

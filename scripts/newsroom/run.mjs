@@ -109,9 +109,17 @@ function prepare(candidates, editionDate) {
 
   const selected = [];
   for (const category of CATEGORIES) {
-    selected.push(...accepted.filter((item) => item.category === category)
-      .sort((a, b) => b.weightedScore - a.weightedScore).slice(0, 4)
-      .map((item, index) => ({ ...item, rank: index + 1 })));
+    const categorySelection = [];
+    const primaryTopics = new Set();
+    for (const item of accepted.filter((candidate) => candidate.category === category)
+      .sort((a, b) => b.weightedScore - a.weightedScore)) {
+      const primaryTopic = item.topics[0]?.slug;
+      if (primaryTopic && primaryTopics.has(primaryTopic)) continue;
+      categorySelection.push(item);
+      if (primaryTopic) primaryTopics.add(primaryTopic);
+      if (categorySelection.length === 4) break;
+    }
+    selected.push(...categorySelection.map((item, index) => ({ ...item, rank: index + 1 })));
   }
   return {
     editionDate,

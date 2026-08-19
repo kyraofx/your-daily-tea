@@ -16,6 +16,7 @@
     "newsroom:save": "node scripts/newsroom/run.mjs --input scripts/newsroom/candidates.example.json --save",
     "newsroom:retrieve": "node scripts/newsroom/retrieve.mjs",
     "newsroom:feeds": "node scripts/newsroom/collect-feeds.mjs",
+    "newsroom:evaluate": "node scripts/newsroom/evaluate-feeds.mjs",
     "test:newsroom": "node --test tests/openai-newsroom.test.mjs tests/feeds.test.mjs"
   },
   "dependencies": {
