@@ -4,15 +4,19 @@ The sequence below reflects the product concepts discussed so far. Dates and imp
 
 ## Phase 1 — Foundation
 
-- Finalize the 13-section taxonomy and display order.
+- Finalize the 15-section taxonomy and display order.
 - Define the exact 6:00 AM Pacific edition boundary and immutable archive behavior.
 - Define the initial source strategy and fetching method per category.
 - Design the core PostgreSQL data model for editions, stories, placements, categories, sources, and topics.
 - Resolve publisher usage, attribution, and licensing constraints.
 
-## Phase 2 — Authentication
+Implementation status: the Supabase project, core schema, row-level security, immutable publication guard, 15-section taxonomy, and initial edition API routes are complete.
 
-TBD. Authentication requirements and whether accounts are needed for the MVP have not been decided.
+## Phase 2 — Calibration Approval
+
+- Use the private Supabase dashboard for owner review and approval.
+- Keep public reader accounts out of the MVP.
+- Revisit a dedicated editor interface only after the newsroom output is calibrated.
 
 ## Phase 3 — Core Newsroom Engine
 
@@ -22,7 +26,6 @@ TBD. Authentication requirements and whether accounts are needed for the MVP hav
 - Compare candidates with archived coverage for material newness.
 - Implement weighted editorial scoring and hard editorial rules.
 - Add final variety, topic-balance, and credibility checks.
-- Generate Top Stories from selected subject-category stories.
 - Generate concise conversational summaries, attribution, and structured topics.
 - Freeze one edition per day.
 
@@ -59,4 +62,3 @@ TBD. Authentication requirements and whether accounts are needed for the MVP hav
 - Richer source-diversity and trending signals.
 
 Priorities, milestones, owners, and dates are TBD.
-

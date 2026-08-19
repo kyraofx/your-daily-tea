@@ -2,7 +2,7 @@
 
 ## Authentication
 
-TBD. Authentication, account types, permissions, and whether the MVP requires accounts have not been decided.
+Public reader accounts are not required for the MVP. During calibration, edition approval is performed privately by the owner through Supabase rather than through a public admin interface.
 
 ## Daily Briefing
 
@@ -18,21 +18,21 @@ TBD. Authentication, account types, permissions, and whether the MVP requires ac
 
 The website must present sections in this order:
 
-1. Top Stories
-2. Tech & AI
-3. Jobs, Work & Hiring Trends
-4. Science & Planet
-5. Health & Wellness
-6. Internet & Trends
-7. Gaming
-8. Life & Society
-9. Culture, Entertainment & Pop Culture
-10. Money & Economy
-11. Politics & World
-12. Sports
-13. Other Notable News
-
-Top Stories is a ranked presentation of selected category stories, not an independent retrieval category. It is generated after selection from the subject categories and shown first to readers. A promoted story retains its original category and archive metadata.
+1. USA
+2. California
+3. World
+4. Tech + AI
+5. Science + Planet
+6. Health + Wellness
+7. Money + Economy
+8. Politics + Policy
+9. Jobs + Work
+10. Sports
+11. Internet + Trends
+12. Gaming
+13. Life + Society
+14. Pop Culture
+15. Other Notable
 
 ### Category Coverage
 
@@ -58,7 +58,6 @@ Top Stories is a ranked presentation of selected category stories, not an indepe
 - Compare candidates with prior archived coverage and require materially new information.
 - Treat social and trend signals as discovery inputs, not sufficient factual verification.
 - Allow **0–4 stories for most subject sections**. Do not force filler or symmetrical section lengths.
-- Choose approximately **3–5 Top Stories** from the stories selected for the full edition.
 - Prevent one topic from dominating the edition and perform a final diversity/editorial pass.
 - Label opinion or analysis when included.
 - Require strong sourcing for extraordinary claims.
@@ -101,4 +100,3 @@ Tone may vary by section while facts remain neutral: politics should be clear an
 - Clicking a hashtag must show all matching archived stories ordered/grouped by date.
 - Topic results must support date filters, including all time, today, last 7 days, last 30 days, and a custom date or date range.
 - Category-specific retrieval is a pipeline requirement; category filtering of archived topic results is a future enhancement unless promoted into MVP later.
-

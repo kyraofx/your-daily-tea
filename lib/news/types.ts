@@ -1,5 +1,5 @@
 export const SECTION_ORDER = [
-  "top",
+  "usa",
   "california",
   "world",
   "tech-ai",
@@ -44,4 +44,3 @@ export type Edition = {
   publishedAt: string;
   sections: Partial<Record<SectionSlug, Story[]>>;
 };
-
