@@ -58,14 +58,3 @@ jobs:
         run: pnpm newsroom:generate-edition -- --date "${{ steps.edition.outputs.date }}"
       - name: Publish reviewed edition
         run: pnpm newsroom:publish-reviewed -- --input "work/edition-${{ steps.edition.outputs.date }}/review-report.json"
-      - name: Preserve private run report
-        if: always()
-        uses: actions/upload-artifact@v6
-        with:
-          name: newsroom-${{ steps.edition.outputs.date }}
-          path: |
-            work/edition-${{ steps.edition.outputs.date }}/manifest.json
-            work/edition-${{ steps.edition.outputs.date }}/review-report.json
-            work/edition-${{ steps.edition.outputs.date }}/dedupe-report.json
-          if-no-files-found: ignore
-          retention-days: 14

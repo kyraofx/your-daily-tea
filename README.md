@@ -1,79 +1,95 @@
 # Your Daily Tea
 
-Your Daily Tea is a concise daily news briefing covering 15 fixed sections, beginning with USA, California, and World. It publishes one frozen edition each morning, keeps a permanent archive, and supports topic and archive search.
+**A fully automated morning news briefing that turns yesterday's noise into one calm, frozen edition.**
 
-## Production
+[Read today's edition](https://www.yourdailytea.com) · [Meet the creator](https://gettoknowkyra.com)
 
-- Website: [www.yourdailytea.com](https://www.yourdailytea.com)
-- Root domain: [yourdailytea.com](https://yourdailytea.com)
-- Creator: [Kyra](https://gettoknowkyra.com)
-- Hosting: OpenAI Sites
-- Database: Supabase PostgreSQL
-- Automation: GitHub Actions
+## The story
 
-## Current behavior
+I built Your Daily Tea around a simple question:
 
-- Displays the latest published edition in the supplied editorial design.
-- Preserves the confirmed 15-section order and shows quiet sections without filler.
-- Provides Today, Archive, Topics, and Search views.
-- Publishes a new edition automatically each day after 6:07 AM Pacific.
-- Uses `gpt-5.6-luna` for grounded candidate evaluation and final editorial review.
-- Fails closed when an edition has fewer than 20 stories or fewer than 10 populated sections, leaving the previous edition live.
-- Treats published editions as immutable and numbers only successful publications.
+> Out of everything that happened yesterday, what is actually worth knowing this morning?
 
-## Architecture
+Most news products never stop updating. That makes them comprehensive, but also repetitive and exhausting. Your Daily Tea takes the opposite approach: one concise edition each morning, a clear cutoff, no filler, and a permanent archive of exactly what readers saw that day.
 
-The Vinext application reads only published content through Supabase's row-level-security-protected Data API. Server-only newsroom credentials are used exclusively by the scheduled GitHub Actions workflow.
+The first edition launched on August 18, 2026 with 41 stories across 14 active sections. The product now runs autonomously—from source discovery and editorial review through database publication—while preserving deterministic quality and safety rules around the AI.
 
-The daily pipeline:
+## What readers can do
 
-1. Collects timestamped stories from the reviewed RSS/Atom source registry.
-2. Filters the exact prior 24-hour Pacific coverage window.
-3. Deduplicates candidates against the current pool and published archive.
-4. Evaluates each of the 15 sections with Luna.
+- Read one frozen daily briefing across 15 sections, beginning with USA, California, and World.
+- Expand or collapse sections and follow every story to its original source.
+- Browse previous editions by date.
+- Follow structured topics across the archive.
+- Search by phrase, date range, or category.
+- Switch between dark and light reading themes.
+
+## How it works
+
+Every morning, the newsroom workflow:
+
+1. Collects timestamped candidates from a reviewed RSS/Atom source registry.
+2. Enforces the exact prior 24-hour Pacific coverage window.
+3. Normalizes URLs and removes duplicate or previously covered stories.
+4. Evaluates each of the 15 sections with `gpt-5.6-luna`.
 5. Applies deterministic scoring, source-diversity, and section-balance rules.
 6. Runs one grounded cross-section editorial review.
-7. Applies automatic quality gates.
-8. Saves, approves, publishes, and verifies the frozen Supabase edition.
+7. Fails closed if the edition is too thin or incomplete.
+8. Saves, approves, publishes, and verifies an immutable Supabase edition.
 
-## Local development
+The workflow starts at 6:07 AM in `America/Los_Angeles`, so daylight-saving changes are automatic. If generation fails—or produces fewer than 20 stories across 10 populated sections—the previous edition remains live.
 
-Requirements: Node.js 22.13 or newer and pnpm.
+## Engineering highlights
+
+- **AI with guardrails:** the model can evaluate supplied candidates, but deterministic code controls timestamps, provenance, scoring, source caps, deduplication, and publication thresholds.
+- **Immutable archive:** Supabase transition guards prevent published editions from being changed retrospectively.
+- **Secure public data:** row-level security exposes published content while keeping drafts and newsroom credentials private.
+- **Reliable automation:** GitHub Actions handles timezone-aware daily generation, encrypted credentials, concurrency, diagnostics, and manual recovery runs.
+- **Independent reader runtime:** the website reads the newest published edition automatically; daily publication does not require a site redeployment.
+- **Production domain and SSL:** the public experience is served at [yourdailytea.com](https://yourdailytea.com).
+
+## Technology
+
+| Layer | Choice |
+|---|---|
+| Frontend | React, Vinext, TypeScript, CSS |
+| Hosting | OpenAI Sites on Cloudflare Workers |
+| Database | Supabase PostgreSQL |
+| Data access | Supabase REST API with RLS |
+| Newsroom AI | OpenAI Responses API with `gpt-5.6-luna` |
+| Automation | GitHub Actions |
+| Testing | Node test runner, ESLint, production build checks |
+
+## Run locally
+
+Requires Node.js 22.13 or newer and pnpm.
 
 ```bash
 pnpm install --frozen-lockfile
 pnpm dev
-pnpm build
-pnpm test:newsroom
 ```
 
-Copy `.env.example` to `.env.local` for browser-safe local configuration. Never commit `.env.local` or secret keys.
+Verification:
 
-## Publishing and deployment
+```bash
+pnpm test
+pnpm test:newsroom
+pnpm lint
+```
 
-The newsroom workflow runs from `.github/workflows/daily-edition.yml` on the `main` branch. It can also be started manually from GitHub Actions with an optional Pacific edition date.
+Copy `.env.example` to `.env.local` for local configuration. Never commit local environment files or credentials.
 
-Merging website code into GitHub does not by itself redeploy OpenAI Sites. After website changes, build and publish a new Sites version. New Supabase editions do not require a site deployment; the reader automatically loads the latest published edition.
+## Explore the repository
 
-## Project documentation
+- [`app/`](app/) — reader interface and public API routes
+- [`scripts/newsroom/`](scripts/newsroom/) — discovery, evaluation, deduplication, review, and publication
+- [`supabase/migrations/`](supabase/migrations/) — schema, RLS, views, and immutable publication rules
+- [`.github/workflows/daily-edition.yml`](.github/workflows/daily-edition.yml) — production scheduler
+- [`tests/`](tests/) — newsroom and rendered-experience verification
+- [`docs/project/`](docs/project/) — product, requirements, architecture, decisions, and roadmap
+- [`AGENTS.md`](AGENTS.md) — operational instructions for future coding agents
 
-Future developers and coding agents should read these before making substantial changes:
+## Production notes
 
-- [`AGENTS.md`](AGENTS.md) — repository-wide instructions for coding agents
-- [`docs/project/AGENTS.md`](docs/project/AGENTS.md) — working rules and project context
-- [`docs/project/PRODUCT.md`](docs/project/PRODUCT.md) — product vision and scope
-- [`docs/project/REQUIREMENTS.md`](docs/project/REQUIREMENTS.md) — functional and editorial requirements
-- [`docs/project/ARCHITECTURE.md`](docs/project/ARCHITECTURE.md) — system design and data flow
-- [`docs/project/DECISIONS.md`](docs/project/DECISIONS.md) — accepted architectural and product decisions
-- [`docs/project/ROADMAP.md`](docs/project/ROADMAP.md) — completed and future phases
-- [`BACKEND.md`](BACKEND.md) — newsroom commands, persistence, and operational details
+GitHub `main` is the source of truth. Website-code changes require a new OpenAI Sites deployment; new database editions appear automatically. Published editions must never be overwritten, RLS must remain enabled, and server credentials must never enter browser code or committed files.
 
-## Safe contribution workflow
-
-1. Create a branch from `main`.
-2. Make a focused change.
-3. Run the relevant build and tests.
-4. Open a pull request.
-5. Review before merging into production.
-
-Do not weaken Supabase RLS, bypass the guarded publication state machine, overwrite a published edition, expose credentials, or replace the established visual design without explicit owner approval.
+Created by [Kyra](https://gettoknowkyra.com).

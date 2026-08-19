@@ -335,4 +335,4 @@ Run the complete newsroom workflow every day at 6:07 AM in `America/Los_Angeles`
 - Daylight-saving changes are handled by the scheduler's named Pacific timezone.
 - Publication no longer requires daily owner action.
 - Duplicate scheduled or manual retries cannot overwrite an existing edition date.
-- GitHub stores the Supabase and OpenAI credentials as encrypted repository secrets and retains a private 14-day run report for diagnosis.
+- GitHub stores the Supabase and OpenAI credentials as encrypted repository secrets. Workflow logs retain operational progress, but unpublished review files are not uploaded because the repository is public.
