@@ -53,7 +53,7 @@ export const CANDIDATE_SCHEMA = {
   additionalProperties: false,
 };
 
-function responseText(payload) {
+export function responseText(payload) {
   if (payload.output_text) return payload.output_text;
   for (const item of payload.output ?? []) {
     for (const content of item.content ?? []) {

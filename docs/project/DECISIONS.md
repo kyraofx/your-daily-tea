@@ -265,3 +265,17 @@ Run all 15 sections through one manually invoked, resumable calibration command.
 - Transient failures can resume without repeating completed Luna calls.
 - The owner can inspect the entire frozen edition before authorizing a Supabase draft.
 - Final cross-section editorial review remains a required gate during calibration.
+
+## DEC-016 — Require a Grounded Cross-Section Editorial Pass
+
+- **Status:** Accepted
+
+### Decision
+
+After deterministic selection, review the complete edition in one structured Luna pass. Permit only keep, remove, or move decisions for the exact supplied story URLs, validate complete one-to-one decision coverage, and reapply deterministic topic and source balance afterward.
+
+### Consequences
+
+- Low-similarity duplicate events and section leakage can be caught with full-edition context.
+- The model cannot add stories, alter provenance, or invent URLs during final review.
+- The final report remains private and still requires owner approval before database saving.

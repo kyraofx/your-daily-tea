@@ -8,6 +8,7 @@ import { fetchPublishedArchive } from "./archive.mjs";
 import { deduplicateCandidates } from "./dedupe.mjs";
 import { collectFeeds } from "./feeds.mjs";
 import { CATEGORY_SLUGS, evaluateCandidates } from "./openai.mjs";
+import { applyEditorialDecisions, reviewEdition } from "./editorial-review.mjs";
 import { coverageWindow } from "./time.mjs";
 
 const execFileAsync = promisify(execFile);
@@ -82,6 +83,8 @@ for (const [index, category] of CATEGORY_SLUGS.entries()) {
 const finalDeduplication = deduplicateCandidates(evaluated, archive);
 const candidatesPath = resolve(outputDirectory, "candidates.json");
 const dedupeReportPath = resolve(outputDirectory, "dedupe-report.json");
+const selectionReportPath = resolve(outputDirectory, "selection-report.json");
+const decisionsPath = resolve(outputDirectory, "editorial-decisions.json");
 const reportPath = resolve(outputDirectory, "review-report.json");
 const manifestPath = resolve(outputDirectory, "manifest.json");
 await writeFile(candidatesPath, `${JSON.stringify(finalDeduplication.candidates, null, 2)}\n`, { mode: 0o600 });
@@ -90,8 +93,33 @@ const runner = new URL("./run.mjs", import.meta.url).pathname;
 const { stdout } = await execFileAsync(process.execPath, [runner, "--input", candidatesPath, "--date", editionDate], {
   maxBuffer: 10 * 1024 * 1024,
 });
-await writeFile(reportPath, stdout, { mode: 0o600 });
-const report = JSON.parse(stdout);
+await writeFile(selectionReportPath, stdout, { mode: 0o600 });
+const selectionReport = JSON.parse(stdout);
+let decisions;
+if (resume) {
+  try {
+    decisions = JSON.parse(await readFile(decisionsPath, "utf8"));
+    process.stderr.write(`Final editorial review: resumed ${decisions.length} decisions\n`);
+  } catch {}
+}
+if (!decisions) {
+  process.stderr.write(`Final editorial review: evaluating ${selectionReport.selected.length} stories with Luna\n`);
+  decisions = await reviewEdition({
+    stories: selectionReport.selected,
+    model: process.env.OPENAI_NEWSROOM_MODEL ?? "gpt-5.6-luna",
+  });
+  await writeFile(decisionsPath, `${JSON.stringify(decisions, null, 2)}\n`, { mode: 0o600 });
+}
+const reviewedStories = applyEditorialDecisions(selectionReport.selected, decisions);
+const editorialReview = {
+  inputStories: selectionReport.selected.length,
+  finalStories: reviewedStories.length,
+  kept: decisions.filter((decision) => decision.action === "keep").length,
+  moved: decisions.filter((decision) => decision.action === "move").length,
+  removed: decisions.filter((decision) => decision.action === "remove").length,
+};
+const report = { ...selectionReport, selected: reviewedStories, editorialReview };
+await writeFile(reportPath, `${JSON.stringify(report, null, 2)}\n`, { mode: 0o600 });
 const manifest = {
   editionDate,
   ...window,
@@ -101,8 +129,15 @@ const manifest = {
   uniqueCandidates: finalDeduplication.candidates.length,
   selectedStories: report.selected.length,
   sectionsWithStories: new Set(report.selected.map((story) => story.category)).size,
+  editorialReview,
   categoryStats,
-  files: { candidates: candidatesPath, dedupeReport: dedupeReportPath, reviewReport: reportPath },
+  files: {
+    candidates: candidatesPath,
+    dedupeReport: dedupeReportPath,
+    selectionReport: selectionReportPath,
+    editorialDecisions: decisionsPath,
+    reviewReport: reportPath,
+  },
 };
 await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, { mode: 0o600 });
 console.log(JSON.stringify(manifest, null, 2));

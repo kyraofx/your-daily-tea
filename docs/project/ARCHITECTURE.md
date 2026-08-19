@@ -41,7 +41,7 @@ Required responsibilities:
 
 The website API is implemented in TypeScript. The newsroom engine will run as a separate scheduled worker so long-running retrieval and editorial work cannot delay reader requests. The worker runtime and scheduler remain to be finalized during calibration.
 
-The current calibration runner accepts normalized candidate JSON, enforces the Pacific edition window, applies hard validation and the agreed weighted score, and optionally saves a private draft through a server-only Supabase credential. A resumable full-edition command orchestrates deterministic feed discovery, per-section Luna evaluation, current-pool and published-archive deduplication, balanced selection, and private report generation across all 15 sections. It checkpoints each completed section to avoid repeating model calls after a transient failure. Scheduling and automatic publication remain disabled.
+The current calibration runner accepts normalized candidate JSON, enforces the Pacific edition window, applies hard validation and the agreed weighted score, and optionally saves a private draft through a server-only Supabase credential. A resumable full-edition command orchestrates deterministic feed discovery, per-section Luna evaluation, current-pool and published-archive deduplication, balanced selection, and a grounded cross-section editorial pass across all 15 sections. The final pass can only keep, remove, or move supplied URLs; deterministic balance rules then run again. Section and final-review checkpoints avoid repeating model calls after transient failures. Scheduling and automatic publication remain disabled.
 
 ## Database
 
