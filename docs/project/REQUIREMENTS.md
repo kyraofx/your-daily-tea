@@ -99,4 +99,4 @@ Tone may vary by section while facts remain neutral: politics should be clear an
 - Store topics as structured entities and display them as hashtags.
 - Clicking a hashtag must show all matching archived stories ordered/grouped by date.
 - Topic results must support date filters, including all time, today, last 7 days, last 30 days, and a custom date or date range.
-- Category-specific retrieval is a pipeline requirement; category filtering of archived topic results is a future enhancement unless promoted into MVP later.
+- Archive search must support all-date, last-7-day, last-30-day, and category filters. Date filters use the latest published edition as their reference date so frozen archives remain deterministic.

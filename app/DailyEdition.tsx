@@ -29,6 +29,7 @@ function displayDate(value: string, options?: Intl.DateTimeFormatOptions) {
 }
 
 type View = "today" | "archive" | "topics" | "search";
+type SearchRange = "all" | "7" | "30";
 
 export function DailyEdition({ edition, editions, topics }: { edition: Edition | null; editions: EditionSummary[]; topics: TopicSummary[] }) {
   const [light, setLight] = useState(false);
@@ -39,6 +40,9 @@ export function DailyEdition({ edition, editions, topics }: { edition: Edition |
   const [topicName, setTopicName] = useState("");
   const [query, setQuery] = useState("AI jobs");
   const [searchStories, setSearchStories] = useState<SearchStory[]>([]);
+  const [searchRange, setSearchRange] = useState<SearchRange>("all");
+  const [searchCategory, setSearchCategory] = useState<SectionSlug | "all">("all");
+  const [categoryOpen, setCategoryOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   if (!edition) {
@@ -93,6 +97,14 @@ export function DailyEdition({ edition, editions, topics }: { edition: Edition |
     setView(item);
     if (item === "search" && searchStories.length === 0) void runSearch("AI jobs");
   }
+
+  const latestEditionTime = new Date(`${edition.editionDate}T12:00:00Z`).getTime();
+  const visibleSearchStories = searchStories.filter((story) => {
+    if (searchCategory !== "all" && story.section !== searchCategory) return false;
+    if (searchRange === "all") return true;
+    const ageInDays = (latestEditionTime - new Date(`${story.editionDate}T12:00:00Z`).getTime()) / 86_400_000;
+    return ageInDays >= 0 && ageInDays < Number(searchRange);
+  });
 
   const renderStory = (story: Story | TopicStory | SearchStory, dateLabel?: string, showSection = false) => (
     <article className="tea-story" key={`${dateLabel ?? "today"}-${story.id}`}>
@@ -200,10 +212,17 @@ export function DailyEdition({ edition, editions, topics }: { edition: Edition |
         {view === "search" && <section className="tea-view">
           <h1>Search the archive</h1>
           <form className="tea-search" onSubmit={submitSearch}><label htmlFor="archive-search">Search</label><input id="archive-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="AI jobs"/><button className="tea-submit-search" type="submit">Search</button></form>
-          <div className="tea-search-tools"><span>{searchStories.length} stories</span><button className="is-active">All dates</button><button>Last 7 days</button><button>Last 30 days</button><button>By category</button></div>
+          <div className="tea-search-tools">
+            <span aria-live="polite">{visibleSearchStories.length} {visibleSearchStories.length === 1 ? "story" : "stories"}</span>
+            <button className={searchRange === "all" ? "is-active" : ""} onClick={() => setSearchRange("all")}>All dates</button>
+            <button className={searchRange === "7" ? "is-active" : ""} onClick={() => setSearchRange("7")}>Last 7 days</button>
+            <button className={searchRange === "30" ? "is-active" : ""} onClick={() => setSearchRange("30")}>Last 30 days</button>
+            <button className={categoryOpen || searchCategory !== "all" ? "is-active" : ""} aria-expanded={categoryOpen} aria-controls="search-category" onClick={() => setCategoryOpen((value) => !value)}>By category</button>
+            {categoryOpen && <label className="tea-category-filter" htmlFor="search-category"><span>Category</span><select id="search-category" value={searchCategory} onChange={(event) => setSearchCategory(event.target.value as SectionSlug | "all")}><option value="all">All categories</option>{SECTION_ORDER.map((slug) => <option value={slug} key={slug}>{SECTION_META[slug].label}</option>)}</select></label>}
+          </div>
           {loading && <p className="tea-status">Searching…</p>}
-          {!loading && searchStories.length > 0 && <div className="tea-search-results">{searchStories.map((story) => renderStory(story, displayDate(story.editionDate, { month: "short", day: "numeric", year: "numeric" }), true))}</div>}
-          {!loading && query.length >= 2 && searchStories.length === 0 && <p className="tea-status">Nothing matched that phrase.</p>}
+          {!loading && visibleSearchStories.length > 0 && <div className="tea-search-results">{visibleSearchStories.map((story) => renderStory(story, displayDate(story.editionDate, { month: "short", day: "numeric", year: "numeric" }), true))}</div>}
+          {!loading && query.length >= 2 && visibleSearchStories.length === 0 && <p className="tea-status">Nothing matched those search filters.</p>}
         </section>}
       </main>
     </div>
