@@ -201,7 +201,7 @@ Do not generate or display a Top Stories section. The product has 15 ranked subj
 
 ### Decision
 
-Use the OpenAI Responses API with web search to research each section independently. Require strict structured candidate output, keep the model configurable, and default to `gpt-5.4-mini` during calibration.
+Use the OpenAI Responses API with web search to research each section independently. Require strict structured candidate output, keep the model configurable, and default to the cost-sensitive `gpt-5.6-luna` with reasoning disabled during calibration.
 
 ### Consequences
 

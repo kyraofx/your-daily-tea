@@ -70,7 +70,7 @@ The agreed direction is a hybrid retrieval strategy:
 - Social/trend signals for discovery only, followed by credible verification.
 - An AI model/API for classification, scoring assistance, summarization, and topic extraction from retrieved source material.
 
-The OpenAI model is configurable and defaults to `gpt-5.4-mini` during calibration. Source contracts, other API plans, and licensing arrangements are TBD. The system should publish original short summaries, attribution, and links rather than reproduce articles wholesale.
+The OpenAI model is configurable and defaults to the cost-sensitive `gpt-5.6-luna` with reasoning disabled during retrieval calibration. Source contracts, other API plans, and licensing arrangements are TBD. The system should publish original short summaries, attribution, and links rather than reproduce articles wholesale.
 
 ## Data Flow
 

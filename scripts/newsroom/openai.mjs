@@ -1,5 +1,5 @@
 const CATEGORY_BRIEFS = {
-  usa: "Major United States news excluding stories that fit Politics + Policy more directly.",
+  usa: "Major United States news excluding stories that fit Politics + Policy more directly. This is a broad national desk and should rarely be empty.",
   california: "Statewide California news and consequential regional developments.",
   world: "International events, diplomacy, conflict, elections, and major cross-border developments.",
   "tech-ai": "AI, Big Tech, startups, cybersecurity, products, and computing infrastructure.",
@@ -63,17 +63,20 @@ function responseText(payload) {
   return null;
 }
 
-export function retrievalRequest({ category, coverageStartsAt, coverageEndsAt, model = "gpt-5.4-mini" }) {
+export function retrievalRequest({ category, coverageStartsAt, coverageEndsAt, model = "gpt-5.6-luna" }) {
   const brief = CATEGORY_BRIEFS[category];
   if (!brief) throw new Error(`Unknown retrieval category: ${category}`);
   return {
     model,
-    tools: [{ type: "web_search" }],
+    reasoning: { effort: "none" },
+    tools: [{ type: "web_search", search_context_size: "low" }],
+    tool_choice: "required",
     input: [
       "You are a careful research desk for a concise morning news briefing.",
       `Research only this section: ${category}. ${brief}`,
       `Accept only events with source publication times from ${coverageStartsAt} through ${coverageEndsAt}, inclusive.`,
       "Find zero to eight genuinely worthwhile candidates. Quiet sections may return zero.",
+      "You must search the web before producing the structured response. Use multiple focused searches when the first search is insufficient.",
       "Prefer primary sources and original reporting. Treat social signals as discovery only.",
       "Do not reproduce article prose. Write an original, factual two-to-four sentence summary.",
       "Use the canonical source URL, an ISO-8601 publication timestamp, and two to five normalized topic names.",
@@ -87,7 +90,7 @@ export function retrievalRequest({ category, coverageStartsAt, coverageEndsAt, m
         schema: CANDIDATE_SCHEMA,
       },
     },
-    max_output_tokens: 5000,
+    max_output_tokens: 3000,
   };
 }
 
