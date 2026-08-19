@@ -70,6 +70,7 @@ Merging website code into GitHub does not by itself redeploy OpenAI Sites. After
 
 Future developers and coding agents should read these before making substantial changes:
 
+- [`AGENTS.md`](AGENTS.md) — repository-wide instructions for coding agents
 - [`docs/project/AGENTS.md`](docs/project/AGENTS.md) — working rules and project context
 - [`docs/project/PRODUCT.md`](docs/project/PRODUCT.md) — product vision and scope
 - [`docs/project/REQUIREMENTS.md`](docs/project/REQUIREMENTS.md) — functional and editorial requirements
