@@ -52,7 +52,7 @@ a { color: inherit; }
 .tea-section-glyph { width: 16px; font-size: 26px; line-height: .8; text-align: center; color: var(--ink-2); }
 .tea-story-list { padding-bottom: 22px; }
 .tea-story { padding: 10px 0 10px 116px; display: grid; gap: 8px; }
-.tea-story h2 { margin: 0 0 0 -30px; font-family: var(--font-barlow-condensed), sans-serif; font-size: calc(clamp(24px, 3vw, 34px) * .86); font-weight: 500; line-height: 1.08; letter-spacing: .004em; text-wrap: pretty; }
+.tea-story h2 { margin: 0 0 0 -30px; display:grid; grid-template-columns:30px minmax(0,1fr); font-family: var(--font-barlow-condensed), sans-serif; font-size: calc(clamp(24px, 3vw, 34px) * .86); font-weight: 500; line-height: 1.08; letter-spacing: .004em; text-wrap: pretty; }
 .tea-story h2 span { display: inline-block; width: 30px; color: var(--steel); }
 .tea-story h2 a { text-decoration: none; }
 .tea-story h2 a:hover { color: var(--steel); }
