@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { retrieveCategory, retrievalRequest } from "../scripts/newsroom/openai.mjs";
+import { evaluateCandidates, evaluationRequest, retrieveCategory, retrievalRequest } from "../scripts/newsroom/openai.mjs";
 
 const options = {
   category: "usa",
@@ -40,4 +40,30 @@ test("retrieval reports quota failures without retrying", async () => {
     retrieveCategory({ ...options, apiKey: "test-key" }, fakeFetch),
     /insufficient_quota.*Billing required/,
   );
+});
+
+test("evaluation uses supplied candidates without a web-search tool", () => {
+  const request = evaluationRequest({
+    category: "usa",
+    candidates: [{
+      headline: "A feed headline", canonicalUrl: "https://example.com/story",
+      sourceName: "Example", publishedAt: "2026-08-19T01:00:00.000Z", sourceSummary: "Feed summary",
+    }],
+  });
+  assert.equal(request.model, "gpt-5.6-luna");
+  assert.equal(request.tools, undefined);
+  assert.match(request.input, /A feed headline/);
+  assert.equal(request.text.format.strict, true);
+});
+
+test("evaluation parses a structured shortlist", async () => {
+  const expected = [{ category: "usa", headline: "Selected" }];
+  const fakeFetch = async (_url, init) => {
+    const body = JSON.parse(init.body);
+    assert.equal(body.tools, undefined);
+    return { ok: true, json: async () => ({ output_text: JSON.stringify({ candidates: expected }) }) };
+  };
+  assert.deepEqual(await evaluateCandidates({
+    category: "usa", candidates: [], apiKey: "test-key",
+  }, fakeFetch), expected);
 });

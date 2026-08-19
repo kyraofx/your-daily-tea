@@ -52,3 +52,5 @@ Then inspect and score the candidate file without publishing:
 `node scripts/newsroom/run.mjs --input work/candidates-YYYY-MM-DD.json --date YYYY-MM-DD`
 
 Add `--save` to the runner only after reviewing its report. Saving creates a private draft and never skips the owner approval step. A valid OpenAI key with active API billing/quota is required for retrieval.
+
+`pnpm newsroom:evaluate -- --category usa --input work/feed-candidates-usa-YYYY-MM-DD.json` sends the feed metadata to Luna without web search, producing a private structured shortlist. The regular runner then applies cutoff, score, duplicate, and primary-topic diversity gates. During calibration, inspect that final report before any `--save` operation.
