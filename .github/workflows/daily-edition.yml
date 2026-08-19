@@ -31,8 +31,8 @@ jobs:
       NEWSROOM_MINIMUM_STORIES: "20"
       NEWSROOM_MINIMUM_SECTIONS: "10"
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: "22"
       - name: Enable pnpm
@@ -60,7 +60,7 @@ jobs:
         run: pnpm newsroom:publish-reviewed -- --input "work/edition-${{ steps.edition.outputs.date }}/review-report.json"
       - name: Preserve private run report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: newsroom-${{ steps.edition.outputs.date }}
           path: |
