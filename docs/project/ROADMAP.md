@@ -62,7 +62,7 @@ The first published edition is available to those endpoints and powers Today, Ar
 - Validate archive immutability and topic/date query behavior.
 - Test editorial quality, source provenance, summary accuracy, and duplicate suppression.
 
-Implementation status: a timezone-aware GitHub Actions workflow runs at 6:07 AM Pacific and automatically publishes editions that pass the grounded editorial pipeline plus minimum story and section gates. Failed runs leave the last published edition live. Operational logs remain available in GitHub Actions, while unpublished review files are not uploaded to the public repository.
+Implementation status: a timezone-aware GitHub Actions workflow starts at 6:07 AM Pacific and automatically publishes editions that pass the grounded editorial pipeline plus minimum story and section gates. Guarded backup attempts through 7:07 AM first check whether the edition already exists, avoiding repeated setup and AI generation after publication. Failed runs leave the last published edition live. Operational logs remain available in GitHub Actions, while unpublished review files are not uploaded to the public repository.
 
 ## Later Phases
 

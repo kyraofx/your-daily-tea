@@ -43,7 +43,7 @@ Required responsibilities:
 
 The website API is implemented in TypeScript. The newsroom engine runs as a separate scheduled GitHub Actions worker so long-running retrieval and editorial work cannot delay reader requests.
 
-The production runner enforces the Pacific edition window and orchestrates deterministic feed discovery, per-section Luna evaluation, current-pool and published-archive deduplication, balanced selection, and a grounded cross-section editorial pass across all 15 sections. The final pass can only keep, remove, or move supplied URLs; deterministic balance rules then run again. A timezone-aware schedule starts at 6:07 AM Pacific. Passing editions are saved, automatically approved, published, and verified; editions below the minimum story or populated-section gates fail closed. Manual persistence remains draft-only.
+The production runner enforces the Pacific edition window and orchestrates deterministic feed discovery, per-section Luna evaluation, current-pool and published-archive deduplication, balanced selection, and a grounded cross-section editorial pass across all 15 sections. The final pass can only keep, remove, or move supplied URLs; deterministic balance rules then run again. A timezone-aware schedule starts at 6:07 AM Pacific and makes guarded backup attempts through 7:07 AM. Each attempt checks the public date endpoint first and skips setup and AI generation when that edition is already published. Passing editions are saved, automatically approved, published, and verified; editions below the minimum story or populated-section gates fail closed. Manual persistence remains draft-only.
 
 ## Database
 
