@@ -279,3 +279,17 @@ After deterministic selection, review the complete edition in one structured Lun
 - Low-similarity duplicate events and section leakage can be caught with full-edition context.
 - The model cannot add stories, alter provenance, or invent URLs during final review.
 - The final report remains private and still requires owner approval before database saving.
+
+## DEC-017 — Persist Reviewed Reports as Non-Overwriting Private Drafts
+
+- **Status:** Accepted
+
+### Decision
+
+Save only the final cross-section review artifact through a dedicated server-side command. Refuse to overwrite an edition date, decode residual HTML entities before storage, and insert only the `draft` state. Keep approval and publication as later, explicit owner-controlled transitions.
+
+### Consequences
+
+- The stored edition is the exact reviewed selection rather than an earlier candidate or selection checkpoint.
+- Retrying cannot silently replace a calibration edition; partial failures are visibly marked `failed`.
+- The August 18, 2026 calibration edition is stored with 41 placements and remains invisible through anonymous Data API reads.

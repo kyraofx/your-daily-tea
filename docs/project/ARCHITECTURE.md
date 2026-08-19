@@ -41,7 +41,7 @@ Required responsibilities:
 
 The website API is implemented in TypeScript. The newsroom engine will run as a separate scheduled worker so long-running retrieval and editorial work cannot delay reader requests. The worker runtime and scheduler remain to be finalized during calibration.
 
-The current calibration runner accepts normalized candidate JSON, enforces the Pacific edition window, applies hard validation and the agreed weighted score, and optionally saves a private draft through a server-only Supabase credential. A resumable full-edition command orchestrates deterministic feed discovery, per-section Luna evaluation, current-pool and published-archive deduplication, balanced selection, and a grounded cross-section editorial pass across all 15 sections. The final pass can only keep, remove, or move supplied URLs; deterministic balance rules then run again. Section and final-review checkpoints avoid repeating model calls after transient failures. Scheduling and automatic publication remain disabled.
+The current calibration runner accepts normalized candidate JSON, enforces the Pacific edition window, applies hard validation and the agreed weighted score, and optionally saves a private draft through a server-only Supabase credential. A resumable full-edition command orchestrates deterministic feed discovery, per-section Luna evaluation, current-pool and published-archive deduplication, balanced selection, and a grounded cross-section editorial pass across all 15 sections. The final pass can only keep, remove, or move supplied URLs; deterministic balance rules then run again. Section and final-review checkpoints avoid repeating model calls after transient failures. A separate persistence command accepts only the final reviewed artifact, refuses edition-date overwrites, creates only `draft`, and marks partial failures without advancing publication state. Scheduling and automatic publication remain disabled.
 
 ## Database
 
@@ -57,7 +57,7 @@ The logical model must support at least:
 - **Story-topic relationships:** many-to-many links for archive filtering.
 - **Source records or source metadata:** enough information for attribution and quality evaluation.
 
-Exact schema, migrations, indexes, retention, and backup policies are TBD.
+The core schema, initial migration, indexes, row-level-security policies, public security-invoker views, and immutable publication trigger are implemented. Retention and backup policies remain TBD.
 
 ## External Services
 
@@ -90,5 +90,6 @@ The OpenAI model is configurable and defaults to the cost-sensitive `gpt-5.6-lun
 8. Make a category-level editorial selection, allowing 0–4 stories for most sections.
 9. Perform a cross-edition diversity check and prevent topic domination.
 10. Write concise briefing copy and assign roughly 2–5 structured topics per story.
-11. Freeze and persist the edition.
-12. Serve the same saved edition to all readers and expose it through date/topic archive queries.
+11. Persist the reviewed edition as a private draft.
+12. Require explicit owner approval, then a separate publication transition.
+13. Serve the same published edition to all readers and expose it through date/topic archive queries.
