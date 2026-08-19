@@ -43,6 +43,8 @@ Use `node scripts/newsroom/run.mjs --input path/to/candidates.json --date YYYY-M
 
 `pnpm newsroom:audit-sources` verifies that every section has at least two configured sources. Add `-- --live` to fetch and parse all feeds; the command fails if a source is unavailable or returns no parseable items. The initial registry contains 36 feeds and provides 2–6 sources per section.
 
+Every source has a deterministic tier: primary (98), major newsroom (92), or specialist publication (88). Feed metadata carries that score into evaluation, and the evaluator grounds Luna's output back to the exact supplied URL, headline, source, and timestamp before overriding the model's source-quality score. Final selection allows no more than two stories from one source in a section and six across a complete edition; it leaves a section short rather than adding source-heavy filler.
+
 `pnpm newsroom:retrieve` uses the OpenAI Responses API with low-context web search and a strict candidate schema. It researches each of the 15 sections separately and writes the results to a private, git-ignored file under `work/`. The default model is the cost-sensitive `gpt-5.6-luna` with reasoning disabled; override the model with `OPENAI_NEWSROOM_MODEL` when needed.
 
 During calibration, retrieve one section first:

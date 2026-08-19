@@ -57,13 +57,36 @@ test("evaluation uses supplied candidates without a web-search tool", () => {
 });
 
 test("evaluation parses a structured shortlist", async () => {
-  const expected = [{ category: "usa", headline: "Selected" }];
+  const expected = [{
+    category: "usa", headline: "Selected", canonicalUrl: "https://example.com/selected",
+    sourceName: "Model Source", publishedAt: "2026-08-19T01:00:00.000Z",
+    scores: { sourceQuality: 1 },
+  }];
+  const supplied = [{
+    headline: "Grounded headline", canonicalUrl: "https://example.com/selected",
+    sourceName: "Grounded Source", publishedAt: "2026-08-19T02:00:00.000Z", credibilityScore: 92,
+  }];
   const fakeFetch = async (_url, init) => {
     const body = JSON.parse(init.body);
     assert.equal(body.tools, undefined);
     return { ok: true, json: async () => ({ output_text: JSON.stringify({ candidates: expected }) }) };
   };
   assert.deepEqual(await evaluateCandidates({
+    category: "usa", candidates: supplied, apiKey: "test-key",
+  }, fakeFetch), [{
+    ...expected[0], headline: "Grounded headline", sourceName: "Grounded Source",
+    publishedAt: "2026-08-19T02:00:00.000Z", scores: { sourceQuality: 92 },
+  }]);
+});
+
+test("evaluation rejects URLs that were not supplied by a feed", async () => {
+  const fakeFetch = async () => ({
+    ok: true,
+    json: async () => ({ output_text: JSON.stringify({ candidates: [{
+      canonicalUrl: "https://invented.example/story", scores: { sourceQuality: 99 },
+    }] }) }),
+  });
+  await assert.rejects(evaluateCandidates({
     category: "usa", candidates: [], apiKey: "test-key",
-  }, fakeFetch), expected);
+  }, fakeFetch), /unknown candidate URL/);
 });

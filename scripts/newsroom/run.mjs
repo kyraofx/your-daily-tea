@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import process from "node:process";
+import { selectBalancedEdition } from "./selection.mjs";
 
 const WEIGHTS = {
   importance: 0.25,
@@ -107,20 +108,7 @@ function prepare(candidates, editionDate) {
     }
   }
 
-  const selected = [];
-  for (const category of CATEGORIES) {
-    const categorySelection = [];
-    const primaryTopics = new Set();
-    for (const item of accepted.filter((candidate) => candidate.category === category)
-      .sort((a, b) => b.weightedScore - a.weightedScore)) {
-      const primaryTopic = item.topics[0]?.slug;
-      if (primaryTopic && primaryTopics.has(primaryTopic)) continue;
-      categorySelection.push(item);
-      if (primaryTopic) primaryTopics.add(primaryTopic);
-      if (categorySelection.length === 4) break;
-    }
-    selected.push(...categorySelection.map((item, index) => ({ ...item, rank: index + 1 })));
-  }
+  const selected = selectBalancedEdition(accepted, CATEGORIES);
   return {
     editionDate,
     coverageStartsAt: window.start.toISOString(),
