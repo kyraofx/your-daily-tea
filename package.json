@@ -13,7 +13,9 @@
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "db:generate": "drizzle-kit generate",
     "newsroom:dry-run": "node scripts/newsroom/run.mjs --input scripts/newsroom/candidates.example.json",
-    "newsroom:save": "node scripts/newsroom/run.mjs --input scripts/newsroom/candidates.example.json --save"
+    "newsroom:save": "node scripts/newsroom/run.mjs --input scripts/newsroom/candidates.example.json --save",
+    "newsroom:retrieve": "node scripts/newsroom/retrieve.mjs",
+    "test:newsroom": "node --test tests/openai-newsroom.test.mjs"
   },
   "dependencies": {
     "drizzle-orm": "0.45.2",

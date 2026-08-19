@@ -29,7 +29,7 @@ Implementation status: the Supabase project, core schema, row-level security, im
 - Generate concise conversational summaries, attribution, and structured topics.
 - Freeze one edition per day.
 
-Implementation status: the manual runner now validates the Pacific cutoff, normalizes URLs, deduplicates exact candidates, calculates the agreed weighted score, selects up to four stories per section, emits a calibration report, and can save private drafts when server credentials are configured. Automated retrieval, archive-aware newness, AI briefing generation, and richer diversity checks remain.
+Implementation status: the manual runner now validates the Pacific cutoff, normalizes URLs, deduplicates exact candidates, calculates the agreed weighted score, selects up to four stories per section, emits a calibration report, and can save private drafts when server credentials are configured. The OpenAI Responses API retrieval adapter is implemented with web search, strict output, and per-section runs. Its key is authenticated, but live retrieval awaits active API billing/quota. Archive-aware newness, final AI briefing generation, and richer diversity checks remain.
 
 ## Phase 4 — Core Website
 
