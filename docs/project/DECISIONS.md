@@ -251,3 +251,17 @@ Assign source quality deterministically from a reviewed registry tier rather tha
 - Primary and established reporting sources receive consistent scoring.
 - A section may contain fewer than four stories when its shortlist lacks source diversity.
 - Registry tiers and caps require periodic editorial review.
+
+## DEC-015 — Generate Resumable Private Edition Reports
+
+- **Status:** Accepted
+
+### Decision
+
+Run all 15 sections through one manually invoked, resumable calibration command. Checkpoint each section, then write private candidate, deduplication, manifest, and final review files. Do not combine generation with database saving or publication.
+
+### Consequences
+
+- Transient failures can resume without repeating completed Luna calls.
+- The owner can inspect the entire frozen edition before authorizing a Supabase draft.
+- Final cross-section editorial review remains a required gate during calibration.

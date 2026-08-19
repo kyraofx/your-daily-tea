@@ -29,7 +29,7 @@ Implementation status: the Supabase project, core schema, row-level security, im
 - Generate concise conversational summaries, attribution, and structured topics.
 - Freeze one edition per day.
 
-Implementation status: the manual runner validates the Pacific cutoff, normalizes URLs, calculates the agreed weighted score, applies primary-topic and source diversity, selects up to four stories per section, emits a calibration report, and can save private drafts when server credentials are configured. Deterministic RSS/Atom discovery covers all 15 sections through 36 live-validated feeds. Cross-source and cross-section deduplication plus a read-only 30-day published-archive comparison are implemented. Source tiers now set credibility scores, Luna output is grounded to feed provenance, and source caps prevent publisher domination. Reapplying the policy to the USA calibration selected three stories instead of filling a fourth slot from an overrepresented source. Material-development detection, full-edition generation, and final cross-section review remain.
+Implementation status: a resumable full-edition command now runs all 15 sections through discovery, Luna evaluation, deduplication, archive comparison, scoring, and balanced selection without saving. The first closed-window run evaluated 70 candidates, retained 61 unique candidates, and selected 44 stories across 14 nonempty sections with no retries or feed errors. Review found remaining category leakage and low-similarity cross-section duplicates, which are the next editorial-engine milestone. Material-development exceptions and database draft verification also remain.
 
 ## Phase 4 — Core Website
 
