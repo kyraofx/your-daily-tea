@@ -307,3 +307,32 @@ Use distinct owner instructions for approval and publication during calibration.
 - The first edition exercised the database-enforced state machine without skipping a gate.
 - Publishable-key reads returned no private content before publication and exactly 41 stories afterward.
 - The published edition is immutable and can now support end-to-end website and archive integration testing.
+
+## DEC-019 — Number Editions by Published Chronology
+
+- **Status:** Accepted
+
+### Decision
+
+Show readers a consecutive edition number derived from the chronological order of successfully published editions. Drafts, failed calibration saves, and internal database identity gaps do not consume a public edition number.
+
+### Consequences
+
+- The August 18, 2026 publication is Edition 1 even though earlier failed calibration inserts consumed internal identity values.
+- Today, Archive, and edition API responses use the same reader-facing number.
+- Published database rows remain immutable; correcting presentation does not rewrite publication history or weaken the transition guard.
+
+## DEC-020 — Automate Daily Publication with Fail-Closed Quality Gates
+
+- **Status:** Accepted
+
+### Decision
+
+Run the complete newsroom workflow every day at 6:07 AM in `America/Los_Angeles`. After deterministic validation and Luna's grounded editorial review, automatically advance a qualifying edition through `draft`, `approved`, and `published`. Require at least 20 stories across at least 10 populated sections; otherwise fail the run and retain the previous published edition.
+
+### Consequences
+
+- Daylight-saving changes are handled by the scheduler's named Pacific timezone.
+- Publication no longer requires daily owner action.
+- Duplicate scheduled or manual retries cannot overwrite an existing edition date.
+- GitHub stores the Supabase and OpenAI credentials as encrypted repository secrets and retains a private 14-day run report for diagnosis.

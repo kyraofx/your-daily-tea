@@ -39,6 +39,8 @@ Implementation status: a resumable full-edition command runs all 15 sections thr
 - Ensure quiet sections do not produce filler.
 - Support section-appropriate editorial voice without a "Why it matters" block.
 
+Implementation status: the finished reader now server-renders the latest published Supabase edition inside the preserved supplied design. The first edition renders 41 real stories across 14 non-empty sections while retaining all 15 section headers, including the intentionally empty Internet + Trends section. Story links, source attribution, publication times, topic labels, section controls, theme control, and responsive layout are wired. Archive loads frozen editions by date; Topics browses all published hashtags and their stories; Search queries published headlines and summaries with all-date, 7-day, 30-day, and category filters.
+
 ## Phase 5 — Archive and Topic Discovery
 
 - Build permanent edition storage and archive-by-date browsing.
@@ -46,9 +48,9 @@ Implementation status: a resumable full-edition command runs all 15 sections thr
 - Build topic/hashtag pages spanning archived stories.
 - Add all-time, today, 7-day, 30-day, and custom date filters.
 
-Implementation status: the backend endpoints and secured database views for edition lists, topic lists, and topic/date results are complete. Frontend wiring remains.
+Implementation status: the backend endpoints and secured database views for edition lists, topic lists, and topic/date results are complete. Today, Archive, Topics, and Search are wired in the frontend; additional custom-range controls remain.
 
-The first published edition is now available to those endpoints, enabling end-to-end frontend integration and archive testing against real frozen data.
+The first published edition is available to those endpoints and powers Today, Archive, Topics, and Search against real frozen data.
 
 ## Phase 6 — Scheduling, Reliability, and Launch
 
@@ -57,6 +59,8 @@ The first published edition is now available to those endpoints, enabling end-to
 - Verify that post-cutoff stories roll into the following edition.
 - Validate archive immutability and topic/date query behavior.
 - Test editorial quality, source provenance, summary accuracy, and duplicate suppression.
+
+Implementation status: a timezone-aware GitHub Actions workflow runs at 6:07 AM Pacific and automatically publishes editions that pass the grounded editorial pipeline plus minimum story and section gates. Failed runs leave the last published edition live and retain private diagnostic reports for 14 days.
 
 ## Later Phases
 

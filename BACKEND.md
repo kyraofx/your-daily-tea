@@ -4,15 +4,15 @@
 
 - **Public site:** Sites-hosted Vinext application.
 - **Database:** Supabase PostgreSQL.
-- **Editorial pipeline:** a separate scheduled newsroom worker using the Supabase service role and OpenAI API.
-- **Publication:** every run creates a `draft`; the owner reviews it in the private Supabase dashboard, approves it, and only then publishes it.
+- **Editorial pipeline:** a GitHub Actions newsroom worker runs daily at 6:07 AM Pacific using encrypted Supabase and OpenAI repository secrets.
+- **Publication:** a passing run generates the reviewed edition, saves it as `draft`, records an automated approval, and publishes it. Runs below 20 stories or 10 populated sections fail closed and leave the prior edition live.
 - **Public access:** anonymous visitors can read only `published` editions. Draft and approved editions are blocked by row-level security.
 
 ## Publication state machine
 
 `draft -> approved -> published`
 
-Failed runs use `failed` and never appear publicly. Publishing is an explicit second action so approval cannot accidentally expose a partially generated edition.
+Failed runs use `failed` and never appear publicly. The scheduled publisher still passes through both guarded state transitions, but does so automatically only after the complete review and quality gates pass.
 
 During calibration, the owner records a short reviewer label in `approved_by` (for example, `owner`) and the approval timestamp in the private Supabase dashboard. This avoids requiring reader or editor accounts in the MVP.
 
@@ -67,6 +67,6 @@ After reviewing the final report, save that exact result with:
 
 `pnpm newsroom:save-reviewed -- --input work/edition-YYYY-MM-DD/final-review-report.json`
 
-The reviewed-report writer accepts only reports carrying final editorial-review metadata, decodes residual HTML entities in display copy, refuses to overwrite an existing edition date, and always inserts `draft`. A failed partial write marks the edition `failed`; it never approves or publishes. Approval and publication remain separate owner actions during calibration.
+The reviewed-report writer accepts only reports carrying final editorial-review metadata, decodes residual HTML entities in display copy, refuses to overwrite an existing edition date, and always inserts `draft`. The manual command remains draft-only. The scheduled command applies the automatic quality gates before advancing the new edition through approval and publication.
 
 The first verified database edition is `2026-08-18`: 41 reviewed placements across 14 non-empty sections. It was saved privately, confirmed invisible through the publishable key, explicitly approved by the owner, and then separately published. Post-publication verification through the publishable key returned exactly one edition and all 41 stories with matching section counts.

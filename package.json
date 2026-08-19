@@ -22,14 +22,14 @@
     "newsroom:generate-edition": "node scripts/newsroom/generate-edition.mjs",
     "newsroom:review-edition": "node scripts/newsroom/review-edition.mjs",
     "newsroom:save-reviewed": "node scripts/newsroom/save-reviewed-edition.mjs",
+    "newsroom:publish-reviewed": "node scripts/newsroom/publish-reviewed-edition.mjs",
     "test:newsroom": "node --test tests/openai-newsroom.test.mjs tests/feeds.test.mjs tests/source-registry.test.mjs tests/dedupe.test.mjs tests/selection.test.mjs tests/full-edition.test.mjs tests/editorial-review.test.mjs tests/persistence.test.mjs"
   },
   "dependencies": {
     "drizzle-orm": "0.45.2",
     "fast-xml-parser": "^5.11.0",
     "react": "19.2.6",
-    "react-dom": "19.2.6",
-    "react-loading-skeleton": "3.5.0"
+    "react-dom": "19.2.6"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "1.37.1",

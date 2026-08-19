@@ -24,6 +24,8 @@ Required capabilities:
 
 The implementation uses the Sites Vinext/React runtime and preserves the supplied HTML design. Public data is read from Supabase through server-side API routes; browser code never receives administrative credentials.
 
+The reader interface is connected to published data through the same public repository used by the API. Today preserves the supplied dark editorial layout, 15-section order, numbered collapsible sections, source attribution, timestamps, and hashtags. Empty sections remain visible so quiet coverage is explicit. Archive loads frozen editions by date, Topics lists and opens real published hashtags, and Search queries published headlines and summaries only.
+
 ## Backend
 
 Required responsibilities:
@@ -39,9 +41,9 @@ Required responsibilities:
 - Save and publish an immutable daily edition.
 - Query archived editions by date and stories by topic plus date constraints.
 
-The website API is implemented in TypeScript. The newsroom engine will run as a separate scheduled worker so long-running retrieval and editorial work cannot delay reader requests. The worker runtime and scheduler remain to be finalized during calibration.
+The website API is implemented in TypeScript. The newsroom engine runs as a separate scheduled GitHub Actions worker so long-running retrieval and editorial work cannot delay reader requests.
 
-The current calibration runner accepts normalized candidate JSON, enforces the Pacific edition window, applies hard validation and the agreed weighted score, and optionally saves a private draft through a server-only Supabase credential. A resumable full-edition command orchestrates deterministic feed discovery, per-section Luna evaluation, current-pool and published-archive deduplication, balanced selection, and a grounded cross-section editorial pass across all 15 sections. The final pass can only keep, remove, or move supplied URLs; deterministic balance rules then run again. Section and final-review checkpoints avoid repeating model calls after transient failures. A separate persistence command accepts only the final reviewed artifact, refuses edition-date overwrites, creates only `draft`, and marks partial failures without advancing publication state. Scheduling and automatic publication remain disabled.
+The production runner enforces the Pacific edition window and orchestrates deterministic feed discovery, per-section Luna evaluation, current-pool and published-archive deduplication, balanced selection, and a grounded cross-section editorial pass across all 15 sections. The final pass can only keep, remove, or move supplied URLs; deterministic balance rules then run again. A timezone-aware schedule starts at 6:07 AM Pacific. Passing editions are saved, automatically approved, published, and verified; editions below the minimum story or populated-section gates fail closed. Manual persistence remains draft-only.
 
 ## Database
 
@@ -49,7 +51,7 @@ Supabase PostgreSQL is the accepted database and managed platform direction; see
 
 The logical model must support at least:
 
-- **Editions:** edition date, coverage start/end, publication time, and frozen status.
+- **Editions:** edition date, coverage start/end, publication time, and frozen status. Reader-facing edition numbers are assigned from successful published chronology, so drafts and failed saves never create visible gaps.
 - **Stories:** headline, summary, source metadata, original publication time, and canonical URL.
 - **Categories:** the subject taxonomy and display order.
 - **Edition story placements:** a story's section and rank within a frozen edition.
