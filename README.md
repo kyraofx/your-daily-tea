@@ -49,17 +49,6 @@ pnpm test:newsroom
 
 Copy `.env.example` to `.env.local` for browser-safe local configuration. Never commit `.env.local` or secret keys.
 
-## Production secrets
-
-The daily workflow expects these encrypted GitHub repository secrets:
-
-- `SUPABASE_URL`
-- `SUPABASE_PUBLISHABLE_KEY`
-- `SUPABASE_SECRET_KEY`
-- `OPENAI_API_KEY`
-
-Do not place the Supabase secret key or OpenAI key in browser code, committed files, build artifacts, or logs.
-
 ## Publishing and deployment
 
 The newsroom workflow runs from `.github/workflows/daily-edition.yml` on the `main` branch. It can also be started manually from GitHub Actions with an optional Pacific edition date.
