@@ -9,6 +9,7 @@ Public reader accounts are not required. Production publication is automatic aft
 ### Edition Schedule and Window
 
 - Freeze the coverage window at **6:00 AM Pacific** and begin the automatic publication workflow at **6:07 AM Pacific**.
+- Retry delayed or failed scheduling through **7:07 AM Pacific**, while skipping all generation work when that date is already published.
 - Each edition covers **6:00 AM Pacific on the previous day through 5:59 AM Pacific on the edition date**.
 - A story published after the cutoff belongs to the following day's edition, regardless of importance.
 - Save the completed edition once and serve the same frozen edition to every visitor.

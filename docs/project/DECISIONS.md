@@ -336,3 +336,18 @@ Run the complete newsroom workflow every day at 6:07 AM in `America/Los_Angeles`
 - Publication no longer requires daily owner action.
 - Duplicate scheduled or manual retries cannot overwrite an existing edition date.
 - GitHub stores the Supabase and OpenAI credentials as encrypted repository secrets. Workflow logs retain operational progress, but unpublished review files are not uploaded because the repository is public.
+
+## DEC-021 — Add Cost-Safe Schedule Redundancy
+
+- **Status:** Accepted
+
+### Decision
+
+Keep 6:07 AM Pacific as the primary daily start, then schedule backup attempts at 6:22, 6:37, 6:52, and 7:07. Before dependency installation or AI generation, query the public edition-by-date endpoint. Skip the remaining newsroom work when that date is already published, continue only on a confirmed `404`, and fail closed on any other response.
+
+### Consequences
+
+- A delayed or dropped GitHub schedule has four additional chances to start without owner intervention.
+- Successful backup attempts do not repeat Luna generation or incur its associated model cost.
+- The existing concurrency group prevents overlapping workflow jobs, while the database remains the final non-overwrite guard.
+- GitHub Actions remains a best-effort scheduler, so publication near 6:07 AM is substantially more resilient but not a hard real-time guarantee.
