@@ -55,7 +55,7 @@ for (const category of categories) {
   candidates.push(...await retrieveCategory({
     category,
     ...window,
-    model: process.env.OPENAI_NEWSROOM_MODEL ?? "gpt-5.4-mini",
+    model: process.env.OPENAI_NEWSROOM_MODEL ?? "gpt-5.6-luna",
   }));
 }
 
