@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { SECTION_ORDER, type Edition, type EditionSummary, type SearchStory, type SectionSlug, type TopicStory, type TopicSummary } from "../lib/news/types";
+import { SECTION_ORDER, type Edition, type EditionSummary, type SearchStory, type SectionSlug, type Story, type TopicStory, type TopicSummary } from "../lib/news/types";
 
 const SECTION_META: Record<SectionSlug, { label: string; emoji: string }> = {
   usa: { label: "USA", emoji: "🌎" },
@@ -37,7 +37,7 @@ export function DailyEdition({ edition, editions, topics }: { edition: Edition |
   const [archiveEdition, setArchiveEdition] = useState<Edition | null>(edition);
   const [topicStories, setTopicStories] = useState<TopicStory[]>([]);
   const [topicName, setTopicName] = useState("");
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState("AI jobs");
   const [searchStories, setSearchStories] = useState<SearchStory[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -77,22 +77,29 @@ export function DailyEdition({ edition, editions, topics }: { edition: Edition |
     } finally { setLoading(false); }
   }
 
-  async function submitSearch(event: FormEvent) {
-    event.preventDefault();
-    if (query.trim().length < 2) return;
+  async function runSearch(value = query) {
+    if (value.trim().length < 2) return;
     setLoading(true);
     try {
-      const response = await fetch(`/api/search?q=${encodeURIComponent(query.trim())}`);
+      const response = await fetch(`/api/search?q=${encodeURIComponent(value.trim())}`);
       if (!response.ok) throw new Error("Search unavailable");
       setSearchStories((await response.json()).stories);
     } finally { setLoading(false); }
   }
 
-  const renderStory = (story: Edition["sections"][SectionSlug] extends (infer T)[] | undefined ? T : never, dateLabel?: string) => (
+  async function submitSearch(event: FormEvent) { event.preventDefault(); await runSearch(); }
+
+  function chooseView(item: View) {
+    setView(item);
+    if (item === "search" && searchStories.length === 0) void runSearch("AI jobs");
+  }
+
+  const renderStory = (story: Story | TopicStory | SearchStory, dateLabel?: string, showSection = false) => (
     <article className="tea-story" key={`${dateLabel ?? "today"}-${story.id}`}>
+      {showSection && <div className="tea-result-section">{SECTION_META[story.section].label}</div>}
       <h2><span aria-hidden="true">›</span><a href={story.canonicalUrl} target="_blank" rel="noreferrer">{story.headline}</a></h2>
       <p>{story.summary}</p>
-      <div className="tea-story-meta"><a href={story.canonicalUrl} target="_blank" rel="noreferrer">{story.sourceName}</a>{dateLabel && <span>{dateLabel}</span>}</div>
+      <div className="tea-story-meta"><a href={story.canonicalUrl} target="_blank" rel="noreferrer">{story.sourceName}</a>{dateLabel && <span>{dateLabel}</span>}{"topics" in story && <div className="tea-tags">{story.topics.map((topic) => <span key={topic.slug}>#{topic.name.replace(/^#/, "")}</span>)}</div>}</div>
     </article>
   );
 
@@ -100,9 +107,9 @@ export function DailyEdition({ edition, editions, topics }: { edition: Edition |
     <div className={`tea-site${light ? " is-light" : ""}`}>
       <header className="tea-header">
         <div className="tea-header-inner">
-          <a className="tea-wordmark" href="#top">Your Daily Tea</a>
+          <a className="tea-wordmark" href="#top">Your daily tea</a>
           <nav aria-label="Primary navigation">
-            {(["today", "archive", "topics", "search"] as View[]).map((item) => <button aria-current={view === item ? "page" : undefined} key={item} onClick={() => setView(item)}>{item}</button>)}
+            {(["today", "archive", "topics", "search"] as View[]).map((item) => <button aria-current={view === item ? "page" : undefined} key={item} onClick={() => chooseView(item)}>{item}</button>)}
           </nav>
           <div className="tea-date-tools">
             <time dateTime={edition.editionDate}>{date}</time>
@@ -171,25 +178,31 @@ export function DailyEdition({ edition, editions, topics }: { edition: Edition |
         </footer>
         </>}
 
-        {view === "archive" && <section className="tea-view">
-          <p className="tea-kicker">Frozen daily editions</p><h1>The archive</h1><p className="tea-deck">Pick a date and read exactly what ran that day.</p>
-          <div className="tea-choice-grid">{editions.map((item) => <button className="tea-choice" key={item.id} onClick={() => pickEdition(item.editionDate)}><strong>{displayDate(item.editionDate, { weekday: "short", month: "long", day: "numeric", year: "numeric" })}</strong><span>Edition {item.editionNumber}</span></button>)}</div>
+        {view === "archive" && <section className="tea-view tea-archive-view">
+          <div className="tea-view-heading"><div><h1>The archive</h1><p className="tea-deck">Pick a date and read exactly what we sent that day.</p></div><p className="tea-kicker">{editions.length} {editions.length === 1 ? "edition" : "editions"} · since Aug 2026</p></div>
+          <div className="tea-calendar-heading"><h2>August 2026</h2><span>← July&nbsp;&nbsp;&nbsp; September →</span></div>
+          <div className="tea-calendar-frame"><i/><i/><i/><i/><div className="tea-calendar">
+            {(["Sun","Mon","Tue","Wed","Thu","Fri","Sat"] as const).map((day) => <span className="tea-weekday" key={day}>{day}</span>)}
+            {Array.from({ length: 6 }, (_, index) => <span key={`blank-${index}`}/>) }
+            {Array.from({ length: 31 }, (_, index) => { const day = index + 1; const dateValue = `2026-08-${String(day).padStart(2,"0")}`; const available = editions.some((item) => item.editionDate === dateValue); return <button className={archiveEdition?.editionDate === dateValue ? "is-picked" : ""} disabled={!available} key={day} onClick={() => pickEdition(dateValue)}>{day}</button>; })}
+          </div></div>
           {loading && <p className="tea-status">Loading…</p>}
-          {archiveEdition && <div className="tea-archive-results"><h2>{displayDate(archiveEdition.editionDate, { weekday: "long", month: "long", day: "numeric", year: "numeric" })}</h2>{SECTION_ORDER.map((slug) => (archiveEdition.sections[slug] ?? []).map((story) => renderStory(story)))}</div>}
+          {archiveEdition && <div className="tea-archive-results"><p className="tea-kicker">Edition {archiveEdition.editionNumber}</p><h2>{displayDate(archiveEdition.editionDate, { weekday: "long", month: "long", day: "numeric", year: "numeric" })}</h2>{SECTION_ORDER.map((slug, index) => <section className="tea-archive-section" key={slug}><div><span>{String(index + 1).padStart(2,"0")}</span><h3>{SECTION_META[slug].emoji} {SECTION_META[slug].label}</h3><small>{archiveEdition.sections[slug]?.length ?? 0} stories</small></div>{(archiveEdition.sections[slug] ?? []).map((story) => renderStory(story))}</section>)}</div>}
         </section>}
 
         {view === "topics" && <section className="tea-view">
           <p className="tea-kicker">Follow the threads</p><h1>Topics</h1><p className="tea-deck">Every hashtag is a thread you can pull.</p>
           <div className="tea-choice-grid tea-topic-grid">{topics.map((topic) => <button className="tea-choice" key={topic.slug} onClick={() => pickTopic(topic)}><strong>#{topic.name.replace(/^#/, "")}</strong><span>{topic.storyCount} {topic.storyCount === 1 ? "story" : "stories"}</span></button>)}</div>
           {loading && <p className="tea-status">Loading…</p>}
-          {topicName && !loading && <div className="tea-archive-results"><h2>#{topicName.replace(/^#/, "")}</h2>{topicStories.map((story) => renderStory(story, displayDate(story.editionDate, { month: "short", day: "numeric", year: "numeric" })))}</div>}
+          {topicName && <div className="tea-topic-backdrop"><button aria-label="Close topic" onClick={() => setTopicName("")}/><aside className="tea-topic-panel"><header><div><h2>#{topicName.replace(/^#/, "")}</h2><p>Following the story over time.</p></div><button onClick={() => setTopicName("")}>Close ✕</button></header><div className="tea-filter-row"><span>All time</span><span>Today</span><span>7 days</span><span>30 days</span></div>{loading ? <p className="tea-status">Loading…</p> : topicStories.map((story) => renderStory(story, displayDate(story.editionDate, { month: "short", day: "numeric", year: "numeric" })))}</aside></div>}
         </section>}
 
         {view === "search" && <section className="tea-view">
-          <p className="tea-kicker">Published editions only</p><h1>Search the archive</h1>
-          <form className="tea-search" onSubmit={submitSearch}><label htmlFor="archive-search">Search</label><input id="archive-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="AI jobs"/><button type="submit">Search</button></form>
+          <h1>Search the archive</h1>
+          <form className="tea-search" onSubmit={submitSearch}><label htmlFor="archive-search">Search</label><input id="archive-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="AI jobs"/><button className="tea-submit-search" type="submit">Search</button></form>
+          <div className="tea-search-tools"><span>{searchStories.length} stories</span><button className="is-active">All dates</button><button>Last 7 days</button><button>Last 30 days</button><button>By category</button></div>
           {loading && <p className="tea-status">Searching…</p>}
-          {!loading && searchStories.length > 0 && <div className="tea-archive-results"><h2>{searchStories.length} results</h2>{searchStories.map((story) => renderStory(story, displayDate(story.editionDate, { month: "short", day: "numeric", year: "numeric" })))}</div>}
+          {!loading && searchStories.length > 0 && <div className="tea-search-results">{searchStories.map((story) => renderStory(story, displayDate(story.editionDate, { month: "short", day: "numeric", year: "numeric" }), true))}</div>}
           {!loading && query.length >= 2 && searchStories.length === 0 && <p className="tea-status">Nothing matched that phrase.</p>}
         </section>}
       </main>

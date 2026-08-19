@@ -26,7 +26,7 @@ a { color: inherit; }
 .tea-site.is-light { --bg: #f2f2f3; --ink: #1d1f20; --ink-2: #5d5d60; --ink-3: #7a7a7d; --rule: rgba(29,31,32,.16); --rule-2: rgba(29,31,32,.3); --steel: #416180; }
 .tea-header { position: sticky; top: 0; z-index: 40; border-bottom: 1px solid var(--rule); background: color-mix(in srgb, var(--bg) 94%, transparent); backdrop-filter: blur(12px); }
 .tea-header-inner { max-width: 1240px; margin: auto; padding: 14px 40px; display: flex; align-items: center; gap: 40px; }
-.tea-wordmark { margin-right: auto; font-family: var(--font-barlow-condensed), sans-serif; font-size: 30px; font-weight: 700; line-height: 1; letter-spacing: -.022em; text-transform: uppercase; text-decoration: none; }
+.tea-wordmark { margin-right: auto; font-family: var(--font-barlow-condensed), sans-serif; font-size: 30px; font-weight: 500; line-height: 1; letter-spacing: .004em; text-decoration: none; }
 .tea-header nav { display: flex; gap: 26px; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-2); }
 .tea-header nav button { padding: 0 0 3px; border: 0; border-bottom: 1px solid transparent; background: none; color: var(--ink-2); letter-spacing: .16em; text-transform: uppercase; cursor: pointer; }
 .tea-header nav button[aria-current="page"] { border-color: var(--steel); color: var(--ink); }
@@ -35,7 +35,7 @@ a { color: inherit; }
 .tea-date-tools button:hover { color: var(--steel); border-color: var(--steel); }
 .tea-main { max-width: 1240px; margin: auto; padding: 0 40px; }
 .tea-intro { display: grid; gap: 40px; padding: 60px 0 40px 86px; border-bottom: 1px solid var(--rule-2); }
-.tea-intro h1, .tea-empty h1 { margin: 0; font-family: var(--font-barlow-condensed), sans-serif; font-size: clamp(42px, 8.5vw, 100px); font-weight: 700; line-height: .95; letter-spacing: -.022em; text-transform: uppercase; white-space: nowrap; }
+.tea-intro h1, .tea-empty h1 { margin: 0; font-family: var(--font-barlow-condensed), sans-serif; font-size: calc(clamp(42px, 8.5vw, 100px) * .86); font-weight: 500; line-height: .95; letter-spacing: .004em; white-space: nowrap; }
 .tea-intro-lower { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 40px; align-items: end; }
 .tea-kicker { margin: 0; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--steel); }
 .tea-deck { margin: 14px 0 0; font-size: 19px; line-height: 1.5; color: var(--ink-2); }
@@ -52,7 +52,7 @@ a { color: inherit; }
 .tea-section-glyph { width: 16px; font-size: 26px; line-height: .8; text-align: center; color: var(--ink-2); }
 .tea-story-list { padding-bottom: 22px; }
 .tea-story { padding: 10px 0 10px 116px; display: grid; gap: 8px; }
-.tea-story h2 { margin: 0 0 0 -30px; font-family: var(--font-barlow-condensed), sans-serif; font-size: clamp(24px, 3vw, 34px); font-weight: 700; line-height: 1.08; letter-spacing: -.022em; text-transform: uppercase; text-wrap: pretty; }
+.tea-story h2 { margin: 0 0 0 -30px; font-family: var(--font-barlow-condensed), sans-serif; font-size: calc(clamp(24px, 3vw, 34px) * .86); font-weight: 500; line-height: 1.08; letter-spacing: .004em; text-wrap: pretty; }
 .tea-story h2 span { display: inline-block; width: 30px; color: var(--steel); }
 .tea-story h2 a { text-decoration: none; }
 .tea-story h2 a:hover { color: var(--steel); }
@@ -70,19 +70,38 @@ a { color: inherit; }
 .tea-empty h1 { white-space: normal; }
 .tea-empty p { color: #b7b7ba; }
 .tea-view { padding: 60px 0 40px 86px; }
-.tea-view > h1 { margin: 14px 0 0; font-family: var(--font-barlow-condensed), sans-serif; font-size: clamp(44px, 6.6vw, 78px); line-height: .95; letter-spacing: -.022em; text-transform: uppercase; }
+.tea-view > h1, .tea-view-heading h1 { margin: 0; font-family: var(--font-barlow-condensed), sans-serif; font-size: calc(clamp(44px, 6.6vw, 78px) * .86); font-weight: 500; line-height: .95; letter-spacing: .004em; }
+.tea-view-heading { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 40px; padding-bottom: 28px; border-bottom: 1px solid var(--rule-2); }
+.tea-calendar-heading { display: flex; justify-content: space-between; align-items: baseline; margin-top: 38px; }
+.tea-calendar-heading h2 { font-family: var(--font-barlow-condensed); font-size: 30px; font-weight: 600; text-transform: uppercase; }
+.tea-calendar-heading span { font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
+.tea-calendar-frame { position: relative; width: 66%; margin: 26px auto 0; padding: 14px; border: 1px solid var(--rule-2); }
+.tea-calendar-frame > i { position: absolute; width: 7px; height: 7px; border-color: var(--steel); }
+.tea-calendar-frame > i:nth-child(1){top:-4px;left:-4px;border-left:1px solid;border-top:1px solid}.tea-calendar-frame > i:nth-child(2){top:-4px;right:-4px;border-right:1px solid;border-top:1px solid}.tea-calendar-frame > i:nth-child(3){bottom:-4px;left:-4px;border-left:1px solid;border-bottom:1px solid}.tea-calendar-frame > i:nth-child(4){bottom:-4px;right:-4px;border-right:1px solid;border-bottom:1px solid}
+.tea-calendar { display: grid; grid-template-columns: repeat(7,1fr); gap: 1px; }
+.tea-calendar > * { height: 31px; display: grid; place-items: center; }
+.tea-calendar button { border: 1px solid transparent; background: transparent; color: var(--ink); font-family: var(--font-barlow-condensed); cursor: pointer; }
+.tea-calendar button:disabled { color: var(--rule-2); cursor: default; }
+.tea-calendar button.is-picked { background: var(--steel); color: var(--bg); }
+.tea-weekday { font-size: 9px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
 .tea-choice-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0 40px; margin-top: 38px; }
 .tea-choice { display: grid; grid-template-columns: 1fr auto; gap: 16px; padding: 18px 0; border: 0; border-top: 1px solid var(--rule); background: none; color: var(--ink); text-align: left; cursor: pointer; }
 .tea-choice:hover strong { color: var(--steel); }
 .tea-choice strong { font-family: var(--font-barlow-condensed), sans-serif; font-size: 18px; }
 .tea-choice span { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); }
 .tea-archive-results { margin-top: 44px; border-top: 1px solid var(--rule-2); padding-top: 24px; }
-.tea-archive-results > h2 { font-family: var(--font-barlow-condensed), sans-serif; font-size: 36px; text-transform: uppercase; }
+.tea-archive-results > h2 { font-family: var(--font-barlow-condensed), sans-serif; font-size: 44px; font-weight: 500; }
 .tea-archive-results .tea-story { padding-left: 30px; border-top: 1px solid var(--rule); }
+.tea-archive-section > div:first-child { display:grid; grid-template-columns:62px 1fr auto; gap:24px; align-items:baseline; padding:24px 0 14px; border-bottom:1px solid var(--rule-2); color:var(--steel) }
+.tea-archive-section > div:first-child span { font:600 34px/.8 var(--font-barlow-condensed) }.tea-archive-section h3{margin:0;font:600 26px/1 var(--font-barlow-condensed);text-transform:uppercase}.tea-archive-section small{color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase}
 .tea-search { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 16px; margin-top: 32px; padding-bottom: 14px; border-bottom: 1px solid var(--rule-2); }
 .tea-search label { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--steel); }
 .tea-search input { min-width: 0; border: 0; outline: 0; background: transparent; color: var(--ink); font-family: var(--font-barlow-condensed), sans-serif; font-size: 40px; }
 .tea-search button { padding: 8px 12px; border: 1px solid var(--rule-2); background: none; color: var(--ink); cursor: pointer; text-transform: uppercase; }
+.tea-search-tools,.tea-filter-row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; padding:22px 0 6px; }.tea-search-tools span{margin-right:8px;color:var(--ink-3);font-size:11px;letter-spacing:.16em;text-transform:uppercase}.tea-search-tools button,.tea-filter-row span{padding:7px 11px;border:1px solid var(--rule-2);background:transparent;color:var(--ink-3);font-size:11px;letter-spacing:.1em;text-transform:uppercase}.tea-search-tools button.is-active,.tea-filter-row span:first-child{border-color:var(--steel);color:var(--steel)}
+.tea-search-results { padding-top: 16px }.tea-result-section{margin-left:-30px;color:var(--steel);font-size:11px;letter-spacing:.18em;text-transform:uppercase}.tea-search-results .tea-story{padding:14px 0 14px 30px}
+.tea-topic-backdrop{position:fixed;inset:0;z-index:80;display:flex;justify-content:flex-end;background:rgba(0,0,0,.6)}.tea-topic-backdrop>button{flex:1;border:0;background:transparent}.tea-topic-panel{width:560px;max-width:92vw;overflow-y:auto;padding:40px;background:var(--bg);border-left:1px solid var(--rule-2)}.tea-topic-panel>header{display:flex;justify-content:space-between;gap:20px;padding-bottom:20px;border-bottom:1px solid var(--rule-2)}.tea-topic-panel>header h2{margin:0;color:var(--steel);font:500 48px/1 var(--font-barlow-condensed)}.tea-topic-panel header p{color:var(--ink-3)}.tea-topic-panel header button{border:0;background:none;color:var(--ink-2);text-transform:uppercase}.tea-topic-panel .tea-story{padding:22px 0 22px 30px;border-top:1px solid var(--rule)}.tea-topic-panel .tea-story p{display:none}.tea-topic-panel .tea-story h2{font-size:24px;color:var(--ink)}
+.tea-submit-search{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
 .tea-status { padding: 28px 0; color: var(--ink-3); font-style: italic; }
 :focus-visible { outline: 2px solid var(--steel); outline-offset: 3px; }
 
@@ -93,6 +112,8 @@ a { color: inherit; }
   .tea-main { padding: 0 20px; }
   .tea-intro { padding: 42px 0 30px; gap: 28px; }
   .tea-view { padding: 42px 0 30px; }
+  .tea-view-heading { grid-template-columns: 1fr; }
+  .tea-calendar-frame { width: 100%; }
   .tea-search { grid-template-columns: 1fr auto; }
   .tea-search label { grid-column: 1 / -1; }
   .tea-intro h1 { white-space: normal; }

@@ -167,13 +167,13 @@ export async function listPublishedTopicStories(
 }
 
 export async function searchPublishedStories(query: string): Promise<SearchStory[]> {
-  const term = query.replace(/[,*%()]/g, " ").trim();
-  if (term.length < 2) return [];
+  const terms = query.replace(/[,*%()]/g, " ").trim().split(/\s+/).filter((term) => term.length >= 2);
+  if (!terms.length) return [];
   const rows = await supabaseGet<(StoryRow & { edition_id: string; edition_date: string })[]>(
     "published_edition_stories",
     {
       select: "edition_id,edition_date,id,headline,summary,canonical_url,published_at,source_name,section_slug,rank,topics",
-      or: `(headline.ilike.*${term}*,summary.ilike.*${term}*)`,
+      or: `(${terms.flatMap((term) => [`headline.ilike.*${term}*`, `summary.ilike.*${term}*`]).join(",")})`,
       order: "edition_date.desc,rank.asc",
       limit: "100",
     },
