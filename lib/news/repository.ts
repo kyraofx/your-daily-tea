@@ -31,7 +31,19 @@ type StoryRow = {
   topics: Topic[] | null;
 };
 
-async function hydrateEdition(row: EditionRow): Promise<Edition> {
+type PublishedDateRow = Pick<EditionRow, "edition_date">;
+
+async function getPublishedEditionNumbers(): Promise<Map<string, number>> {
+  const rows = await supabaseGet<PublishedDateRow[]>("editions", {
+    select: "edition_date",
+    status: "eq.published",
+    order: "edition_date.asc",
+  });
+
+  return new Map(rows.map((row, index) => [row.edition_date, index + 1]));
+}
+
+async function hydrateEdition(row: EditionRow, editionNumber: number): Promise<Edition> {
   const stories = await supabaseGet<StoryRow[]>("published_edition_stories", {
     select: "*",
     edition_id: `eq.${row.id}`,
@@ -57,7 +69,7 @@ async function hydrateEdition(row: EditionRow): Promise<Edition> {
   return {
     id: row.id,
     editionDate: row.edition_date,
-    editionNumber: row.edition_number,
+    editionNumber,
     coverageStartsAt: row.coverage_starts_at,
     coverageEndsAt: row.coverage_ends_at,
     publishedAt: row.published_at,
@@ -74,8 +86,13 @@ export async function getPublishedEdition(date?: string): Promise<Edition | null
   };
 
   if (date) query.edition_date = `eq.${date}`;
-  const rows = await supabaseGet<EditionRow[]>("editions", query);
-  return rows[0] ? hydrateEdition(rows[0]) : null;
+  const [rows, editionNumbers] = await Promise.all([
+    supabaseGet<EditionRow[]>("editions", query),
+    getPublishedEditionNumbers(),
+  ]);
+  return rows[0]
+    ? hydrateEdition(rows[0], editionNumbers.get(rows[0].edition_date) ?? 1)
+    : null;
 }
 
 export async function listPublishedEditions(
@@ -90,14 +107,17 @@ export async function listPublishedEditions(
   };
   if (before) query.edition_date = `lt.${before}`;
 
-  const rows = await supabaseGet<
-    Pick<EditionRow, "id" | "edition_date" | "edition_number" | "published_at">[]
-  >("editions", query);
+  const [rows, editionNumbers] = await Promise.all([
+    supabaseGet<
+      Pick<EditionRow, "id" | "edition_date" | "edition_number" | "published_at">[]
+    >("editions", query),
+    getPublishedEditionNumbers(),
+  ]);
 
   return rows.map((row) => ({
     id: row.id,
     editionDate: row.edition_date,
-    editionNumber: row.edition_number,
+    editionNumber: editionNumbers.get(row.edition_date) ?? 1,
     publishedAt: row.published_at,
   }));
 }

@@ -51,7 +51,7 @@ Supabase PostgreSQL is the accepted database and managed platform direction; see
 
 The logical model must support at least:
 
-- **Editions:** edition date, coverage start/end, publication time, and frozen status.
+- **Editions:** edition date, coverage start/end, publication time, and frozen status. Reader-facing edition numbers are assigned from successful published chronology, so drafts and failed saves never create visible gaps.
 - **Stories:** headline, summary, source metadata, original publication time, and canonical URL.
 - **Categories:** the subject taxonomy and display order.
 - **Edition story placements:** a story's section and rank within a frozen edition.

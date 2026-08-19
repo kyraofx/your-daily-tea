@@ -307,3 +307,17 @@ Use distinct owner instructions for approval and publication during calibration.
 - The first edition exercised the database-enforced state machine without skipping a gate.
 - Publishable-key reads returned no private content before publication and exactly 41 stories afterward.
 - The published edition is immutable and can now support end-to-end website and archive integration testing.
+
+## DEC-019 — Number Editions by Published Chronology
+
+- **Status:** Accepted
+
+### Decision
+
+Show readers a consecutive edition number derived from the chronological order of successfully published editions. Drafts, failed calibration saves, and internal database identity gaps do not consume a public edition number.
+
+### Consequences
+
+- The August 18, 2026 publication is Edition 1 even though earlier failed calibration inserts consumed internal identity values.
+- Today, Archive, and edition API responses use the same reader-facing number.
+- Published database rows remain immutable; correcting presentation does not rewrite publication history or weaken the transition guard.
