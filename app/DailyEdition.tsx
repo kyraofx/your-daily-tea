@@ -121,7 +121,7 @@ export function DailyEdition({ edition, editions, topics }: { edition: Edition |
     <div className={`tea-site${light ? " is-light" : ""}`}>
       <header className="tea-header">
         <div className="tea-header-inner">
-          <a className="tea-wordmark" href="#top">Your daily tea</a>
+          <a className="tea-wordmark" href="#top" onClick={() => chooseView("today")}>Your daily tea</a>
           <nav aria-label="Primary navigation">
             {(["today", "archive", "topics", "search"] as View[]).map((item) => <button aria-current={view === item ? "page" : undefined} key={item} onClick={() => chooseView(item)}>{item}</button>)}
           </nav>
