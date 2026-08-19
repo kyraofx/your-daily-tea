@@ -18,7 +18,8 @@
     "newsroom:feeds": "node scripts/newsroom/collect-feeds.mjs",
     "newsroom:evaluate": "node scripts/newsroom/evaluate-feeds.mjs",
     "newsroom:audit-sources": "node scripts/newsroom/audit-sources.mjs",
-    "test:newsroom": "node --test tests/openai-newsroom.test.mjs tests/feeds.test.mjs tests/source-registry.test.mjs"
+    "newsroom:dedupe": "node scripts/newsroom/dedupe-candidates.mjs",
+    "test:newsroom": "node --test tests/openai-newsroom.test.mjs tests/feeds.test.mjs tests/source-registry.test.mjs tests/dedupe.test.mjs"
   },
   "dependencies": {
     "drizzle-orm": "0.45.2",

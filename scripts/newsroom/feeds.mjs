@@ -37,6 +37,15 @@ function link(item) {
   return text(item.guid);
 }
 
+function validHttpUrl(value) {
+  try {
+    const url = new URL(value);
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
 export function parseFeed(xml, source) {
   const document = parser.parse(xml);
   const rssItems = list(document.rss?.channel?.item);
@@ -46,7 +55,7 @@ export function parseFeed(xml, source) {
     const publishedAt = new Date(rawDate);
     const canonicalUrl = link(item);
     const headline = clean(item.title);
-    if (!headline || !canonicalUrl || Number.isNaN(publishedAt.getTime())) return [];
+    if (!headline || !validHttpUrl(canonicalUrl) || Number.isNaN(publishedAt.getTime())) return [];
     return [{
       headline,
       canonicalUrl,

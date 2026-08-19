@@ -222,3 +222,17 @@ Collect timestamped candidates from a configurable RSS/Atom source registry befo
 - A temporary AI or web-search failure cannot make a newsworthy section appear empty.
 - Feed candidates still require category cleanup, deduplication, credibility checks, scoring, and owner review.
 - Source balance and publisher usage must be monitored as the registry expands.
+
+## DEC-013 — Deduplicate Against the Current Pool and Published Archive
+
+- **Status:** Accepted
+
+### Decision
+
+Before final selection, merge matching canonical URLs and highly similar headlines published within 48 hours, preferring the higher-scoring or higher-source-quality candidate. Compare remaining candidates with the prior 30 days of published archive stories and reject repeated coverage unless a later material-newness capability marks a genuine development.
+
+### Consequences
+
+- Duplicate outlet coverage and accidental cross-section repetition are reduced deterministically.
+- Only published editions establish archive precedent; drafts do not suppress future coverage.
+- The similarity threshold and material-development exception require ongoing calibration.

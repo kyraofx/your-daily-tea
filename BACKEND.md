@@ -56,3 +56,5 @@ Then inspect and score the candidate file without publishing:
 Add `--save` to the runner only after reviewing its report. Saving creates a private draft and never skips the owner approval step. A valid OpenAI key with active API billing/quota is required for retrieval.
 
 `pnpm newsroom:evaluate -- --category usa --input work/feed-candidates-usa-YYYY-MM-DD.json` sends the feed metadata to Luna without web search, producing a private structured shortlist. The regular runner then applies cutoff, score, duplicate, and primary-topic diversity gates. During calibration, inspect that final report before any `--save` operation.
+
+`pnpm newsroom:dedupe -- --input file-one.json,file-two.json` performs cross-source and cross-section event deduplication, preferring the higher-scoring or higher-quality candidate. It also reads the last 30 days from Supabase's published, security-invoker archive view and rejects materially repeated coverage. Use `--archive-days N`, `--output`, and `--report` to customize the read-only comparison.

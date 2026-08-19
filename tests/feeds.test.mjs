@@ -27,3 +27,8 @@ test("collects only in-window category candidates", async () => {
   assert.equal(result.candidates.length, 1);
   assert.equal(result.errors.length, 0);
 });
+
+test("rejects feed GUIDs that are not HTTP URLs", () => {
+  const invalid = `<rss><channel><item><title>Invalid link</title><guid>US-EN-49651586</guid><pubDate>Tue, 18 Aug 2026 08:00:00 GMT</pubDate></item></channel></rss>`;
+  assert.deepEqual(parseFeed(invalid, source), []);
+});
