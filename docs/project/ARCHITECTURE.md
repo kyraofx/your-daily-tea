@@ -41,7 +41,7 @@ Required responsibilities:
 
 The website API is implemented in TypeScript. The newsroom engine will run as a separate scheduled worker so long-running retrieval and editorial work cannot delay reader requests. The worker runtime and scheduler remain to be finalized during calibration.
 
-The current calibration runner accepts normalized candidate JSON, enforces the Pacific edition window, applies hard validation and the agreed weighted score, and optionally saves a private draft through a server-only Supabase credential. Automated retrieval and AI-assisted writing are the next worker capabilities.
+The current calibration runner accepts normalized candidate JSON, enforces the Pacific edition window, applies hard validation and the agreed weighted score, and optionally saves a private draft through a server-only Supabase credential. A category-specific OpenAI Responses API adapter now uses web search and strict structured output to create those candidate files. It remains a manually invoked calibration tool; scheduling and automatic publication are disabled.
 
 ## Database
 
@@ -65,12 +65,12 @@ The agreed direction is a hybrid retrieval strategy:
 
 - RSS feeds.
 - Official or publisher APIs where appropriate.
-- Selected web search for coverage gaps and category-specific discovery.
+- OpenAI Responses API web search for category-specific discovery, with a strict normalized candidate schema.
 - Primary sources such as government agencies, universities, research papers, and company announcements where appropriate.
 - Social/trend signals for discovery only, followed by credible verification.
 - An AI model/API for classification, scoring assistance, summarization, and topic extraction from retrieved source material.
 
-Specific vendors, source contracts, API plans, and licensing arrangements are TBD. The system should publish original short summaries, attribution, and links rather than reproduce articles wholesale.
+The OpenAI model is configurable and defaults to `gpt-5.4-mini` during calibration. Source contracts, other API plans, and licensing arrangements are TBD. The system should publish original short summaries, attribution, and links rather than reproduce articles wholesale.
 
 ## Data Flow
 

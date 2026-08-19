@@ -37,4 +37,16 @@ Apply `supabase/migrations/202608180001_initial_newsroom.sql` to a new Supabase 
 
 Use `node scripts/newsroom/run.mjs --input path/to/candidates.json --date YYYY-MM-DD` for another candidate set. The runner reads ordinary public configuration from `.env.local` and secrets from `$HOME/.config/your-daily-tea/secrets.env`. Add `--save` only after `SUPABASE_SECRET_KEY` has been configured securely; saving always creates a private draft.
 
-AI-assisted retrieval and summary generation remain disabled until the OpenAI API key is configured.
+## AI-assisted retrieval
+
+`pnpm newsroom:retrieve` uses the OpenAI Responses API with web search and a strict candidate schema. It researches each of the 15 sections separately and writes the results to a private, git-ignored file under `work/`. The default model is `gpt-5.4-mini`; override it with `OPENAI_NEWSROOM_MODEL` when needed.
+
+During calibration, retrieve one section first:
+
+`pnpm newsroom:retrieve -- --category usa --date YYYY-MM-DD`
+
+Then inspect and score the candidate file without publishing:
+
+`node scripts/newsroom/run.mjs --input work/candidates-YYYY-MM-DD.json --date YYYY-MM-DD`
+
+Add `--save` to the runner only after reviewing its report. Saving creates a private draft and never skips the owner approval step. A valid OpenAI key with active API billing/quota is required for retrieval.

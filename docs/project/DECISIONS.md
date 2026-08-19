@@ -194,3 +194,17 @@ Published editions are immutable, and the database rejects transitions that skip
 ### Decision
 
 Do not generate or display a Top Stories section. The product has 15 ranked subject sections, beginning with USA, California, and World. Each selected story appears only in its subject section.
+
+## DEC-011 — Use OpenAI Responses for Candidate Retrieval
+
+- **Status:** Accepted
+
+### Decision
+
+Use the OpenAI Responses API with web search to research each section independently. Require strict structured candidate output, keep the model configurable, and default to `gpt-5.4-mini` during calibration.
+
+### Consequences
+
+- Retrieval writes a private candidate file; it does not publish.
+- Existing cutoff validation, scoring, draft creation, and owner approval remain separate gates.
+- Production use requires an OpenAI API project with active billing and quota.
