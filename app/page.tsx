@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getPublishedEdition } from "../lib/news/repository";
+import { getPublishedEdition, listPublishedEditions, listPublishedTopics } from "../lib/news/repository";
 import { DailyEdition } from "./DailyEdition";
 
 export const metadata: Metadata = {
@@ -8,6 +8,8 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const edition = await getPublishedEdition();
-  return <DailyEdition edition={edition} />;
+  const [edition, editions, topics] = await Promise.all([
+    getPublishedEdition(), listPublishedEditions(100), listPublishedTopics(),
+  ]);
+  return <DailyEdition edition={edition} editions={editions} topics={topics} />;
 }

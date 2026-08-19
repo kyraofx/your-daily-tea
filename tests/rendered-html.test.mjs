@@ -19,6 +19,10 @@ test("the homepage is the finished daily-edition experience", async () => {
   assert.match(component, /Internet \+ Trends/);
   assert.match(component, /story\.canonicalUrl/);
   assert.match(component, /story\.topics\.map/);
+  assert.match(component, /pickEdition/);
+  assert.match(component, /pickTopic/);
+  assert.match(component, /submitSearch/);
+  assert.match(component, /\/api\/search/);
   assert.match(layout, /title: "Your Daily Tea"/);
   assert.match(styles, /--steel: #94bce3/);
   assert.doesNotMatch(page + layout, /codex-preview|SkeletonPreview|Starter Project/);

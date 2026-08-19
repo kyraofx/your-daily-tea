@@ -24,7 +24,7 @@ Required capabilities:
 
 The implementation uses the Sites Vinext/React runtime and preserves the supplied HTML design. Public data is read from Supabase through server-side API routes; browser code never receives administrative credentials.
 
-The Today page is now connected to the latest published edition through the same public repository used by the API. It preserves the supplied dark editorial layout, 15-section order, numbered collapsible sections, source attribution, timestamps, and hashtags. Empty sections remain visible so quiet coverage is explicit. Archive, topic, and search views remain later frontend milestones.
+The reader interface is connected to published data through the same public repository used by the API. Today preserves the supplied dark editorial layout, 15-section order, numbered collapsible sections, source attribution, timestamps, and hashtags. Empty sections remain visible so quiet coverage is explicit. Archive loads frozen editions by date, Topics lists and opens real published hashtags, and Search queries published headlines and summaries only.
 
 ## Backend
 

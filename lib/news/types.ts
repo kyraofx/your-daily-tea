@@ -60,3 +60,8 @@ export type TopicStory = Omit<Story, "topics"> & {
   editionDate: string;
   topic: Topic;
 };
+
+export type SearchStory = Story & {
+  editionId: string;
+  editionDate: string;
+};

@@ -4,6 +4,7 @@ import type {
   EditionSummary,
   SectionSlug,
   Story,
+  SearchStory,
   Topic,
   TopicStory,
   TopicSummary,
@@ -162,5 +163,26 @@ export async function listPublishedTopicStories(
     section: row.section_slug,
     rank: row.rank,
     topic: { name: row.topic_name, slug: row.topic_slug },
+  }));
+}
+
+export async function searchPublishedStories(query: string): Promise<SearchStory[]> {
+  const term = query.replace(/[,*%()]/g, " ").trim();
+  if (term.length < 2) return [];
+  const rows = await supabaseGet<(StoryRow & { edition_id: string; edition_date: string })[]>(
+    "published_edition_stories",
+    {
+      select: "edition_id,edition_date,id,headline,summary,canonical_url,published_at,source_name,section_slug,rank,topics",
+      or: `(headline.ilike.*${term}*,summary.ilike.*${term}*)`,
+      order: "edition_date.desc,rank.asc",
+      limit: "100",
+    },
+  );
+  return rows.map((row) => ({
+    editionId: row.edition_id, editionDate: row.edition_date,
+    id: row.id, headline: row.headline, summary: row.summary,
+    canonicalUrl: row.canonical_url, sourceName: row.source_name,
+    publishedAt: row.published_at, section: row.section_slug,
+    rank: row.rank, topics: row.topics ?? [],
   }));
 }

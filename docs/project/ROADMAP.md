@@ -39,7 +39,7 @@ Implementation status: a resumable full-edition command runs all 15 sections thr
 - Ensure quiet sections do not produce filler.
 - Support section-appropriate editorial voice without a "Why it matters" block.
 
-Implementation status: the finished Today page now server-renders the latest published Supabase edition inside the preserved supplied design. The first edition renders 41 real stories across 14 non-empty sections while retaining all 15 section headers, including the intentionally empty Internet + Trends section. Story links, source attribution, publication times, topic labels, section controls, theme control, and responsive layout are wired. Archive, topic, and search interfaces remain.
+Implementation status: the finished reader now server-renders the latest published Supabase edition inside the preserved supplied design. The first edition renders 41 real stories across 14 non-empty sections while retaining all 15 section headers, including the intentionally empty Internet + Trends section. Story links, source attribution, publication times, topic labels, section controls, theme control, and responsive layout are wired. Archive loads frozen editions by date; Topics browses all published hashtags and their stories; Search queries published headlines and summaries.
 
 ## Phase 5 — Archive and Topic Discovery
 
@@ -50,7 +50,7 @@ Implementation status: the finished Today page now server-renders the latest pub
 
 Implementation status: the backend endpoints and secured database views for edition lists, topic lists, and topic/date results are complete. Frontend wiring remains.
 
-The first published edition is available to those endpoints and now powers the Today page, enabling archive and topic interface work against real frozen data.
+The first published edition is available to those endpoints and powers Today, Archive, Topics, and Search against real frozen data.
 
 ## Phase 6 — Scheduling, Reliability, and Launch
 
