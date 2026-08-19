@@ -41,7 +41,7 @@ Required responsibilities:
 
 The website API is implemented in TypeScript. The newsroom engine will run as a separate scheduled worker so long-running retrieval and editorial work cannot delay reader requests. The worker runtime and scheduler remain to be finalized during calibration.
 
-The current calibration runner accepts normalized candidate JSON, enforces the Pacific edition window, applies hard validation and the agreed weighted score, and optionally saves a private draft through a server-only Supabase credential. A category-specific OpenAI Responses API adapter now uses web search and strict structured output to create those candidate files. It remains a manually invoked calibration tool; scheduling and automatic publication are disabled.
+The current calibration runner accepts normalized candidate JSON, enforces the Pacific edition window, applies hard validation and the agreed weighted score, and optionally saves a private draft through a server-only Supabase credential. Deterministic RSS/Atom discovery now supplies timestamped candidates from a configurable source registry. A category-specific OpenAI Responses API adapter can supplement discovery with web search and strict structured output. Both remain manually invoked calibration tools; scheduling and automatic publication are disabled.
 
 ## Database
 

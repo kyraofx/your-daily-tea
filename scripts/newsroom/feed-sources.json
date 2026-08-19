@@ -1,0 +1,27 @@
+[
+  {
+    "name": "NPR News",
+    "url": "https://feeds.npr.org/1001/rss.xml",
+    "categories": ["usa"]
+  },
+  {
+    "name": "The New York Times — U.S.",
+    "url": "https://rss.nytimes.com/services/xml/rss/nyt/US.xml",
+    "categories": ["usa"]
+  },
+  {
+    "name": "BBC News — US & Canada",
+    "url": "https://feeds.bbci.co.uk/news/world/us_and_canada/rss.xml",
+    "categories": ["usa"]
+  },
+  {
+    "name": "NASA News Releases",
+    "url": "https://www.nasa.gov/rss/dyn/breaking_news.rss",
+    "categories": ["science-planet"]
+  },
+  {
+    "name": "NOAA News",
+    "url": "https://www.noaa.gov/rss.xml",
+    "categories": ["science-planet"]
+  }
+]

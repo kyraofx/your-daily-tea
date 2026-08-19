@@ -208,3 +208,17 @@ Use the OpenAI Responses API with web search to research each section independen
 - Retrieval writes a private candidate file; it does not publish.
 - Existing cutoff validation, scoring, draft creation, and owner approval remain separate gates.
 - Production use requires an OpenAI API project with active billing and quota.
+
+## DEC-012 — Separate Deterministic Discovery from AI Evaluation
+
+- **Status:** Accepted
+
+### Decision
+
+Collect timestamped candidates from a configurable RSS/Atom source registry before AI evaluation. Treat feeds as discovery metadata—headline, short description, timestamp, attribution, and link—not as content to republish.
+
+### Consequences
+
+- A temporary AI or web-search failure cannot make a newsworthy section appear empty.
+- Feed candidates still require category cleanup, deduplication, credibility checks, scoring, and owner review.
+- Source balance and publisher usage must be monitored as the registry expands.
