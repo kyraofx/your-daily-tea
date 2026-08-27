@@ -63,6 +63,17 @@ export function responseText(payload) {
   return null;
 }
 
+function groundingUrlKey(value) {
+  try {
+    const url = new URL(value);
+    const host = url.hostname.toLowerCase().replace(/^www\./, "");
+    const path = url.pathname.replace(/\/+$/, "") || "/";
+    return `${host}${path}`;
+  } catch {
+    return null;
+  }
+}
+
 export function evaluationRequest({ category, candidates, model = "gpt-5.6-luna" }) {
   const brief = CATEGORY_BRIEFS[category];
   if (!brief) throw new Error(`Unknown evaluation category: ${category}`);
@@ -101,9 +112,12 @@ export function evaluationRequest({ category, candidates, model = "gpt-5.6-luna"
 }
 
 export function groundEvaluatedCandidates(evaluated, supplied, category) {
-  const byUrl = new Map(supplied.map((candidate) => [candidate.canonicalUrl, candidate]));
+  const byUrl = new Map(supplied.flatMap((candidate) => {
+    const key = groundingUrlKey(candidate.canonicalUrl);
+    return key ? [[key, candidate]] : [];
+  }));
   return evaluated.map((candidate) => {
-    const original = byUrl.get(candidate.canonicalUrl);
+    const original = byUrl.get(groundingUrlKey(candidate.canonicalUrl));
     if (!original) throw new Error(`Evaluation returned an unknown candidate URL: ${candidate.canonicalUrl}`);
     return {
       ...candidate,
