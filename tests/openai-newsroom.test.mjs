@@ -90,3 +90,34 @@ test("evaluation rejects URLs that were not supplied by a feed", async () => {
     category: "usa", candidates: [], apiKey: "test-key",
   }, fakeFetch), /unknown candidate URL/);
 });
+
+test("evaluation grounds equivalent canonical URLs back to the supplied feed URL", async () => {
+  const suppliedUrl = "https://www.nytimes.com/2026/08/26/us/tif-chicago-study-downtown.html?partner=rss&emc=rss";
+  const evaluatedUrl = "https://nytimes.com/2026/08/26/us/tif-chicago-study-downtown.html";
+  const fakeFetch = async () => ({
+    ok: true,
+    json: async () => ({ output_text: JSON.stringify({ candidates: [{
+      canonicalUrl: evaluatedUrl,
+      headline: "Model headline",
+      sourceName: "Model source",
+      publishedAt: "2026-08-27T01:00:00.000Z",
+      scores: { sourceQuality: 1 },
+    }] }) }),
+  });
+  const [result] = await evaluateCandidates({
+    category: "usa",
+    apiKey: "test-key",
+    candidates: [{
+      canonicalUrl: suppliedUrl,
+      headline: "Grounded headline",
+      sourceName: "The New York Times",
+      publishedAt: "2026-08-27T02:00:00.000Z",
+      credibilityScore: 92,
+    }],
+  }, fakeFetch);
+  assert.equal(result.canonicalUrl, suppliedUrl);
+  assert.equal(result.headline, "Grounded headline");
+  assert.equal(result.sourceName, "The New York Times");
+  assert.equal(result.publishedAt, "2026-08-27T02:00:00.000Z");
+  assert.equal(result.scores.sourceQuality, 92);
+});
