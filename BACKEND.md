@@ -49,6 +49,8 @@ Every source has a deterministic tier: primary (98), major newsroom (92), or spe
 
 Grounding recognizes equivalent canonical links by publisher host and article path, tolerating removed tracking parameters, `www` differences, fragments, and trailing slashes. The stored story still uses the exact URL and provenance supplied by the feed; a different host or article path remains rejected.
 
+For NPR links only, grounding may also match a changed headline slug when the evaluated and supplied URLs contain the same stable NPR story ID (for example, `nx-s1-5959657`). The original feed URL and provenance are always retained. Missing, different, or ambiguous story IDs remain rejected.
+
 `pnpm newsroom:retrieve` uses the OpenAI Responses API with low-context web search and a strict candidate schema. It researches each of the 15 sections separately and writes the results to a private, git-ignored file under `work/`. The default model is the cost-sensitive `gpt-5.6-luna` with reasoning disabled; override the model with `OPENAI_NEWSROOM_MODEL` when needed.
 
 During calibration, retrieve one section first:

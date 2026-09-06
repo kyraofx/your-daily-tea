@@ -248,6 +248,7 @@ Assign source quality deterministically from a reviewed registry tier rather tha
 ### Consequences
 
 - Luna cannot introduce an unknown URL or silently alter source provenance.
+- Publisher-specific stable story IDs may resolve harmless headline-slug variations only when the match is unique; the supplied feed URL remains authoritative.
 - Primary and established reporting sources receive consistent scoring.
 - A section may contain fewer than four stories when its shortlist lacks source diversity.
 - Registry tiers and caps require periodic editorial review.
