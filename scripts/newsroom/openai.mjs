@@ -74,6 +74,17 @@ function groundingUrlKey(value) {
   }
 }
 
+function nprStoryId(value) {
+  try {
+    const url = new URL(value);
+    const host = url.hostname.toLowerCase().replace(/^www\./, "");
+    if (host !== "npr.org") return null;
+    return url.pathname.split("/").find((part) => /^[a-z]+-s1-\d+$/i.test(part))?.toLowerCase() ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export function evaluationRequest({ category, candidates, model = "gpt-5.6-luna" }) {
   const brief = CATEGORY_BRIEFS[category];
   if (!brief) throw new Error(`Unknown evaluation category: ${category}`);
@@ -116,8 +127,24 @@ export function groundEvaluatedCandidates(evaluated, supplied, category) {
     const key = groundingUrlKey(candidate.canonicalUrl);
     return key ? [[key, candidate]] : [];
   }));
+  const byNprStoryId = new Map();
+  for (const candidate of supplied) {
+    const storyId = nprStoryId(candidate.canonicalUrl);
+    if (!storyId) continue;
+    const matches = byNprStoryId.get(storyId) ?? [];
+    matches.push(candidate);
+    byNprStoryId.set(storyId, matches);
+  }
   return evaluated.map((candidate) => {
-    const original = byUrl.get(groundingUrlKey(candidate.canonicalUrl));
+    let original = byUrl.get(groundingUrlKey(candidate.canonicalUrl));
+    if (!original) {
+      const storyId = nprStoryId(candidate.canonicalUrl);
+      const matches = storyId ? byNprStoryId.get(storyId) ?? [] : [];
+      if (matches.length > 1) {
+        throw new Error(`Evaluation returned an ambiguous NPR story URL: ${candidate.canonicalUrl}`);
+      }
+      [original] = matches;
+    }
     if (!original) throw new Error(`Evaluation returned an unknown candidate URL: ${candidate.canonicalUrl}`);
     return {
       ...candidate,

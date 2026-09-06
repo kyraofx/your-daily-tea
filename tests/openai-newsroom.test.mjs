@@ -121,3 +121,69 @@ test("evaluation grounds equivalent canonical URLs back to the supplied feed URL
   assert.equal(result.publishedAt, "2026-08-27T02:00:00.000Z");
   assert.equal(result.scores.sourceQuality, 92);
 });
+
+test("evaluation grounds an NPR slug variation by stable story ID", async () => {
+  const suppliedUrl = "https://www.npr.org/2026/09/06/nx-s1-5959657/us-envoys-witkoff-kushner-talks-in-kyiv-putin-moscow";
+  const evaluatedUrl = "https://www.npr.org/2026/09/06/nx-s1-5959657/us-envoys-witkoff-kushner-talks-kyiv-putin-moscow";
+  const fakeFetch = async () => ({
+    ok: true,
+    json: async () => ({ output_text: JSON.stringify({ candidates: [{
+      canonicalUrl: evaluatedUrl,
+      headline: "Model headline",
+      sourceName: "Model source",
+      publishedAt: "2026-09-06T12:00:00.000Z",
+      scores: { sourceQuality: 1 },
+    }] }) }),
+  });
+  const [result] = await evaluateCandidates({
+    category: "politics-policy",
+    apiKey: "test-key",
+    candidates: [{
+      canonicalUrl: suppliedUrl,
+      headline: "Grounded NPR headline",
+      sourceName: "NPR",
+      publishedAt: "2026-09-06T11:00:00.000Z",
+      credibilityScore: 92,
+    }],
+  }, fakeFetch);
+  assert.equal(result.canonicalUrl, suppliedUrl);
+  assert.equal(result.headline, "Grounded NPR headline");
+  assert.equal(result.sourceName, "NPR");
+  assert.equal(result.publishedAt, "2026-09-06T11:00:00.000Z");
+  assert.equal(result.scores.sourceQuality, 92);
+});
+
+test("evaluation rejects an NPR slug variation with a different story ID", async () => {
+  const fakeFetch = async () => ({
+    ok: true,
+    json: async () => ({ output_text: JSON.stringify({ candidates: [{
+      canonicalUrl: "https://www.npr.org/2026/09/06/nx-s1-9999999/invented-story",
+      scores: { sourceQuality: 99 },
+    }] }) }),
+  });
+  await assert.rejects(evaluateCandidates({
+    category: "politics-policy",
+    apiKey: "test-key",
+    candidates: [{
+      canonicalUrl: "https://www.npr.org/2026/09/06/nx-s1-5959657/real-story",
+    }],
+  }, fakeFetch), /unknown candidate URL/);
+});
+
+test("evaluation rejects an ambiguous NPR story ID fallback", async () => {
+  const fakeFetch = async () => ({
+    ok: true,
+    json: async () => ({ output_text: JSON.stringify({ candidates: [{
+      canonicalUrl: "https://www.npr.org/2026/09/06/nx-s1-5959657/model-slug",
+      scores: { sourceQuality: 99 },
+    }] }) }),
+  });
+  await assert.rejects(evaluateCandidates({
+    category: "politics-policy",
+    apiKey: "test-key",
+    candidates: [
+      { canonicalUrl: "https://www.npr.org/2026/09/06/nx-s1-5959657/feed-slug-one" },
+      { canonicalUrl: "https://www.npr.org/2026/09/06/nx-s1-5959657/feed-slug-two" },
+    ],
+  }, fakeFetch), /ambiguous NPR story URL/);
+});
