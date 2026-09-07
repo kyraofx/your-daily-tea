@@ -32,6 +32,7 @@ test("the homepage is the finished daily-edition experience", async () => {
   assert.match(component, /\/api\/search/);
   assert.match(component, /useState\(""\)/);
   assert.doesNotMatch(component, /AI jobs/);
+  assert.doesNotMatch(component, /Previous edition|Next edition/);
   assert.match(layout, /title: "Your Daily Tea"/);
   assert.match(layout, /tea-favicon\.svg/);
   assert.match(favicon, /#94bce3/);
