@@ -76,7 +76,10 @@ a { color: inherit; }
 .tea-view-heading { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 40px; padding-bottom: 28px; border-bottom: 1px solid var(--rule-2); }
 .tea-calendar-heading { display: flex; justify-content: space-between; align-items: baseline; margin-top: 38px; }
 .tea-calendar-heading h2 { font-family: var(--font-barlow-condensed); font-size: 30px; font-weight: 600; text-transform: uppercase; }
-.tea-calendar-heading span { font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
+.tea-calendar-months { display: flex; gap: 22px; }
+.tea-calendar-months button { padding: 0; border: 0; background: transparent; color: var(--ink-3); font: inherit; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; cursor: pointer; }
+.tea-calendar-months button:hover:not(:disabled), .tea-calendar-months button:focus-visible { color: var(--ink); }
+.tea-calendar-months button:disabled { opacity: .3; cursor: default; }
 .tea-calendar-frame { position: relative; width: 66%; margin: 26px auto 0; padding: 14px; border: 1px solid var(--rule-2); }
 .tea-calendar-frame > i { position: absolute; width: 7px; height: 7px; border-color: var(--steel); }
 .tea-calendar-frame > i:nth-child(1){top:-4px;left:-4px;border-left:1px solid;border-top:1px solid}.tea-calendar-frame > i:nth-child(2){top:-4px;right:-4px;border-right:1px solid;border-top:1px solid}.tea-calendar-frame > i:nth-child(3){bottom:-4px;left:-4px;border-left:1px solid;border-bottom:1px solid}.tea-calendar-frame > i:nth-child(4){bottom:-4px;right:-4px;border-right:1px solid;border-bottom:1px solid}

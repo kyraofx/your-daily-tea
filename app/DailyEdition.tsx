@@ -31,11 +31,26 @@ function displayDate(value: string, options?: Intl.DateTimeFormatOptions) {
 type View = "today" | "archive" | "topics" | "search";
 type SearchRange = "all" | "7" | "30";
 
+function shiftMonth(value: string, offset: number) {
+  const [year, month] = value.split("-").map(Number);
+  const shifted = new Date(Date.UTC(year, month - 1 + offset, 1));
+  return `${shifted.getUTCFullYear()}-${String(shifted.getUTCMonth() + 1).padStart(2, "0")}`;
+}
+
+function monthLabel(value: string, includeYear = true) {
+  return new Intl.DateTimeFormat("en-US", {
+    timeZone: "UTC",
+    month: "long",
+    ...(includeYear ? { year: "numeric" } : {}),
+  }).format(new Date(`${value}-01T12:00:00Z`));
+}
+
 export function DailyEdition({ edition, editions, topics }: { edition: Edition | null; editions: EditionSummary[]; topics: TopicSummary[] }) {
   const [light, setLight] = useState(false);
   const [open, setOpen] = useState<Set<SectionSlug>>(() => new Set(SECTION_ORDER));
   const [view, setView] = useState<View>("today");
   const [archiveEdition, setArchiveEdition] = useState<Edition | null>(edition);
+  const [archiveMonth, setArchiveMonth] = useState(() => edition.editionDate.slice(0, 7));
   const [topicStories, setTopicStories] = useState<TopicStory[]>([]);
   const [topicName, setTopicName] = useState("");
   const [query, setQuery] = useState("");
@@ -106,6 +121,12 @@ export function DailyEdition({ edition, editions, topics }: { edition: Edition |
   }
 
   const latestEditionTime = new Date(`${edition.editionDate}T12:00:00Z`).getTime();
+  const [archiveYear, archiveMonthNumber] = archiveMonth.split("-").map(Number);
+  const archiveDays = new Date(Date.UTC(archiveYear, archiveMonthNumber, 0)).getUTCDate();
+  const archiveLeadingDays = new Date(Date.UTC(archiveYear, archiveMonthNumber - 1, 1)).getUTCDay();
+  const previousArchiveMonth = shiftMonth(archiveMonth, -1);
+  const nextArchiveMonth = shiftMonth(archiveMonth, 1);
+  const availableArchiveMonths = new Set(editions.map((item) => item.editionDate.slice(0, 7)));
   const visibleSearchStories = searchStories.filter((story) => {
     if (searchCategory !== "all" && story.section !== searchCategory) return false;
     if (searchRange === "all") return true;
@@ -202,11 +223,14 @@ export function DailyEdition({ edition, editions, topics }: { edition: Edition |
 
         {view === "archive" && <section className="tea-view tea-archive-view">
           <div className="tea-view-heading"><div><h1>The archive</h1><p className="tea-deck">Pick a date and read exactly what we sent that day.</p></div><p className="tea-kicker">{editions.length} {editions.length === 1 ? "edition" : "editions"} · since Aug 2026</p></div>
-          <div className="tea-calendar-heading"><h2>August 2026</h2><span>← July&nbsp;&nbsp;&nbsp; September →</span></div>
+          <div className="tea-calendar-heading"><h2>{monthLabel(archiveMonth)}</h2><div className="tea-calendar-months">
+            <button type="button" disabled={!availableArchiveMonths.has(previousArchiveMonth)} onClick={() => setArchiveMonth(previousArchiveMonth)}>← {monthLabel(previousArchiveMonth, false)}</button>
+            <button type="button" disabled={!availableArchiveMonths.has(nextArchiveMonth)} onClick={() => setArchiveMonth(nextArchiveMonth)}>{monthLabel(nextArchiveMonth, false)} →</button>
+          </div></div>
           <div className="tea-calendar-frame"><i/><i/><i/><i/><div className="tea-calendar">
             {(["Sun","Mon","Tue","Wed","Thu","Fri","Sat"] as const).map((day) => <span className="tea-weekday" key={day}>{day}</span>)}
-            {Array.from({ length: 6 }, (_, index) => <span key={`blank-${index}`}/>) }
-            {Array.from({ length: 31 }, (_, index) => { const day = index + 1; const dateValue = `2026-08-${String(day).padStart(2,"0")}`; const available = editions.some((item) => item.editionDate === dateValue); return <button className={archiveEdition?.editionDate === dateValue ? "is-picked" : ""} disabled={!available} key={day} onClick={() => pickEdition(dateValue)}>{day}</button>; })}
+            {Array.from({ length: archiveLeadingDays }, (_, index) => <span key={`blank-${index}`}/>) }
+            {Array.from({ length: archiveDays }, (_, index) => { const day = index + 1; const dateValue = `${archiveMonth}-${String(day).padStart(2,"0")}`; const available = editions.some((item) => item.editionDate === dateValue); return <button className={archiveEdition?.editionDate === dateValue ? "is-picked" : ""} disabled={!available} key={day} onClick={() => pickEdition(dateValue)}>{day}</button>; })}
           </div></div>
           {loading && <p className="tea-status">Loading…</p>}
           {archiveEdition && <div className="tea-archive-results"><p className="tea-kicker">Edition {archiveEdition.editionNumber}</p><h2>{displayDate(archiveEdition.editionDate, { weekday: "long", month: "long", day: "numeric", year: "numeric" })}</h2>{SECTION_ORDER.map((slug, index) => <section className="tea-archive-section" key={slug}><div><span>{String(index + 1).padStart(2,"0")}</span><h3>{SECTION_META[slug].emoji} {SECTION_META[slug].label}</h3><small>{archiveEdition.sections[slug]?.length ?? 0} stories</small></div>{(archiveEdition.sections[slug] ?? []).map((story) => renderStory(story))}</section>)}</div>}

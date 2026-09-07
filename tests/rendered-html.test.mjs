@@ -24,6 +24,9 @@ test("the homepage is the finished daily-edition experience", async () => {
   assert.match(component, /story\.canonicalUrl/);
   assert.match(component, /story\.topics\.map/);
   assert.match(component, /pickEdition/);
+  assert.match(component, /setArchiveMonth/);
+  assert.match(component, /availableArchiveMonths/);
+  assert.doesNotMatch(component, /2026-08-/);
   assert.match(component, /pickTopic/);
   assert.match(component, /submitSearch/);
   assert.match(component, /\/api\/search/);
