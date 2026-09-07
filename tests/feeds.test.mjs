@@ -42,6 +42,12 @@ test("rejects feed GUIDs that are not HTTP URLs", () => {
   assert.deepEqual(parseFeed(invalid, source), []);
 });
 
+test("parses ESPN-style links wrapped in CDATA", () => {
+  const espn = `<rss xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><item><title><![CDATA[League announces playoff schedule]]></title><description><![CDATA[The complete playoff schedule is now available.]]></description><link><![CDATA[https://www.espn.com/sports/story/_/id/12345/playoff-schedule]]></link><pubDate>Mon, 7 Sep 2026 11:40:39 EST</pubDate><guid isPermaLink="false"><![CDATA[US-EN-12345]]></guid></item></channel></rss>`;
+  const [item] = parseFeed(espn, { ...source, name: "ESPN News" });
+  assert.equal(item.canonicalUrl, "https://www.espn.com/sports/story/_/id/12345/playoff-schedule");
+});
+
 test("decodes numeric HTML entities in feed headlines", () => {
   const encoded = `<rss><channel><item><title>Workers: &#8216;No one is coming&#8217;</title><link>https://example.com/entity</link><pubDate>Tue, 18 Aug 2026 08:00:00 GMT</pubDate></item></channel></rss>`;
   assert.equal(parseFeed(encoded, source)[0].headline, "Workers: ‘No one is coming’");

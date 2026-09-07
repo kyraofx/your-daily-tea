@@ -38,6 +38,8 @@ function clean(value) {
 
 function link(item) {
   if (typeof item.link === "string") return item.link;
+  const embeddedLink = text(item.link).trim();
+  if (embeddedLink) return embeddedLink;
   for (const candidate of list(item.link)) {
     if (candidate?.["@_rel"] === "alternate" && candidate?.["@_href"]) return candidate["@_href"];
     if (candidate?.["@_href"]) return candidate["@_href"];
