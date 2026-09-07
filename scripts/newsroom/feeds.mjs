@@ -70,6 +70,7 @@ export function parseFeed(xml, source) {
       headline,
       canonicalUrl,
       sourceName: source.name,
+      publisherName: source.publisher ?? source.name,
       sourceTier: source.tier,
       ...sourcePolicy,
       publishedAt: publishedAt.toISOString(),

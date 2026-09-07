@@ -13,8 +13,15 @@ test("parses normalized RSS items", () => {
   assert.equal(item.headline, "Inside window");
   assert.equal(item.publishedAt, "2026-08-18T08:00:00.000Z");
   assert.equal(item.sourceSummary, "A useful summary.");
+  assert.equal(item.publisherName, "Test Source");
   assert.equal(item.credibilityScore, 92);
   assert.equal(item.isPrimarySource, false);
+});
+
+test("preserves a shared publisher identity across desk-specific feeds", () => {
+  const [item] = parseFeed(xml, { ...source, name: "Test Source — World", publisher: "Test Source" });
+  assert.equal(item.sourceName, "Test Source — World");
+  assert.equal(item.publisherName, "Test Source");
 });
 
 test("collects only in-window category candidates", async () => {

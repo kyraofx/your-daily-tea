@@ -21,3 +21,10 @@ test("every source has an accepted deterministic credibility tier", () => {
   const tiers = new Set(["primary", "major", "specialist"]);
   for (const source of sources) assert.ok(tiers.has(source.tier), `${source.name} has invalid tier`);
 });
+
+test("desk-specific feeds share a stable publisher identity", () => {
+  for (const publisher of ["NPR", "BBC", "The New York Times"]) {
+    const matching = sources.filter((source) => source.publisher === publisher);
+    assert.ok(matching.length > 1, `${publisher} needs a shared publisher identity`);
+  }
+});

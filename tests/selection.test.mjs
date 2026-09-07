@@ -2,8 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { selectBalancedEdition } from "../scripts/newsroom/selection.mjs";
 
-function candidate(category, sourceName, topic, weightedScore) {
-  return { category, sourceName, weightedScore, topics: [{ slug: topic }] };
+function candidate(category, sourceName, topic, weightedScore, publisherName) {
+  return { category, sourceName, publisherName, weightedScore, topics: [{ slug: topic }] };
 }
 
 test("limits one source to two stories in a section", () => {
@@ -17,6 +17,17 @@ test("limits one source to two stories in a section", () => {
   const selected = selectBalancedEdition(items, ["usa"]);
   assert.equal(selected.length, 4);
   assert.equal(selected.filter((item) => item.sourceName === "Source A").length, 2);
+});
+
+test("counts desk-specific feeds as one publisher", () => {
+  const categories = ["usa", "world", "sports"];
+  const items = categories.flatMap((category, index) => [
+    candidate(category, `Publisher — ${category}`, `${category}-one`, 100 - index, "Publisher"),
+    candidate(category, `Publisher — ${category}`, `${category}-two`, 90 - index, "Publisher"),
+    candidate(category, `Alternative ${category}`, `${category}-three`, 80, `Alternative ${category}`),
+  ]);
+  const selected = selectBalancedEdition(items, categories, { maxPerSourcePerEdition: 3 });
+  assert.equal(selected.filter((item) => item.publisherName === "Publisher").length, 3);
 });
 
 test("limits one source across the full edition", () => {

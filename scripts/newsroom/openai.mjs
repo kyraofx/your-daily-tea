@@ -152,6 +152,7 @@ export function groundEvaluatedCandidates(evaluated, supplied, category) {
       headline: original.headline,
       canonicalUrl: original.canonicalUrl,
       sourceName: original.sourceName,
+      publisherName: original.publisherName ?? original.sourceName,
       publishedAt: original.publishedAt,
       scores: {
         ...candidate.scores,
