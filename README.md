@@ -36,14 +36,14 @@ Every morning, the newsroom workflow:
 7. Fails closed if the edition is too thin or incomplete.
 8. Saves, approves, publishes, and verifies an immutable Supabase edition.
 
-The workflow starts at 6:07 AM in `America/Los_Angeles`, with safe backup attempts through 7:07 AM in case GitHub delays a scheduled run. Every attempt first checks whether that date is already published, so backups skip setup and AI generation once the edition is live. Daylight-saving changes are automatic. If generation fails—or produces fewer than 20 stories across 10 populated sections—the previous edition remains live.
+The workflow starts at 6:07 AM in `America/Los_Angeles`, with safe GitHub backup attempts through 7:07 AM. An independent publication watchdog also checks repeatedly from 6:12 through 7:52 AM Pacific and dispatches the same guarded workflow only when the date is still missing. Every attempt first checks whether that date is already published, so backups skip setup and AI generation once the edition is live. Daylight-saving changes are automatic. If generation fails—or produces fewer than 20 stories across 10 populated sections—the previous edition remains live.
 
 ## Engineering highlights
 
 - **AI with guardrails:** the model can evaluate supplied candidates, but deterministic code controls timestamps, provenance, scoring, source caps, deduplication, and publication thresholds.
 - **Immutable archive:** Supabase transition guards prevent published editions from being changed retrospectively.
 - **Secure public data:** row-level security exposes published content while keeping drafts and newsroom credentials private.
-- **Reliable automation:** GitHub Actions handles timezone-aware daily generation, encrypted credentials, concurrency, diagnostics, and manual recovery runs.
+- **Reliable automation:** GitHub Actions handles generation, encrypted credentials, queued retries, and diagnostics, while an independent publication watchdog compensates for delayed or dropped GitHub schedules.
 - **Independent reader runtime:** the website reads the newest published edition automatically; daily publication does not require a site redeployment.
 - **Production domain and SSL:** the public experience is served at [yourdailytea.com](https://yourdailytea.com).
 

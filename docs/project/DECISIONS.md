@@ -352,3 +352,18 @@ Keep 6:07 AM Pacific as the primary daily start, then schedule backup attempts a
 - Successful backup attempts do not repeat Luna generation or incur its associated model cost.
 - The existing concurrency group prevents overlapping workflow jobs, while the database remains the final non-overwrite guard.
 - GitHub Actions remains a best-effort scheduler, so publication near 6:07 AM is substantially more resilient but not a hard real-time guarantee.
+
+## DEC-022 — Add an Independent Publication Watchdog
+
+- **Status:** Accepted
+
+### Decision
+
+Keep GitHub's timezone-aware schedule, retain all delayed GitHub attempts with a queued concurrency group, and operate an independent watchdog at 6:12, 6:32, 6:52, 7:12, 7:32, and 7:52 AM Pacific. The watchdog checks the public date endpoint, monitors an active run, or dispatches the existing Daily edition workflow only when today's edition is absent.
+
+### Consequences
+
+- GitHub is no longer the only clock capable of starting the newsroom.
+- The same generation, editorial review, minimum-story, minimum-section, transition, idempotence, and immutability safeguards apply regardless of which clock starts the run.
+- Successful publication makes later checks no-ops, avoiding repeat Luna generation.
+- Deterministic or quality-gate failures are reported rather than bypassed or retried indefinitely.

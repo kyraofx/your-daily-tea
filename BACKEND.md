@@ -4,7 +4,7 @@
 
 - **Public site:** Sites-hosted Vinext application.
 - **Database:** Supabase PostgreSQL.
-- **Editorial pipeline:** a GitHub Actions newsroom worker starts daily at 6:07 AM Pacific, with guarded backup attempts at 6:22, 6:37, 6:52, and 7:07, using encrypted Supabase and OpenAI repository secrets.
+- **Editorial pipeline:** a GitHub Actions newsroom worker starts daily at 6:07 AM Pacific, with guarded GitHub backups through 7:07 and independent watchdog checks from 6:12 through 7:52, using encrypted Supabase and OpenAI repository secrets.
 - **Publication:** a passing run generates the reviewed edition, saves it as `draft`, records an automated approval, and publishes it. Runs below 20 stories or 10 populated sections fail closed and leave the prior edition live.
 - **Public access:** anonymous visitors can read only `published` editions. Draft and approved editions are blocked by row-level security.
 
@@ -16,7 +16,7 @@ Failed runs use `failed` and never appear publicly. The scheduled publisher stil
 
 The production workflow records `github-actions-newsroom` in `approved_by` after all review and quality gates pass. Manual draft creation remains available for diagnosis, but it is not the daily production path.
 
-Before installing dependencies or calling Luna, every scheduled attempt checks the public date endpoint. A `200` response means the edition is already published and the attempt exits successfully without generation cost. A `404` permits generation; any other response fails closed. The workflow's concurrency group also prevents overlapping newsroom jobs.
+Before installing dependencies or calling Luna, every scheduled or watchdog-triggered attempt checks the public date endpoint. A `200` response means the edition is already published and the attempt exits successfully without generation cost. A `404` permits generation; any other response fails closed. The workflow's concurrency group prevents overlapping newsroom jobs and retains delayed pending attempts instead of replacing them.
 
 ## Local configuration
 

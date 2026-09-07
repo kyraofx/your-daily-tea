@@ -19,6 +19,7 @@ permissions:
 concurrency:
   group: daily-edition
   cancel-in-progress: false
+  queue: max
 
 jobs:
   publish:
