@@ -64,7 +64,8 @@ test("evaluation parses a structured shortlist", async () => {
   }];
   const supplied = [{
     headline: "Grounded headline", canonicalUrl: "https://example.com/selected",
-    sourceName: "Grounded Source", publishedAt: "2026-08-19T02:00:00.000Z", credibilityScore: 92,
+    sourceName: "Grounded Source — USA", publisherName: "Grounded Source",
+    publishedAt: "2026-08-19T02:00:00.000Z", credibilityScore: 92,
   }];
   const fakeFetch = async (_url, init) => {
     const body = JSON.parse(init.body);
@@ -74,7 +75,8 @@ test("evaluation parses a structured shortlist", async () => {
   assert.deepEqual(await evaluateCandidates({
     category: "usa", candidates: supplied, apiKey: "test-key",
   }, fakeFetch), [{
-    ...expected[0], headline: "Grounded headline", sourceName: "Grounded Source",
+    ...expected[0], headline: "Grounded headline", sourceName: "Grounded Source — USA",
+    publisherName: "Grounded Source",
     publishedAt: "2026-08-19T02:00:00.000Z", scores: { sourceQuality: 92 },
   }]);
 });

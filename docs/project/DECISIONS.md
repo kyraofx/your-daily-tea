@@ -367,3 +367,17 @@ Keep GitHub's timezone-aware schedule, retain all delayed GitHub attempts with a
 - The same generation, editorial review, minimum-story, minimum-section, transition, idempotence, and immutability safeguards apply regardless of which clock starts the run.
 - Successful publication makes later checks no-ops, avoiding repeat Luna generation.
 - Deterministic or quality-gate failures are reported rather than bypassed or retried indefinitely.
+
+## DEC-023 — Enforce Diversity by Publisher, Not Feed Label
+
+- **Status:** Accepted
+
+### Decision
+
+Assign a stable publisher identity to desk-specific feeds and use that identity for section- and edition-wide diversity limits. NPR, BBC, and The New York Times each count as one publisher even when their US, world, business, science, sports, or arts feeds use different labels.
+
+### Consequences
+
+- A publisher cannot bypass the two-per-section or six-per-edition limits through multiple feeds.
+- Feed-specific source labels remain available for attribution while publisher identity controls balance.
+- Existing frozen editions are not rewritten; the corrected limits apply to newly generated editions.
