@@ -212,12 +212,10 @@ export function DailyEdition({ edition, editions, topics }: { edition: Edition |
         </div>
 
         <footer className="tea-footer">
-          <span aria-disabled="true">← Previous edition</span>
           <div className="tea-footer-credit">
             <span>Edition frozen 06:00 Pacific</span>
             <span>Created by <a href="https://gettoknowkyra.com" target="_blank" rel="noreferrer">Kyra</a></span>
           </div>
-          <span aria-disabled="true">Next edition →</span>
         </footer>
         </>}
 
