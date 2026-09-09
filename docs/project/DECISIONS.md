@@ -381,3 +381,18 @@ Assign a stable publisher identity to desk-specific feeds and use that identity 
 - A publisher cannot bypass the two-per-section or six-per-edition limits through multiple feeds.
 - Feed-specific source labels remain available for attribution while publisher identity controls balance.
 - Existing frozen editions are not rewritten; the corrected limits apply to newly generated editions.
+
+## DEC-024 — Ground AI Decisions Through Opaque Record IDs
+
+- **Status:** Accepted
+
+### Decision
+
+Assign temporary deterministic IDs to the feed candidates sent for category evaluation and the selected stories sent for final editorial review. Constrain the structured-output schemas to those exact IDs, validate complete and non-duplicated references, and resolve every accepted decision back to the original supplied record in deterministic code. Do not ask the model to reproduce URLs as decision identifiers.
+
+### Consequences
+
+- Harmless model edits to publisher URL paths cannot block an otherwise valid edition.
+- The model cannot introduce a different source record because only supplied IDs are accepted.
+- Exact feed URLs, headlines, attribution, timestamps, publisher identities, and source-quality scores remain under deterministic control.
+- Unknown, duplicated, omitted, or invalid references continue to fail closed.

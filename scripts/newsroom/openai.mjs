@@ -53,6 +53,40 @@ export const CANDIDATE_SCHEMA = {
   additionalProperties: false,
 };
 
+function referenceId(prefix, index) {
+  return `${prefix}-${String(index + 1).padStart(3, "0")}`;
+}
+
+function evaluatedCandidateSchema(candidateIds) {
+  return {
+    type: "object",
+    properties: {
+      candidates: {
+        type: "array",
+        maxItems: 8,
+        items: {
+          type: "object",
+          properties: {
+            candidateId: { type: "string", enum: candidateIds },
+            summary: { type: "string" },
+            topics: { type: "array", minItems: 2, maxItems: 5, items: { type: "string" } },
+            scores: {
+              type: "object",
+              properties: SCORE_PROPERTIES,
+              required: Object.keys(SCORE_PROPERTIES),
+              additionalProperties: false,
+            },
+          },
+          required: ["candidateId", "summary", "topics", "scores"],
+          additionalProperties: false,
+        },
+      },
+    },
+    required: ["candidates"],
+    additionalProperties: false,
+  };
+}
+
 export function responseText(payload) {
   if (payload.output_text) return payload.output_text;
   for (const item of payload.output ?? []) {
@@ -63,32 +97,11 @@ export function responseText(payload) {
   return null;
 }
 
-function groundingUrlKey(value) {
-  try {
-    const url = new URL(value);
-    const host = url.hostname.toLowerCase().replace(/^www\./, "");
-    const path = url.pathname.replace(/\/+$/, "") || "/";
-    return `${host}${path}`;
-  } catch {
-    return null;
-  }
-}
-
-function nprStoryId(value) {
-  try {
-    const url = new URL(value);
-    const host = url.hostname.toLowerCase().replace(/^www\./, "");
-    if (host !== "npr.org") return null;
-    return url.pathname.split("/").find((part) => /^[a-z]+-s1-\d+$/i.test(part))?.toLowerCase() ?? null;
-  } catch {
-    return null;
-  }
-}
-
 export function evaluationRequest({ category, candidates, model = "gpt-5.6-luna" }) {
   const brief = CATEGORY_BRIEFS[category];
   if (!brief) throw new Error(`Unknown evaluation category: ${category}`);
-  const supplied = candidates.slice(0, 80).map((candidate) => ({
+  const supplied = candidates.slice(0, 80).map((candidate, index) => ({
+    candidateId: referenceId("candidate", index),
     headline: candidate.headline,
     canonicalUrl: candidate.canonicalUrl,
     sourceName: candidate.sourceName,
@@ -105,7 +118,7 @@ export function evaluationRequest({ category, candidates, model = "gpt-5.6-luna"
       `Evaluate only this section: ${category}. ${brief}`,
       "Select zero to eight worthwhile, materially distinct stories from the supplied feed candidates.",
       "Omit stories that belong more directly in another section. Merge overlapping coverage by choosing the strongest original or most informative source.",
-      "Preserve each selected candidate's headline, canonicalUrl, sourceName, and publishedAt exactly as supplied.",
+      "Identify every selection only by its supplied candidateId. Never create, alter, or infer an ID.",
       "Write an original factual two-to-four sentence summary using only facts present in the supplied headline and sourceSummary. Do not invent details.",
       "Assign two to five normalized topic names ordered from most central to least central. Score each dimension independently from 0 to 100. Do not select filler.",
       `Feed candidates:\n${JSON.stringify(supplied)}`,
@@ -115,7 +128,7 @@ export function evaluationRequest({ category, candidates, model = "gpt-5.6-luna"
         type: "json_schema",
         name: "evaluated_news_candidates",
         strict: true,
-        schema: CANDIDATE_SCHEMA,
+        schema: evaluatedCandidateSchema(supplied.map(({ candidateId }) => candidateId)),
       },
     },
     max_output_tokens: 4000,
@@ -123,31 +136,18 @@ export function evaluationRequest({ category, candidates, model = "gpt-5.6-luna"
 }
 
 export function groundEvaluatedCandidates(evaluated, supplied, category) {
-  const byUrl = new Map(supplied.flatMap((candidate) => {
-    const key = groundingUrlKey(candidate.canonicalUrl);
-    return key ? [[key, candidate]] : [];
-  }));
-  const byNprStoryId = new Map();
-  for (const candidate of supplied) {
-    const storyId = nprStoryId(candidate.canonicalUrl);
-    if (!storyId) continue;
-    const matches = byNprStoryId.get(storyId) ?? [];
-    matches.push(candidate);
-    byNprStoryId.set(storyId, matches);
-  }
+  const byId = new Map(supplied.slice(0, 80).map((candidate, index) => [referenceId("candidate", index), candidate]));
+  const selectedIds = new Set();
   return evaluated.map((candidate) => {
-    let original = byUrl.get(groundingUrlKey(candidate.canonicalUrl));
-    if (!original) {
-      const storyId = nprStoryId(candidate.canonicalUrl);
-      const matches = storyId ? byNprStoryId.get(storyId) ?? [] : [];
-      if (matches.length > 1) {
-        throw new Error(`Evaluation returned an ambiguous NPR story URL: ${candidate.canonicalUrl}`);
-      }
-      [original] = matches;
+    const original = byId.get(candidate.candidateId);
+    if (!original) throw new Error(`Evaluation returned an unknown candidate ID: ${candidate.candidateId}`);
+    if (selectedIds.has(candidate.candidateId)) {
+      throw new Error(`Evaluation returned a duplicate candidate ID: ${candidate.candidateId}`);
     }
-    if (!original) throw new Error(`Evaluation returned an unknown candidate URL: ${candidate.canonicalUrl}`);
+    selectedIds.add(candidate.candidateId);
     return {
-      ...candidate,
+      summary: candidate.summary,
+      topics: candidate.topics,
       category,
       headline: original.headline,
       canonicalUrl: original.canonicalUrl,
@@ -163,6 +163,7 @@ export function groundEvaluatedCandidates(evaluated, supplied, category) {
 }
 
 export async function evaluateCandidates(options, fetchImpl = fetch) {
+  if (options.candidates.length === 0) return [];
   const apiKey = options.apiKey ?? process.env.OPENAI_API_KEY;
   if (!apiKey) throw new Error("OPENAI_API_KEY is required for evaluation.");
   const response = await fetchImpl("https://api.openai.com/v1/responses", {

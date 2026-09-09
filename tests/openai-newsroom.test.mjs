@@ -53,14 +53,19 @@ test("evaluation uses supplied candidates without a web-search tool", () => {
   assert.equal(request.model, "gpt-5.6-luna");
   assert.equal(request.tools, undefined);
   assert.match(request.input, /A feed headline/);
+  assert.match(request.input, /candidate-001/);
   assert.equal(request.text.format.strict, true);
+  assert.deepEqual(
+    request.text.format.schema.properties.candidates.items.properties.candidateId.enum,
+    ["candidate-001"],
+  );
+  assert.equal(request.text.format.schema.properties.candidates.items.properties.canonicalUrl, undefined);
 });
 
 test("evaluation parses a structured shortlist", async () => {
   const expected = [{
-    category: "usa", headline: "Selected", canonicalUrl: "https://example.com/selected",
-    sourceName: "Model Source", publishedAt: "2026-08-19T01:00:00.000Z",
-    scores: { sourceQuality: 1 },
+    candidateId: "candidate-001", summary: "Grounded summary", topics: ["One", "Two"],
+    scores: { importance: 80, sourceQuality: 1 },
   }];
   const supplied = [{
     headline: "Grounded headline", canonicalUrl: "https://example.com/selected",
@@ -75,34 +80,43 @@ test("evaluation parses a structured shortlist", async () => {
   assert.deepEqual(await evaluateCandidates({
     category: "usa", candidates: supplied, apiKey: "test-key",
   }, fakeFetch), [{
-    ...expected[0], headline: "Grounded headline", sourceName: "Grounded Source — USA",
+    summary: "Grounded summary", topics: ["One", "Two"], category: "usa",
+    headline: "Grounded headline", canonicalUrl: "https://example.com/selected",
+    sourceName: "Grounded Source — USA",
     publisherName: "Grounded Source",
-    publishedAt: "2026-08-19T02:00:00.000Z", scores: { sourceQuality: 92 },
+    publishedAt: "2026-08-19T02:00:00.000Z", scores: { importance: 80, sourceQuality: 92 },
   }]);
 });
 
-test("evaluation rejects URLs that were not supplied by a feed", async () => {
+test("evaluation returns no selections when no candidates were supplied", async () => {
+  let called = false;
+  const fakeFetch = async () => {
+    called = true;
+  };
+  assert.deepEqual(await evaluateCandidates({
+    category: "usa", candidates: [], apiKey: "test-key",
+  }, fakeFetch), []);
+  assert.equal(called, false);
+});
+
+test("evaluation rejects candidate IDs that were not supplied by a feed", async () => {
   const fakeFetch = async () => ({
     ok: true,
     json: async () => ({ output_text: JSON.stringify({ candidates: [{
-      canonicalUrl: "https://invented.example/story", scores: { sourceQuality: 99 },
+      candidateId: "candidate-999", scores: { sourceQuality: 99 },
     }] }) }),
   });
   await assert.rejects(evaluateCandidates({
-    category: "usa", candidates: [], apiKey: "test-key",
-  }, fakeFetch), /unknown candidate URL/);
+    category: "usa", candidates: [{ canonicalUrl: "https://example.com/real-story" }], apiKey: "test-key",
+  }, fakeFetch), /unknown candidate ID/);
 });
 
-test("evaluation grounds equivalent canonical URLs back to the supplied feed URL", async () => {
+test("evaluation grounds a candidate ID back to the exact supplied feed URL", async () => {
   const suppliedUrl = "https://www.nytimes.com/2026/08/26/us/tif-chicago-study-downtown.html?partner=rss&emc=rss";
-  const evaluatedUrl = "https://nytimes.com/2026/08/26/us/tif-chicago-study-downtown.html";
   const fakeFetch = async () => ({
     ok: true,
     json: async () => ({ output_text: JSON.stringify({ candidates: [{
-      canonicalUrl: evaluatedUrl,
-      headline: "Model headline",
-      sourceName: "Model source",
-      publishedAt: "2026-08-27T01:00:00.000Z",
+      candidateId: "candidate-001",
       scores: { sourceQuality: 1 },
     }] }) }),
   });
@@ -124,68 +138,40 @@ test("evaluation grounds equivalent canonical URLs back to the supplied feed URL
   assert.equal(result.scores.sourceQuality, 92);
 });
 
-test("evaluation grounds an NPR slug variation by stable story ID", async () => {
-  const suppliedUrl = "https://www.npr.org/2026/09/06/nx-s1-5959657/us-envoys-witkoff-kushner-talks-in-kyiv-putin-moscow";
-  const evaluatedUrl = "https://www.npr.org/2026/09/06/nx-s1-5959657/us-envoys-witkoff-kushner-talks-kyiv-putin-moscow";
+test("evaluation selects the intended supplied candidate by opaque ID", async () => {
   const fakeFetch = async () => ({
     ok: true,
     json: async () => ({ output_text: JSON.stringify({ candidates: [{
-      canonicalUrl: evaluatedUrl,
-      headline: "Model headline",
-      sourceName: "Model source",
-      publishedAt: "2026-09-06T12:00:00.000Z",
+      candidateId: "candidate-002",
       scores: { sourceQuality: 1 },
     }] }) }),
   });
   const [result] = await evaluateCandidates({
     category: "politics-policy",
     apiKey: "test-key",
-    candidates: [{
-      canonicalUrl: suppliedUrl,
-      headline: "Grounded NPR headline",
-      sourceName: "NPR",
-      publishedAt: "2026-09-06T11:00:00.000Z",
-      credibilityScore: 92,
-    }],
+    candidates: [
+      { canonicalUrl: "https://example.com/first", headline: "First", sourceName: "Example", credibilityScore: 88 },
+      { canonicalUrl: "https://example.com/second", headline: "Second", sourceName: "Example", credibilityScore: 92 },
+    ],
   }, fakeFetch);
-  assert.equal(result.canonicalUrl, suppliedUrl);
-  assert.equal(result.headline, "Grounded NPR headline");
-  assert.equal(result.sourceName, "NPR");
-  assert.equal(result.publishedAt, "2026-09-06T11:00:00.000Z");
+  assert.equal(result.canonicalUrl, "https://example.com/second");
+  assert.equal(result.headline, "Second");
   assert.equal(result.scores.sourceQuality, 92);
 });
 
-test("evaluation rejects an NPR slug variation with a different story ID", async () => {
+test("evaluation rejects duplicate candidate IDs", async () => {
   const fakeFetch = async () => ({
     ok: true,
-    json: async () => ({ output_text: JSON.stringify({ candidates: [{
-      canonicalUrl: "https://www.npr.org/2026/09/06/nx-s1-9999999/invented-story",
-      scores: { sourceQuality: 99 },
-    }] }) }),
+    json: async () => ({ output_text: JSON.stringify({ candidates: [
+      { candidateId: "candidate-001", scores: { sourceQuality: 99 } },
+      { candidateId: "candidate-001", scores: { sourceQuality: 99 } },
+    ] }) }),
   });
   await assert.rejects(evaluateCandidates({
     category: "politics-policy",
     apiKey: "test-key",
     candidates: [{
-      canonicalUrl: "https://www.npr.org/2026/09/06/nx-s1-5959657/real-story",
+      canonicalUrl: "https://example.com/real-story",
     }],
-  }, fakeFetch), /unknown candidate URL/);
-});
-
-test("evaluation rejects an ambiguous NPR story ID fallback", async () => {
-  const fakeFetch = async () => ({
-    ok: true,
-    json: async () => ({ output_text: JSON.stringify({ candidates: [{
-      canonicalUrl: "https://www.npr.org/2026/09/06/nx-s1-5959657/model-slug",
-      scores: { sourceQuality: 99 },
-    }] }) }),
-  });
-  await assert.rejects(evaluateCandidates({
-    category: "politics-policy",
-    apiKey: "test-key",
-    candidates: [
-      { canonicalUrl: "https://www.npr.org/2026/09/06/nx-s1-5959657/feed-slug-one" },
-      { canonicalUrl: "https://www.npr.org/2026/09/06/nx-s1-5959657/feed-slug-two" },
-    ],
-  }, fakeFetch), /ambiguous NPR story URL/);
+  }, fakeFetch), /duplicate candidate ID/);
 });
