@@ -5,7 +5,12 @@ function nullableString(schema = { type: "string" }) {
   return { anyOf: [schema, { type: "null" }] };
 }
 
+function storyId(index) {
+  return `story-${String(index + 1).padStart(3, "0")}`;
+}
+
 export function editorialReviewRequest({ stories, model = "gpt-5.6-luna" }) {
+  const storyIds = stories.map((_story, index) => storyId(index));
   const schema = {
     type: "object",
     properties: {
@@ -16,13 +21,13 @@ export function editorialReviewRequest({ stories, model = "gpt-5.6-luna" }) {
         items: {
           type: "object",
           properties: {
-            canonicalUrl: { type: "string" },
+            storyId: { type: "string", enum: storyIds },
             action: { type: "string", enum: ["keep", "remove", "move"] },
             targetCategory: nullableString({ type: "string", enum: CATEGORY_SLUGS }),
             reason: { type: "string", enum: ["keep", "duplicate-event", "category-mismatch", "low-value"] },
-            duplicateOf: nullableString(),
+            duplicateOf: nullableString({ type: "string", enum: storyIds }),
           },
-          required: ["canonicalUrl", "action", "targetCategory", "reason", "duplicateOf"],
+          required: ["storyId", "action", "targetCategory", "reason", "duplicateOf"],
           additionalProperties: false,
         },
       },
@@ -30,17 +35,17 @@ export function editorialReviewRequest({ stories, model = "gpt-5.6-luna" }) {
     required: ["decisions"],
     additionalProperties: false,
   };
-  const supplied = stories.map(({ canonicalUrl, category, headline, summary, sourceName, weightedScore }) => ({
-    canonicalUrl, category, headline, summary, sourceName, weightedScore,
+  const supplied = stories.map(({ canonicalUrl, category, headline, summary, sourceName, weightedScore }, index) => ({
+    storyId: storyId(index), canonicalUrl, category, headline, summary, sourceName, weightedScore,
   }));
   return {
     model,
     reasoning: { effort: "none" },
     input: [
       "You are the final cross-section editor for a concise US morning briefing.",
-      "Return exactly one decision for every supplied URL, using each URL exactly once.",
+      "Return exactly one decision for every supplied storyId, using each storyId exactly once. Never create, alter, or infer an ID.",
       "Keep a story when it is worthwhile and correctly categorized. Move it only when another of the 15 sections is clearly better.",
-      "Remove lower-value coverage when two stories describe the same underlying event, even if their headlines use different wording. Set duplicateOf to the kept story URL.",
+      "Remove lower-value coverage when two stories describe the same underlying event, even if their headlines use different wording. Set duplicateOf to the kept storyId.",
       "USA is for consequential domestic news; foreign wars and diplomacy belong in World, while elections, government, courts, and regulation usually belong in Politics + Policy.",
       "Other Notable must not duplicate another section. Do not fill a section for the sake of having content.",
       "For keep: targetCategory and duplicateOf must be null and reason must be keep.",
@@ -54,14 +59,14 @@ export function editorialReviewRequest({ stories, model = "gpt-5.6-luna" }) {
 }
 
 function validateDecisions(stories, decisions) {
-  const known = new Set(stories.map((story) => story.canonicalUrl));
+  const known = new Set(stories.map((_story, index) => storyId(index)));
   const decided = new Set();
   for (const decision of decisions) {
-    if (!known.has(decision.canonicalUrl)) throw new Error(`Editorial review returned unknown URL: ${decision.canonicalUrl}`);
-    if (decided.has(decision.canonicalUrl)) throw new Error(`Editorial review duplicated URL: ${decision.canonicalUrl}`);
-    decided.add(decision.canonicalUrl);
+    if (!known.has(decision.storyId)) throw new Error(`Editorial review returned unknown story ID: ${decision.storyId}`);
+    if (decided.has(decision.storyId)) throw new Error(`Editorial review duplicated story ID: ${decision.storyId}`);
+    decided.add(decision.storyId);
     if (decision.duplicateOf && !known.has(decision.duplicateOf)) {
-      throw new Error(`Editorial review referenced unknown duplicate URL: ${decision.duplicateOf}`);
+      throw new Error(`Editorial review referenced unknown duplicate story ID: ${decision.duplicateOf}`);
     }
     if (decision.action === "move" && !CATEGORY_SLUGS.includes(decision.targetCategory)) {
       throw new Error(`Editorial review returned invalid target category: ${decision.targetCategory}`);
@@ -71,6 +76,7 @@ function validateDecisions(stories, decisions) {
 }
 
 export async function reviewEdition(options, fetchImpl = fetch) {
+  if (options.stories.length === 0) return [];
   const apiKey = options.apiKey ?? process.env.OPENAI_API_KEY;
   if (!apiKey) throw new Error("OPENAI_API_KEY is required for editorial review.");
   const response = await fetchImpl("https://api.openai.com/v1/responses", {
@@ -87,7 +93,12 @@ export async function reviewEdition(options, fetchImpl = fetch) {
   if (!output) throw new Error("OpenAI editorial review returned no structured text.");
   const decisions = JSON.parse(output).decisions;
   validateDecisions(options.stories, decisions);
-  return decisions;
+  const byId = new Map(options.stories.map((story, index) => [storyId(index), story.canonicalUrl]));
+  return decisions.map(({ storyId: selectedStoryId, duplicateOf, ...decision }) => ({
+    ...decision,
+    canonicalUrl: byId.get(selectedStoryId),
+    duplicateOf: duplicateOf ? byId.get(duplicateOf) : null,
+  }));
 }
 
 export function applyEditorialDecisions(stories, decisions) {
