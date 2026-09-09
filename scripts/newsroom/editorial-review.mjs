@@ -47,7 +47,7 @@ export function editorialReviewRequest({ stories, model = "gpt-5.6-luna" }) {
       "Keep a story when it is worthwhile and correctly categorized. Move it only when another of the 15 sections is clearly better.",
       "Remove lower-value coverage when two stories describe the same underlying event, even if their headlines use different wording. Set duplicateOf to the kept storyId.",
       "USA is for consequential domestic news; foreign wars and diplomacy belong in World, while elections, government, courts, and regulation usually belong in Politics + Policy.",
-      "Other Notable must not duplicate another section. Do not fill a section for the sake of having content.",
+      "Other Notable must not duplicate another section. A publishable edition needs at least two qualifying stories in every section, but never keep low-value or duplicate coverage merely to reach that minimum; deterministic code will hold an underfilled edition.",
       "For keep: targetCategory and duplicateOf must be null and reason must be keep.",
       "For move: set targetCategory, duplicateOf null, and reason category-mismatch.",
       "For remove: targetCategory null and use duplicate-event with duplicateOf, or low-value with duplicateOf null.",
