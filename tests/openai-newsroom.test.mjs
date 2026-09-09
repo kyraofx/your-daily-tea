@@ -51,6 +51,8 @@ test("evaluation uses supplied candidates without a web-search tool", () => {
     }],
   });
   assert.equal(request.model, "gpt-5.6-luna");
+  assert.match(request.input, /Select two to eight worthwhile/);
+  assert.match(request.input, /Never lower the standard or select filler/);
   assert.equal(request.tools, undefined);
   assert.match(request.input, /A feed headline/);
   assert.match(request.input, /candidate-001/);

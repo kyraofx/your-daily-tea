@@ -109,7 +109,7 @@ Structured topics support reliable topic/date filtering and future timelines or 
 
 ## DEC-005 — Select with Weighted Editorial Scoring and Hard Rules
 
-- **Status:** Accepted
+- **Status:** Superseded in part by DEC-025
 
 ### Context
 
@@ -325,11 +325,11 @@ Show readers a consecutive edition number derived from the chronological order o
 
 ## DEC-020 — Automate Daily Publication with Fail-Closed Quality Gates
 
-- **Status:** Accepted
+- **Status:** Superseded in part by DEC-025
 
 ### Decision
 
-Run the complete newsroom workflow every day at 6:07 AM in `America/Los_Angeles`. After deterministic validation and Luna's grounded editorial review, automatically advance a qualifying edition through `draft`, `approved`, and `published`. Require at least 20 stories across at least 10 populated sections; otherwise fail the run and retain the previous published edition.
+Run the complete newsroom workflow every day at 6:07 AM in `America/Los_Angeles`. After deterministic validation and Luna's grounded editorial review, automatically advance a qualifying edition through `draft`, `approved`, and `published`. This decision originally required at least 20 stories across at least 10 populated sections; DEC-025 replaces those thresholds with two qualifying stories in all 15 sections and at least 30 total.
 
 ### Consequences
 
@@ -396,3 +396,20 @@ Assign temporary deterministic IDs to the feed candidates sent for category eval
 - The model cannot introduce a different source record because only supplied IDs are accepted.
 - Exact feed URLs, headlines, attribution, timestamps, publisher identities, and source-quality scores remain under deterministic control.
 - Unknown, duplicated, omitted, or invalid references continue to fail closed.
+
+## DEC-025 — Require Two Qualifying Stories in Every Section
+
+- **Status:** Accepted
+
+### Decision
+
+For newly generated editions, reserve two qualifying placements for every one of the 15 sections before assigning third and fourth stories. Prioritize sections with fewer eligible alternatives during reservation so the fixed display order cannot exhaust a shared publisher's edition-wide allowance. After grounded final review and deterministic rebalancing, require at least two stories in every section and at least 30 stories total before automatic publication.
+
+Never weaken the score threshold, coverage window, provenance grounding, deduplication, topic diversity, source caps, editorial review, database transition guard, or published-edition immutability to satisfy the minimum. If any section remains underfilled, fail closed and keep the previous published edition live.
+
+### Consequences
+
+- Every newly published edition has visible coverage in all 15 sections.
+- Sports, Internet + Trends, and other later sections receive their minimum opportunity before earlier sections consume shared publisher capacity.
+- A genuinely quiet section can prevent that day's new edition from publishing; this is preferable to filler under the requested coverage guarantee.
+- Previously published editions remain frozen and may still contain empty or one-story sections.

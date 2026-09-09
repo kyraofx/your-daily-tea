@@ -2,6 +2,13 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { decodeEntities, publishReviewedEdition, saveReviewedDraft, validateAutomaticPublication } from "../scripts/newsroom/persistence.mjs";
 
+const SECTION_SLUGS = [
+  "usa", "california", "world", "tech-ai", "science-planet",
+  "health-wellness", "money-economy", "politics-policy", "jobs-work",
+  "sports", "internet-trends", "gaming", "life-society", "pop-culture",
+  "other-notable",
+];
+
 const report = {
   editionDate: "2026-08-18", coverageStartsAt: "2026-08-17T13:00:00Z", coverageEndsAt: "2026-08-18T12:59:59Z",
   editorialReview: { finalStories: 1 },
@@ -47,24 +54,36 @@ test("saveReviewedDraft refuses to overwrite an existing edition", async () => {
 });
 
 test("automatic publication holds a thin edition", () => {
-  assert.throws(() => validateAutomaticPublication(report), /below the minimum/);
+  assert.throws(() => validateAutomaticPublication(report), /every section needs at least 2 stories/);
+});
+
+test("automatic publication identifies any section with fewer than two stories", () => {
+  const selected = SECTION_SLUGS.flatMap((category) => [0, 1].map((rank) => ({
+    ...report.selected[0], category, rank: rank + 1,
+    canonicalUrl: `https://example.com/${category}-${rank}`,
+  })));
+  selected.find((story) => story.category === "other-notable").category = "usa";
+  assert.throws(
+    () => validateAutomaticPublication({ ...report, selected }),
+    /other-notable \(1\)/,
+  );
 });
 
 test("automatic publication advances a reviewed edition through both guarded states", async () => {
   const fullReport = {
     ...report,
-    selected: Array.from({ length: 20 }, (_, index) => ({
-      ...report.selected[0],
-      canonicalUrl: `https://example.com/story-${index}`,
-      category: index < 10 ? "usa" : "california",
-      rank: (index % 10) + 1,
-    })),
+    selected: SECTION_SLUGS.flatMap((category) => [0, 1].map((rank) => ({
+      ...report.selected[0], category, rank: rank + 1,
+      canonicalUrl: `https://example.com/${category}-${rank}`,
+    }))),
   };
   const calls = [];
   const rest = async (path, options = {}) => {
     calls.push({ path, options });
     if (path.startsWith("editions?edition_date")) return [];
-    if (path === "categories?select=id,slug") return [{ id: "category-1", slug: "usa" }, { id: "category-2", slug: "california" }];
+    if (path === "categories?select=id,slug") {
+      return SECTION_SLUGS.map((slug, index) => ({ id: `category-${index}`, slug }));
+    }
     if (path.startsWith("editions?select")) return [{ id: "edition-1", status: "draft", edition_date: "2026-08-18" }];
     if (path.includes("status=eq.draft")) return [{ id: "edition-1", status: "approved", edition_date: "2026-08-18" }];
     if (path.includes("status=eq.approved")) return [{ id: "edition-1", status: "published", edition_date: "2026-08-18", published_at: new Date().toISOString() }];
@@ -74,8 +93,9 @@ test("automatic publication advances a reviewed edition through both guarded sta
     if (path.startsWith("topics?")) return [{ id: "topic-1" }];
     return null;
   };
-  const result = await publishReviewedEdition(fullReport, rest, { minimumStories: 20, minimumSections: 2 });
+  const result = await publishReviewedEdition(fullReport, rest);
   assert.equal(result.status, "published");
+  assert.equal(result.minimumStoriesPerSection, 2);
   assert.equal(calls.some((call) => call.options.body?.includes('"status":"approved"')), true);
   assert.equal(calls.some((call) => call.options.body?.includes('"status":"published"')), true);
 });

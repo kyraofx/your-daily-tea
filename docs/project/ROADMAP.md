@@ -38,7 +38,7 @@ Implementation status: a resumable full-edition command runs all 15 sections thr
 - Build the Today / Daily Edition experience.
 - Render sections in the agreed order.
 - Present source attribution, source links, publication times, and clickable hashtags.
-- Ensure quiet sections do not produce filler.
+- Require two qualifying stories per section without producing filler; hold an underfilled edition.
 - Support section-appropriate editorial voice without a "Why it matters" block.
 
 Implementation status: the finished reader now server-renders the latest published Supabase edition inside the preserved supplied design. The first edition renders 41 real stories across 14 non-empty sections while retaining all 15 section headers, including the intentionally empty Internet + Trends section. Story links, source attribution, publication times, topic labels, section controls, theme control, and responsive layout are wired. Archive loads frozen editions by date; Topics browses all published hashtags and their stories; Search queries published headlines and summaries with all-date, 7-day, 30-day, and category filters.
@@ -62,7 +62,7 @@ The first published edition is available to those endpoints and powers Today, Ar
 - Validate archive immutability and topic/date query behavior.
 - Test editorial quality, source provenance, summary accuracy, and duplicate suppression.
 
-Implementation status: a timezone-aware GitHub Actions workflow starts at 6:07 AM Pacific and automatically publishes editions that pass the grounded editorial pipeline plus minimum story and section gates. Guarded GitHub backup attempts through 7:07 AM are retained in the workflow queue, and an independent watchdog checks from 6:12 through 7:52 AM Pacific. Every path first checks whether the edition already exists, avoiding repeated setup and AI generation after publication. Failed runs leave the last published edition live. Operational logs remain available in GitHub Actions, while unpublished review files are not uploaded to the public repository.
+Implementation status: a timezone-aware GitHub Actions workflow starts at 6:07 AM Pacific and automatically publishes editions that pass the grounded editorial pipeline plus the two-story minimum for every section. Selection reserves the first two placements across all sections before filling third and fourth slots, and an underfilled edition fails closed without adding filler. Guarded GitHub backup attempts through 7:07 AM are retained in the workflow queue, and an independent watchdog checks from 6:12 through 7:52 AM Pacific. Every path first checks whether the edition already exists, avoiding repeated setup and AI generation after publication. Failed runs leave the last published edition live. Operational logs remain available in GitHub Actions, while unpublished review files are not uploaded to the public repository.
 
 ## Later Phases
 

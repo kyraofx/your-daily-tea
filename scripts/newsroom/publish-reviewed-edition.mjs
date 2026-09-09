@@ -27,7 +27,8 @@ const rest = createRestClient({
   secretKey: process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY,
 });
 const result = await publishReviewedEdition(report, rest, {
-  minimumStories: Number(process.env.NEWSROOM_MINIMUM_STORIES ?? 20),
-  minimumSections: Number(process.env.NEWSROOM_MINIMUM_SECTIONS ?? 10),
+  minimumStories: Number(process.env.NEWSROOM_MINIMUM_STORIES ?? 30),
+  minimumSections: Number(process.env.NEWSROOM_MINIMUM_SECTIONS ?? 15),
+  minimumStoriesPerSection: Number(process.env.NEWSROOM_MINIMUM_STORIES_PER_SECTION ?? 2),
 });
 console.log(JSON.stringify(result, null, 2));

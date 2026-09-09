@@ -5,7 +5,7 @@
 - **Public site:** Sites-hosted Vinext application.
 - **Database:** Supabase PostgreSQL.
 - **Editorial pipeline:** a GitHub Actions newsroom worker starts daily at 6:07 AM Pacific, with guarded GitHub backups through 7:07 and independent watchdog checks from 6:12 through 7:52, using encrypted Supabase and OpenAI repository secrets.
-- **Publication:** a passing run generates the reviewed edition, saves it as `draft`, records an automated approval, and publishes it. Runs below 20 stories or 10 populated sections fail closed and leave the prior edition live.
+- **Publication:** a passing run generates the reviewed edition, saves it as `draft`, records an automated approval, and publishes it. Every section must contain at least two qualifying stories (at least 30 total); underfilled runs fail closed and leave the prior edition live.
 - **Public access:** anonymous visitors can read only `published` editions. Draft and approved editions are blocked by row-level security.
 
 ## Publication state machine
@@ -49,7 +49,7 @@ Every source has a deterministic tier: primary (98), major newsroom (92), or spe
 
 Category evaluation assigns every supplied feed record a temporary opaque ID such as `candidate-017`. The strict response schema permits Luna to select only one of those IDs; deterministic code then restores the exact feed headline, URL, source, publisher identity, timestamp, and source-quality score. Unknown and duplicate IDs fail closed. Luna never supplies the stored URL or attribution.
 
-The final whole-edition review uses the same pattern with temporary `story-###` IDs. Duplicate references are also expressed as supplied IDs and resolved back to exact source URLs only after validation. This prevents harmless model URL edits from stopping publication without introducing fuzzy URL matching or allowing a different article into the edition.
+The final whole-edition review uses the same pattern with temporary `story-###` IDs. Duplicate references are also expressed as supplied IDs and resolved back to exact source URLs only after validation. This prevents harmless model URL edits from stopping publication without introducing fuzzy URL matching or allowing a different article into the edition. Balanced selection reserves two opportunities for every section before assigning third and fourth stories, prioritizing sections with the fewest eligible alternatives so earlier sections cannot exhaust shared publisher allowances. The final publication gate then requires at least two qualifying stories in every section; it never lowers scoring, provenance, duplicate, or source-diversity standards to meet the minimum.
 
 `pnpm newsroom:retrieve` uses the OpenAI Responses API with low-context web search and a strict candidate schema. It researches each of the 15 sections separately and writes the results to a private, git-ignored file under `work/`. The default model is the cost-sensitive `gpt-5.6-luna` with reasoning disabled; override the model with `OPENAI_NEWSROOM_MODEL` when needed.
 

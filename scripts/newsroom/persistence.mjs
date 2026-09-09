@@ -1,9 +1,10 @@
-const EXPECTED_SECTIONS = new Set([
+const EXPECTED_SECTION_SLUGS = [
   "usa", "california", "world", "tech-ai", "science-planet",
   "health-wellness", "money-economy", "politics-policy", "jobs-work",
   "sports", "internet-trends", "gaming", "life-society", "pop-culture",
   "other-notable",
-]);
+];
+const EXPECTED_SECTIONS = new Set(EXPECTED_SECTION_SLUGS);
 
 export function decodeEntities(value) {
   return String(value).replace(/&(#x[0-9a-f]+|#\d+|amp|quot|apos|lt|gt);/gi, (match, entity) => {
@@ -118,10 +119,23 @@ export async function saveReviewedDraft(report, rest) {
 }
 
 export function validateAutomaticPublication(report, {
-  minimumStories = 20,
-  minimumSections = 10,
+  minimumStories = 30,
+  minimumSections = 15,
+  minimumStoriesPerSection = 2,
 } = {}) {
   validateReviewedReport(report);
+  const sectionCounts = new Map(EXPECTED_SECTION_SLUGS.map((section) => [section, 0]));
+  for (const story of report.selected) {
+    sectionCounts.set(story.category, (sectionCounts.get(story.category) ?? 0) + 1);
+  }
+  const underfilled = EXPECTED_SECTION_SLUGS
+    .filter((section) => sectionCounts.get(section) < minimumStoriesPerSection);
+  if (underfilled.length) {
+    const details = underfilled.map((section) => `${section} (${sectionCounts.get(section)})`).join(", ");
+    throw new Error(
+      `Quality gate held publication: every section needs at least ${minimumStoriesPerSection} stories; underfilled: ${details}.`,
+    );
+  }
   const sections = new Set(report.selected.map((story) => story.category));
   if (report.selected.length < minimumStories) {
     throw new Error(`Quality gate held publication: ${report.selected.length} stories is below the minimum of ${minimumStories}.`);
@@ -129,7 +143,7 @@ export function validateAutomaticPublication(report, {
   if (sections.size < minimumSections) {
     throw new Error(`Quality gate held publication: ${sections.size} populated sections is below the minimum of ${minimumSections}.`);
   }
-  return { storyCount: report.selected.length, sectionCount: sections.size };
+  return { storyCount: report.selected.length, sectionCount: sections.size, minimumStoriesPerSection };
 }
 
 export async function publishReviewedEdition(report, rest, options = {}) {

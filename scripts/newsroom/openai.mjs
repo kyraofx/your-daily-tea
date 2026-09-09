@@ -116,11 +116,11 @@ export function evaluationRequest({ category, candidates, model = "gpt-5.6-luna"
     input: [
       "You are the evaluation desk for a concise morning news briefing.",
       `Evaluate only this section: ${category}. ${brief}`,
-      "Select zero to eight worthwhile, materially distinct stories from the supplied feed candidates.",
+      "Select two to eight worthwhile, materially distinct stories when at least two supplied candidates meet every editorial standard; otherwise return only the qualifying stories.",
       "Omit stories that belong more directly in another section. Merge overlapping coverage by choosing the strongest original or most informative source.",
       "Identify every selection only by its supplied candidateId. Never create, alter, or infer an ID.",
       "Write an original factual two-to-four sentence summary using only facts present in the supplied headline and sourceSummary. Do not invent details.",
-      "Assign two to five normalized topic names ordered from most central to least central. Score each dimension independently from 0 to 100. Do not select filler.",
+      "Assign two to five normalized topic names ordered from most central to least central. Score each dimension independently from 0 to 100. Never lower the standard or select filler to reach two stories.",
       `Feed candidates:\n${JSON.stringify(supplied)}`,
     ].join("\n"),
     text: {
@@ -193,7 +193,7 @@ export function retrievalRequest({ category, coverageStartsAt, coverageEndsAt, m
       "You are a careful research desk for a concise morning news briefing.",
       `Research only this section: ${category}. ${brief}`,
       `Accept only events with source publication times from ${coverageStartsAt} through ${coverageEndsAt}, inclusive.`,
-      "Find zero to eight genuinely worthwhile candidates. Quiet sections may return zero.",
+      "Find two to eight genuinely worthwhile candidates when at least two meet every standard; otherwise return only the qualifying candidates so the publication gate can fail closed.",
       "You must search the web before producing the structured response. Use multiple focused searches when the first search is insufficient.",
       "Prefer primary sources and original reporting. Treat social signals as discovery only.",
       "Do not reproduce article prose. Write an original, factual two-to-four sentence summary.",
