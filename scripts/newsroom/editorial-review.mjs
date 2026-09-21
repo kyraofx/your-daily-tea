@@ -101,12 +101,28 @@ export async function reviewEdition(options, fetchImpl = fetch) {
   }));
 }
 
-export function applyEditorialDecisions(stories, decisions) {
+export function applyEditorialDecisions(stories, decisions, { minimumPerCategory = 2 } = {}) {
   const byUrl = new Map(decisions.map((decision) => [decision.canonicalUrl, decision]));
   const retained = stories.flatMap((story) => {
     const decision = byUrl.get(story.canonicalUrl);
     if (!decision || decision.action === "remove") return [];
-    return [{ ...story, category: decision.action === "move" ? decision.targetCategory : story.category }];
+    return [{
+      ...story,
+      originalCategory: story.category,
+      category: decision.action === "move" ? decision.targetCategory : story.category,
+    }];
   });
-  return selectBalancedEdition(retained.map((story) => ({ ...story, rank: undefined })), CATEGORY_SLUGS);
+  let selected = selectBalancedEdition(retained.map((story) => ({ ...story, rank: undefined })), CATEGORY_SLUGS);
+  for (const category of CATEGORY_SLUGS) {
+    if (retained.filter((story) => story.originalCategory === category).length < minimumPerCategory) continue;
+    while (selected.filter((story) => story.category === category).length < minimumPerCategory) {
+      const restoration = retained
+        .filter((story) => story.originalCategory === category && story.category !== category)
+        .sort((left, right) => right.weightedScore - left.weightedScore)[0];
+      if (!restoration) break;
+      restoration.category = category;
+      selected = selectBalancedEdition(retained.map((story) => ({ ...story, rank: undefined })), CATEGORY_SLUGS);
+    }
+  }
+  return selected.map(({ originalCategory: _originalCategory, ...story }) => story);
 }

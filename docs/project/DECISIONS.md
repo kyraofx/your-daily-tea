@@ -439,9 +439,12 @@ When feed evaluation returns fewer than two qualifying stories for a section, ru
 
 Send the complete score-qualified candidate pool to grounded whole-edition review, not only the initial balanced selection. Apply every keep, move, and remove decision to that reviewed pool, then run deterministic section, topic, and publisher balancing once more. Preserve same-day duplicates across tentative sections until this review, and add TechCrunch, Mashable, and Social Media Today as reviewed specialist feeds for Internet + Trends discovery.
 
+Treat duplicate-event and low-value removals as final. Treat a category move as advisory when applying every proposed move would erase the source desk below two stories that already passed its category-specific evaluation and deterministic score threshold; in that case, restore the highest-scoring moved candidates needed to retain the floor before final balancing.
+
 ### Consequences
 
 - When final review moves a USA or Sports story, a reviewed alternate can fill the vacated placement instead of leaving the section empty.
 - Cross-section duplicates are resolved with whole-edition context before the final balanced selection.
 - Internet + Trends receives direct creator, platform, social-media, and internet-culture discovery rather than depending mainly on general technology feeds.
+- The cross-section reviewer can correct categorization without reclassifying an entire qualified desk out of existence.
 - Score thresholds, source caps, the two-per-section publication gate, and published-edition immutability remain unchanged.

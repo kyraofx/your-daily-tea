@@ -46,17 +46,38 @@ test("applies remove and move decisions while preserving story data", () => {
   assert.equal(selected[0].headline, first.headline);
 });
 
-test("rebalances from reviewed alternates after a selected story moves sections", () => {
+test("uses reviewed alternates to preserve the source section floor after a move", () => {
   const first = story("https://example.com/first", "usa", 90);
   const alternate = story("https://example.com/alternate", "usa", 80);
   const selected = applyEditorialDecisions([first, alternate], [
     { canonicalUrl: first.canonicalUrl, action: "move", targetCategory: "politics-policy" },
     { canonicalUrl: alternate.canonicalUrl, action: "keep", targetCategory: null },
   ]);
-  assert.deepEqual(selected.map(({ canonicalUrl, category }) => ({ canonicalUrl, category })), [
-    { canonicalUrl: alternate.canonicalUrl, category: "usa" },
-    { canonicalUrl: first.canonicalUrl, category: "politics-policy" },
+  assert.equal(selected.filter(({ category }) => category === "usa").length, 2);
+  assert.equal(selected.filter(({ category }) => category === "politics-policy").length, 0);
+});
+
+test("does not let category moves erase an otherwise qualified section", () => {
+  const first = story("https://example.com/first", "jobs-work", 90);
+  const second = story("https://example.com/second", "jobs-work", 80);
+  const third = story("https://example.com/third", "jobs-work", 70);
+  const selected = applyEditorialDecisions([first, second, third], [
+    { canonicalUrl: first.canonicalUrl, action: "move", targetCategory: "money-economy" },
+    { canonicalUrl: second.canonicalUrl, action: "move", targetCategory: "money-economy" },
+    { canonicalUrl: third.canonicalUrl, action: "move", targetCategory: "money-economy" },
   ]);
+  assert.equal(selected.filter(({ category }) => category === "jobs-work").length, 2);
+  assert.equal(selected.filter(({ category }) => category === "money-economy").length, 1);
+});
+
+test("still honors final-review removals when a section becomes underfilled", () => {
+  const first = story("https://example.com/first", "life-society", 90);
+  const second = story("https://example.com/second", "life-society", 80);
+  const selected = applyEditorialDecisions([first, second], [
+    { canonicalUrl: first.canonicalUrl, action: "remove", targetCategory: null },
+    { canonicalUrl: second.canonicalUrl, action: "keep", targetCategory: null },
+  ]);
+  assert.equal(selected.length, 1);
 });
 
 test("grounds editorial story IDs back to exact supplied URLs", async () => {
