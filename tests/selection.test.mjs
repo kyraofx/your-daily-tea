@@ -3,7 +3,7 @@ import test from "node:test";
 import { selectBalancedEdition } from "../scripts/newsroom/selection.mjs";
 
 function candidate(category, sourceName, topic, weightedScore, publisherName) {
-  return { category, sourceName, publisherName, weightedScore, topics: [{ slug: topic }] };
+  return { category, sourceName, publisherName, weightedScore, canonicalUrl: `https://example.com/${category}/${topic}`, topics: [{ slug: topic }] };
 }
 
 test("limits one source to two stories in a section", () => {
@@ -65,6 +65,21 @@ test("does not invent filler when a section has fewer than two eligible stories"
     candidate("sports", "Source A", "only-topic", 90),
   ], ["sports"]);
   assert.equal(selected.length, 1);
+});
+
+test("places one canonical story only once across the edition", () => {
+  const shared = "https://example.com/shared-story";
+  const items = [
+    { ...candidate("usa", "Shared", "shared-usa", 100), canonicalUrl: shared },
+    candidate("usa", "USA Alternative", "usa-alt", 90),
+    { ...candidate("world", "Shared", "shared-world", 99), canonicalUrl: shared },
+    candidate("world", "World Alternative A", "world-alt-a", 89),
+    candidate("world", "World Alternative B", "world-alt-b", 88),
+  ];
+  const selected = selectBalancedEdition(items, ["usa", "world"], { maxPerCategory: 2 });
+  assert.equal(selected.filter((item) => item.canonicalUrl === shared).length, 1);
+  assert.equal(selected.filter((item) => item.category === "usa").length, 2);
+  assert.equal(selected.filter((item) => item.category === "world").length, 2);
 });
 
 test("gives a partially fillable scarce section priority over broad desks", () => {

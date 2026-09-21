@@ -32,6 +32,7 @@ test("saveReviewedDraft creates only a draft and persists reviewed stories", asy
     if (path === "categories?select=id,slug") return [{ id: "category-1", slug: "usa" }];
     if (path.startsWith("editions?select")) return [{ id: "edition-1", status: "draft", edition_date: "2026-08-18" }];
     if (path.startsWith("sources?")) return [{ id: "source-1" }];
+    if (path.startsWith("stories?canonical_url")) return [];
     if (path.startsWith("stories?")) return [{ id: "story-1" }];
     if (path.startsWith("topics?")) return [{ id: "topic-1" }];
     return null;
@@ -41,7 +42,7 @@ test("saveReviewedDraft creates only a draft and persists reviewed stories", asy
   const editionBody = JSON.parse(calls.find((call) => call.path.startsWith("editions?select")).options.body);
   assert.equal(editionBody.status, "draft");
   assert.equal(calls.some((call) => call.options.body?.includes('"status":"approved"') || call.options.body?.includes('"status":"published"')), false);
-  const storyBody = JSON.parse(calls.find((call) => call.path.startsWith("stories?")).options.body);
+  const storyBody = JSON.parse(calls.find((call) => call.path.startsWith("stories?on_conflict")).options.body);
   assert.equal(storyBody.headline, "California’s test");
   assert.equal(storyBody.summary, "A & B");
 });
@@ -51,6 +52,31 @@ test("saveReviewedDraft refuses to overwrite an existing edition", async () => {
     saveReviewedDraft(report, async () => [{ id: "existing", status: "draft" }]),
     /refusing to overwrite/,
   );
+});
+
+test("reviewed reports reject a canonical URL repeated across sections", async () => {
+  await assert.rejects(
+    saveReviewedDraft({ ...report, selected: [report.selected[0], { ...report.selected[0], category: "world" }] }, async () => []),
+    /repeats a canonical URL/,
+  );
+});
+
+test("saveReviewedDraft reuses an existing immutable story row", async () => {
+  const calls = [];
+  const rest = async (path, options = {}) => {
+    calls.push({ path, options });
+    if (path.startsWith("editions?edition_date")) return [];
+    if (path === "categories?select=id,slug") return [{ id: "category-1", slug: "usa" }];
+    if (path.startsWith("editions?select")) return [{ id: "edition-1", status: "draft", edition_date: "2026-08-18" }];
+    if (path.startsWith("sources?")) return [{ id: "source-1" }];
+    if (path.startsWith("stories?canonical_url")) return [{ id: "existing-story" }];
+    if (path.startsWith("topics?")) return [{ id: "topic-1" }];
+    return null;
+  };
+  await saveReviewedDraft(report, rest);
+  assert.equal(calls.some((call) => call.path.startsWith("stories?on_conflict")), false);
+  const placement = JSON.parse(calls.find((call) => call.path === "edition_story_placements").options.body);
+  assert.equal(placement.story_id, "existing-story");
 });
 
 test("automatic publication holds a thin edition", () => {
@@ -89,6 +115,7 @@ test("automatic publication advances a reviewed edition through both guarded sta
     if (path.includes("status=eq.approved")) return [{ id: "edition-1", status: "published", edition_date: "2026-08-18", published_at: new Date().toISOString() }];
     if (path.startsWith("edition_story_placements?")) return fullReport.selected.map((_, index) => ({ story_id: `story-${index}` }));
     if (path.startsWith("sources?")) return [{ id: "source-1" }];
+    if (path.startsWith("stories?canonical_url")) return [];
     if (path.startsWith("stories?")) return [{ id: `story-${calls.length}` }];
     if (path.startsWith("topics?")) return [{ id: "topic-1" }];
     return null;
