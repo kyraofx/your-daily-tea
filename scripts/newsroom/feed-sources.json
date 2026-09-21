@@ -37,5 +37,8 @@
   { "name": "Polygon", "url": "https://www.polygon.com/rss/index.xml", "tier": "specialist", "categories": ["gaming", "pop-culture"] },
   { "name": "GamesIndustry.biz", "url": "https://www.gamesindustry.biz/feed", "tier": "specialist", "categories": ["gaming", "jobs-work"] },
   { "name": "HR Dive", "url": "https://www.hrdive.com/feeds/news/", "tier": "specialist", "categories": ["jobs-work"] },
-  { "name": "Vox", "url": "https://www.vox.com/rss/index.xml", "tier": "major", "categories": ["life-society", "internet-trends", "other-notable"] }
+  { "name": "Vox", "url": "https://www.vox.com/rss/index.xml", "tier": "major", "categories": ["life-society", "internet-trends", "other-notable"] },
+  { "name": "TechCrunch", "url": "https://techcrunch.com/feed/", "tier": "specialist", "categories": ["tech-ai", "internet-trends"] },
+  { "name": "Mashable", "url": "https://mashable.com/feeds/rss/all", "tier": "specialist", "categories": ["internet-trends", "pop-culture"] },
+  { "name": "Social Media Today", "url": "https://www.socialmediatoday.com/feeds/news/", "tier": "specialist", "categories": ["internet-trends"] }
 ]

@@ -133,22 +133,23 @@ if (resume) {
   }
 }
 if (!decisions) {
-  process.stderr.write(`Final editorial review: evaluating ${selectionReport.selected.length} stories with Luna\n`);
+  process.stderr.write(`Final editorial review: evaluating ${selectionReport.accepted.length} stories with Luna\n`);
   decisions = await reviewEdition({
-    stories: selectionReport.selected,
+    stories: selectionReport.accepted,
     model: process.env.OPENAI_NEWSROOM_MODEL ?? "gpt-5.6-luna",
   });
   await writeFile(decisionsPath, `${JSON.stringify(decisions, null, 2)}\n`, { mode: 0o600 });
 }
-const reviewedStories = applyEditorialDecisions(selectionReport.selected, decisions);
+const reviewedStories = applyEditorialDecisions(selectionReport.accepted, decisions);
 const editorialReview = {
-  inputStories: selectionReport.selected.length,
+  inputStories: selectionReport.accepted.length,
   finalStories: reviewedStories.length,
   kept: decisions.filter((decision) => decision.action === "keep").length,
   moved: decisions.filter((decision) => decision.action === "move").length,
   removed: decisions.filter((decision) => decision.action === "remove").length,
 };
-const report = { ...selectionReport, selected: reviewedStories, editorialReview };
+const { accepted: _accepted, ...selectionSummary } = selectionReport;
+const report = { ...selectionSummary, selected: reviewedStories, editorialReview };
 await writeFile(reportPath, `${JSON.stringify(report, null, 2)}\n`, { mode: 0o600 });
 const manifest = {
   editionDate,

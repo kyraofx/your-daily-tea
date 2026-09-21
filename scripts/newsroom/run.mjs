@@ -87,15 +87,17 @@ function prepare(candidates, editionDate) {
       if (publishedAt < window.start || publishedAt > window.end) throw new Error("outside coverage window");
       const canonicalUrl = normalizedUrl(raw.canonicalUrl);
       const headlineKey = raw.headline.toLowerCase().replace(/\W+/g, " ").trim();
-      if (seenUrls.has(canonicalUrl) || seenHeadlines.has(headlineKey)) throw new Error("duplicate candidate");
+      const categoryUrlKey = `${raw.category}:${canonicalUrl}`;
+      const categoryHeadlineKey = `${raw.category}:${headlineKey}`;
+      if (seenUrls.has(categoryUrlKey) || seenHeadlines.has(categoryHeadlineKey)) throw new Error("duplicate candidate");
       const weightedScore = score(raw);
       if (weightedScore < 60) throw new Error("below calibration threshold");
       if (!raw.summary?.trim()) throw new Error("summary is required until AI generation is enabled");
       if (!Array.isArray(raw.topics) || raw.topics.length < 2 || raw.topics.length > 5) {
         throw new Error("two to five topics are required");
       }
-      seenUrls.add(canonicalUrl);
-      seenHeadlines.add(headlineKey);
+      seenUrls.add(categoryUrlKey);
+      seenHeadlines.add(categoryHeadlineKey);
       accepted.push({
         ...raw,
         canonicalUrl,
@@ -113,6 +115,7 @@ function prepare(candidates, editionDate) {
     editionDate,
     coverageStartsAt: window.start.toISOString(),
     coverageEndsAt: window.end.toISOString(),
+    accepted,
     selected,
     rejected,
   };

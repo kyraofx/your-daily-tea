@@ -29,6 +29,9 @@ const PUBLISHER_DOMAINS = {
   "GamesIndustry.biz": ["gamesindustry.biz"],
   "HR Dive": ["hrdive.com"],
   Vox: ["vox.com"],
+  TechCrunch: ["techcrunch.com"],
+  Mashable: ["mashable.com"],
+  "Social Media Today": ["socialmediatoday.com"],
 };
 
 function list(value) {
