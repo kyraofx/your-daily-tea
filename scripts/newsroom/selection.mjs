@@ -46,8 +46,7 @@ export function selectBalancedEdition(accepted, categories, {
   const reservationOrder = [...categoryList].sort((left, right) => {
     const leftAvailable = selectable(states.get(left)).length;
     const rightAvailable = selectable(states.get(right)).length;
-    const feasibility = Number(leftAvailable < reservationTarget) - Number(rightAvailable < reservationTarget);
-    return feasibility || leftAvailable - rightAvailable || categoryList.indexOf(left) - categoryList.indexOf(right);
+    return leftAvailable - rightAvailable || categoryList.indexOf(left) - categoryList.indexOf(right);
   });
   for (const category of reservationOrder) {
     const state = states.get(category);

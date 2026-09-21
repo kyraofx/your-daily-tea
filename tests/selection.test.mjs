@@ -66,3 +66,18 @@ test("does not invent filler when a section has fewer than two eligible stories"
   ], ["sports"]);
   assert.equal(selected.length, 1);
 });
+
+test("gives a partially fillable scarce section priority over broad desks", () => {
+  const selected = selectBalancedEdition([
+    candidate("early", "Shared — Early", "early-shared", 100, "Shared"),
+    candidate("early", "Alternative A", "early-alt-one", 90, "Alternative A"),
+    candidate("early", "Alternative B", "early-alt-two", 80, "Alternative B"),
+    candidate("late", "Shared — Late", "late-only", 95, "Shared"),
+  ], ["early", "late"], {
+    maxPerCategory: 2,
+    minimumPerCategory: 2,
+    maxPerSourcePerEdition: 1,
+  });
+  assert.equal(selected.filter((item) => item.category === "late").length, 1);
+  assert.equal(selected.filter((item) => item.category === "early").length, 2);
+});

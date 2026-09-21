@@ -445,6 +445,8 @@ For a duplicate event represented in multiple tentative sections, keep exactly o
 
 A duplicate-event decision is binding only when the referenced supplied pair also matches deterministic canonical-URL or headline/time evidence. Treat an unsupported semantic duplicate label as advisory at the two-story floor, because one uncorroborated whole-edition vote cannot overrule both the specialist desk and deterministic score gate for an entire section.
 
+Order section-floor reservations by the number of currently selectable alternatives, including sections that can supply only one story. A partially fillable scarce desk selects before broad desks so its only eligible publisher capacity is not consumed elsewhere; this does not fabricate a second story or bypass the final two-story gate.
+
 If a section remains below two after final review and duplicate placement, run one bounded recovery search restricted to its reviewed publisher domains. Exclude all already-reviewed event headlines from the request, ground the response to registry identity and the Pacific coverage window, deduplicate it against both the published archive and current selection, and rerun the normal score and balance rules. The publication gate still fails closed if the recovery pass cannot supply two unique qualifying stories.
 
 ### Consequences
