@@ -41,9 +41,12 @@ export function validateReviewedReport(report) {
   if (!report.coverageStartsAt || !report.coverageEndsAt) throw new Error("The reviewed report needs coverage boundaries.");
   if (!Array.isArray(report.selected) || report.selected.length === 0) throw new Error("The reviewed report has no selected stories.");
   if (!report.editorialReview) throw new Error("Only a final editorial-review report can be saved.");
+  const canonicalUrls = new Set();
   for (const story of report.selected) {
     if (!EXPECTED_SECTIONS.has(story.category)) throw new Error(`Unknown section: ${story.category}`);
     if (!story.headline || !story.summary || !story.canonicalUrl || !story.sourceName) throw new Error("Every story needs provenance and briefing copy.");
+    if (canonicalUrls.has(story.canonicalUrl)) throw new Error(`The reviewed report repeats a canonical URL: ${story.canonicalUrl}`);
+    canonicalUrls.add(story.canonicalUrl);
     if (!Array.isArray(story.topics) || story.topics.some((topic) => !topic.name || !topic.slug)) throw new Error(`${story.headline}: invalid topics.`);
   }
   return report;
@@ -78,8 +81,11 @@ export async function saveReviewedDraft(report, rest) {
         prefer: "resolution=merge-duplicates,return=representation",
         body: JSON.stringify({ name: decodeEntities(item.sourceName), domain, credibility_score: item.scores.sourceQuality }),
       });
-      const [story] = await rest("stories?select=id", {
+      const storyPath = `stories?canonical_url=eq.${encodeURIComponent(item.canonicalUrl)}&select=id`;
+      let [story] = await rest(storyPath);
+      if (!story) [story] = await rest("stories?on_conflict=canonical_url&select=id", {
         method: "POST",
+        prefer: "resolution=ignore-duplicates,return=representation",
         body: JSON.stringify({
           category_id: categoryIds.get(item.category), source_id: source.id,
           headline: decodeEntities(item.headline), summary: decodeEntities(item.summary),
@@ -91,6 +97,10 @@ export async function saveReviewedDraft(report, rest) {
           provenance: { pipeline: "reviewed-edition", editorial_reviewed: true },
         }),
       });
+      // A concurrent or earlier failed attempt may have created the immutable
+      // story row first. Resolve it without updating its archived copy.
+      if (!story) [story] = await rest(storyPath);
+      if (!story) throw new Error(`Could not resolve persisted story: ${item.canonicalUrl}`);
       await rest("edition_story_placements", {
         method: "POST",
         body: JSON.stringify({ edition_id: edition.id, story_id: story.id, section_slug: item.category, rank: item.rank }),

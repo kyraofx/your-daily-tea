@@ -470,3 +470,18 @@ Add reviewed education desks from NPR, BBC, and The New York Times, the New York
 - Life + Society no longer depends mainly on broad national and culture feeds for education and housing news.
 - The larger candidate pool gives grounded final review meaningful alternates when a story is duplicate, low-value, or better assigned elsewhere.
 - The same coverage window, category evaluation, score threshold, publisher caps, and final quality gates apply.
+
+## DEC-029 — Enforce One Placement Per Canonical Story
+
+- **Status:** Accepted
+
+### Decision
+
+Permit a canonical URL only once in a complete edition, even when the same feed story was evaluated for more than one tentative section. During balanced selection, give the story to the first scarce section that can select it and let the other section use its next eligible reviewed candidate. Reject any repeated canonical URL again immediately before persistence. When an identical immutable story row already exists from an earlier partial attempt, reference that row rather than updating its content or failing on the unique key.
+
+### Consequences
+
+- One article can no longer satisfy the two-story floor in multiple sections.
+- A cross-section duplicate cannot cause a late Supabase unique-key failure after editorial review has passed.
+- Existing published story copy remains immutable; retries may reference an existing row but do not overwrite it.
+- If no distinct alternate exists, the section remains short and the edition still fails closed.

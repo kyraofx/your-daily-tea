@@ -6,6 +6,7 @@ export function selectBalancedEdition(accepted, categories, {
 } = {}) {
   const categoryList = [...categories];
   const editionSourceCounts = new Map();
+  const selectedCanonicalUrls = new Set();
   const states = new Map(categoryList.map((category) => [category, {
     candidates: accepted.filter((candidate) => candidate.category === category)
       .sort((a, b) => b.weightedScore - a.weightedScore),
@@ -17,6 +18,7 @@ export function selectBalancedEdition(accepted, categories, {
   function selectable(state) {
     return state.candidates.filter((item) => {
       if (state.selected.includes(item)) return false;
+      if (selectedCanonicalUrls.has(item.canonicalUrl)) return false;
       const publisher = item.publisherName ?? item.sourceName;
       const primaryTopic = item.topics[0]?.slug;
       if (primaryTopic && state.primaryTopics.has(primaryTopic)) return false;
@@ -33,6 +35,7 @@ export function selectBalancedEdition(accepted, categories, {
     const publisher = item.publisherName ?? item.sourceName;
     const primaryTopic = item.topics[0]?.slug;
     state.selected.push(item);
+    selectedCanonicalUrls.add(item.canonicalUrl);
     if (primaryTopic) state.primaryTopics.add(primaryTopic);
     state.sourceCounts.set(publisher, (state.sourceCounts.get(publisher) ?? 0) + 1);
     editionSourceCounts.set(publisher, (editionSourceCounts.get(publisher) ?? 0) + 1);
