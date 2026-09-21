@@ -105,16 +105,21 @@ export function applyEditorialDecisions(stories, decisions, { minimumPerCategory
   const byUrl = new Map(decisions.map((decision) => [decision.canonicalUrl, decision]));
   const retained = stories.flatMap((story) => {
     const decision = byUrl.get(story.canonicalUrl);
-    if (!decision || (decision.action === "remove" && decision.reason !== "low-value")) return [];
+    if (!decision || (decision.action === "remove" && !["low-value", "duplicate-event"].includes(decision.reason))) return [];
     return [{
       ...story,
       originalCategory: story.category,
       category: decision.action === "move" ? decision.targetCategory : story.category,
       advisoryRemoval: decision.action === "remove" && decision.reason === "low-value",
+      duplicateRemoval: decision.action === "remove" && decision.reason === "duplicate-event",
+      duplicateOf: decision.duplicateOf,
     }];
   });
-  const active = retained.filter((story) => !story.advisoryRemoval);
+  const active = retained.filter((story) => !story.advisoryRemoval && !story.duplicateRemoval);
   let selected = selectBalancedEdition(active.map((story) => ({ ...story, rank: undefined })), CATEGORY_SLUGS);
+  const deficit = (selection) => CATEGORY_SLUGS.reduce((total, category) => (
+    total + Math.max(0, minimumPerCategory - selection.filter((story) => story.category === category).length)
+  ), 0);
   for (const category of CATEGORY_SLUGS) {
     if (retained.filter((story) => story.originalCategory === category).length < minimumPerCategory) continue;
     while (selected.filter((story) => story.category === category).length < minimumPerCategory) {
@@ -135,6 +140,31 @@ export function applyEditorialDecisions(stories, decisions, { minimumPerCategory
       active.push(restoration);
       selected = selectBalancedEdition(active.map((story) => ({ ...story, rank: undefined })), CATEGORY_SLUGS);
     }
+    for (const restoration of retained
+      .filter((story) => story.duplicateRemoval && story.originalCategory === category)
+      .sort((left, right) => right.weightedScore - left.weightedScore)) {
+      if (selected.filter((story) => story.category === category).length >= minimumPerCategory) break;
+      const beforeDeficit = deficit(selected);
+      const duplicateIndex = active.findIndex((story) => story.canonicalUrl === restoration.duplicateOf);
+      const [replaced] = duplicateIndex >= 0 ? active.splice(duplicateIndex, 1) : [];
+      restoration.duplicateRemoval = false;
+      restoration.category = category;
+      active.push(restoration);
+      const next = selectBalancedEdition(active.map((story) => ({ ...story, rank: undefined })), CATEGORY_SLUGS);
+      if (deficit(next) < beforeDeficit) {
+        selected = next;
+      } else {
+        active.pop();
+        restoration.duplicateRemoval = true;
+        if (replaced) active.splice(duplicateIndex, 0, replaced);
+      }
+    }
   }
-  return selected.map(({ originalCategory: _originalCategory, advisoryRemoval: _advisoryRemoval, ...story }) => story);
+  return selected.map(({
+    originalCategory: _originalCategory,
+    advisoryRemoval: _advisoryRemoval,
+    duplicateRemoval: _duplicateRemoval,
+    duplicateOf: _duplicateOf,
+    ...story
+  }) => story);
 }

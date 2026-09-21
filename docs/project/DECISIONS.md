@@ -441,6 +441,8 @@ Send the complete score-qualified candidate pool to grounded whole-edition revie
 
 Treat duplicate-event removals as final. Treat a category move or broad-review low-value vote as advisory when applying it would erase the source desk below two stories that already passed its category-specific evaluation and deterministic score threshold; in that case, restore the highest-scoring candidates needed to retain the floor before final balancing. This is two-pass consensus, not filler: no candidate can enter through this arbitration unless the specialist desk already selected it and deterministic validation accepted it.
 
+For a duplicate event represented in multiple tentative sections, keep exactly one reviewed copy. Deterministic placement may replace the reviewer's chosen copy with another reviewed copy only when the swap reduces the edition's total section deficit without creating an equal deficit elsewhere.
+
 ### Consequences
 
 - When final review moves a USA or Sports story, a reviewed alternate can fill the vacated placement instead of leaving the section empty.

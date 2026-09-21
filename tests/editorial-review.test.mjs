@@ -74,10 +74,23 @@ test("still honors duplicate removals when a section becomes underfilled", () =>
   const first = story("https://example.com/first", "life-society", 90);
   const second = story("https://example.com/second", "life-society", 80);
   const selected = applyEditorialDecisions([first, second], [
-    { canonicalUrl: first.canonicalUrl, action: "remove", reason: "duplicate-event", targetCategory: null },
+    { canonicalUrl: first.canonicalUrl, action: "remove", reason: "duplicate-event", duplicateOf: second.canonicalUrl, targetCategory: null },
     { canonicalUrl: second.canonicalUrl, action: "keep", targetCategory: null },
   ]);
   assert.equal(selected.length, 1);
+});
+
+test("places one copy of duplicate events in the section that reduces coverage deficits", () => {
+  const usa = [1, 2, 3, 4].map((number) => story(`https://example.com/usa-${number}`, "usa", 100 - number));
+  const sports = [1, 2].map((number) => story(`https://example.com/sports-${number}`, "sports", 90 - number));
+  const selected = applyEditorialDecisions([...usa, ...sports], [
+    ...usa.map((item) => ({ canonicalUrl: item.canonicalUrl, action: "keep", reason: "keep", targetCategory: null })),
+    { canonicalUrl: sports[0].canonicalUrl, action: "remove", reason: "duplicate-event", duplicateOf: usa[0].canonicalUrl, targetCategory: null },
+    { canonicalUrl: sports[1].canonicalUrl, action: "remove", reason: "duplicate-event", duplicateOf: usa[1].canonicalUrl, targetCategory: null },
+  ]);
+  assert.equal(selected.filter(({ category }) => category === "usa").length, 2);
+  assert.equal(selected.filter(({ category }) => category === "sports").length, 2);
+  assert.equal(new Set(selected.map(({ canonicalUrl }) => canonicalUrl)).size, selected.length);
 });
 
 test("uses a specialist-approved low-value alternate only to preserve the section floor", () => {
