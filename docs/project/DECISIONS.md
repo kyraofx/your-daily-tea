@@ -413,3 +413,20 @@ Never weaken the score threshold, coverage window, provenance grounding, dedupli
 - Sports, Internet + Trends, and other later sections receive their minimum opportunity before earlier sections consume shared publisher capacity.
 - A genuinely quiet section can prevent that day's new edition from publishing; this is preferable to filler under the requested coverage guarantee.
 - Previously published editions remain frozen and may still contain empty or one-story sections.
+
+## DEC-026 — Recover Underfilled Sections Without Weakening Publication Gates
+
+- **Status:** Accepted
+
+### Decision
+
+Preserve materially overlapping same-day candidates when they belong to different tentative sections until the grounded whole-edition review decides their final placement. Continue removing duplicates within a section and against the published archive.
+
+When feed evaluation returns fewer than two qualifying stories for a section, run one bounded Luna web search for that section. Restrict discovery to the reviewed publisher domains already represented in the source registry, then deterministically reject unreviewed domains, wrong sections, and timestamps outside the Pacific coverage window. Restore publisher identity and source quality from the registry rather than trusting model-supplied values.
+
+### Consequences
+
+- A cross-section duplicate can no longer erase USA, Sports, or another section before final placement is decided.
+- Sections whose RSS feeds omit a timely article have one additional discovery path without opening publication to arbitrary sources.
+- The fallback adds model cost only for sections with fewer than two qualifying feed stories.
+- The existing score, diversity, deduplication, editorial review, per-section minimum, database transition, idempotence, and immutability safeguards remain fail closed.

@@ -40,7 +40,7 @@ The workflow starts at 6:07 AM in `America/Los_Angeles`, with safe GitHub backup
 
 ## Engineering highlights
 
-- **AI with guardrails:** the model can evaluate supplied candidates, but deterministic code controls timestamps, provenance, scoring, source caps, deduplication, and publication thresholds.
+- **AI with guardrails:** the model evaluates feed candidates and can run one reviewed-domain search for an underfilled section, while deterministic code controls timestamps, provenance, scoring, source caps, deduplication, and publication thresholds.
 - **Immutable archive:** Supabase transition guards prevent published editions from being changed retrospectively.
 - **Secure public data:** row-level security exposes published content while keeping drafts and newsroom credentials private.
 - **Reliable automation:** GitHub Actions handles generation, encrypted credentials, queued retries, and diagnostics, while an independent publication watchdog compensates for delayed or dropped GitHub schedules.

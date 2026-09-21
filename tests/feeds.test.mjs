@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { collectFeeds, parseFeed } from "../scripts/newsroom/feeds.mjs";
+import { collectFeeds, groundRetrievedCandidates, parseFeed } from "../scripts/newsroom/feeds.mjs";
 
 const source = { name: "Test Source", url: "https://example.com/feed", tier: "major", categories: ["usa"] };
 const xml = `<?xml version="1.0"?><rss><channel>
@@ -51,4 +51,37 @@ test("parses ESPN-style links wrapped in CDATA", () => {
 test("decodes numeric HTML entities in feed headlines", () => {
   const encoded = `<rss><channel><item><title>Workers: &#8216;No one is coming&#8217;</title><link>https://example.com/entity</link><pubDate>Tue, 18 Aug 2026 08:00:00 GMT</pubDate></item></channel></rss>`;
   assert.equal(parseFeed(encoded, source)[0].headline, "Workers: ‘No one is coming’");
+});
+
+test("grounds fallback retrieval to reviewed domains and deterministic source quality", () => {
+  const result = groundRetrievedCandidates([{
+    category: "usa",
+    headline: "A grounded story",
+    canonicalUrl: "https://www.npr.org/2026/08/18/a-grounded-story",
+    sourceName: "Invented label",
+    publishedAt: "2026-08-18T14:00:00Z",
+    topics: ["One", "Two"],
+    scores: { sourceQuality: 1 },
+  }], {
+    category: "usa",
+    sources: [{ name: "NPR News", publisher: "NPR", tier: "major", categories: ["usa"] }],
+    coverageStartsAt: "2026-08-18T13:00:00Z",
+    coverageEndsAt: "2026-08-19T12:59:59Z",
+  });
+  assert.equal(result.candidates[0].sourceName, "NPR News");
+  assert.equal(result.candidates[0].publisherName, "NPR");
+  assert.equal(result.candidates[0].scores.sourceQuality, 92);
+});
+
+test("rejects fallback retrieval from unreviewed domains", () => {
+  const result = groundRetrievedCandidates([{
+    category: "usa", canonicalUrl: "https://unknown.example/story", publishedAt: "2026-08-18T14:00:00Z",
+  }], {
+    category: "usa",
+    sources: [{ name: "NPR News", publisher: "NPR", tier: "major", categories: ["usa"] }],
+    coverageStartsAt: "2026-08-18T13:00:00Z",
+    coverageEndsAt: "2026-08-19T12:59:59Z",
+  });
+  assert.equal(result.candidates.length, 0);
+  assert.equal(result.rejected[0].reason, "unreviewed-source-domain");
 });

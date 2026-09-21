@@ -181,7 +181,9 @@ export async function evaluateCandidates(options, fetchImpl = fetch) {
   return groundEvaluatedCandidates(JSON.parse(output).candidates, options.candidates, options.category);
 }
 
-export function retrievalRequest({ category, coverageStartsAt, coverageEndsAt, model = "gpt-5.6-luna" }) {
+export function retrievalRequest({
+  category, coverageStartsAt, coverageEndsAt, allowedSources = [], model = "gpt-5.6-luna",
+}) {
   const brief = CATEGORY_BRIEFS[category];
   if (!brief) throw new Error(`Unknown retrieval category: ${category}`);
   return {
@@ -196,6 +198,9 @@ export function retrievalRequest({ category, coverageStartsAt, coverageEndsAt, m
       "Find two to eight genuinely worthwhile candidates when at least two meet every standard; otherwise return only the qualifying candidates so the publication gate can fail closed.",
       "You must search the web before producing the structured response. Use multiple focused searches when the first search is insufficient.",
       "Prefer primary sources and original reporting. Treat social signals as discovery only.",
+      allowedSources.length
+        ? `Use only these reviewed publishers and article domains: ${JSON.stringify(allowedSources)}. Do not return any other domain.`
+        : "Use reputable sources and preserve exact attribution.",
       "Do not reproduce article prose. Write an original, factual two-to-four sentence summary.",
       "Use the canonical source URL, an ISO-8601 publication timestamp, and two to five normalized topic names.",
       "Score every dimension independently from 0 to 100. Do not select merely to fill space.",

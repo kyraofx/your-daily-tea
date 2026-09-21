@@ -7,10 +7,28 @@ const parser = new XMLParser({
   textNodeName: "#text",
 });
 
-const SOURCE_TIERS = {
+export const SOURCE_TIERS = {
   primary: { credibilityScore: 98, isPrimarySource: true },
   major: { credibilityScore: 92, isPrimarySource: false },
   specialist: { credibilityScore: 88, isPrimarySource: false },
+};
+
+const PUBLISHER_DOMAINS = {
+  NPR: ["npr.org"],
+  BBC: ["bbc.com", "bbc.co.uk"],
+  "The New York Times": ["nytimes.com"],
+  "ESPN News": ["espn.com"],
+  CalMatters: ["calmatters.org"],
+  "California Governor": ["gov.ca.gov"],
+  "NASA News Releases": ["nasa.gov"],
+  "NOAA News": ["noaa.gov"],
+  "The Verge": ["theverge.com"],
+  Wired: ["wired.com"],
+  "IGN Games": ["ign.com"],
+  Polygon: ["polygon.com"],
+  "GamesIndustry.biz": ["gamesindustry.biz"],
+  "HR Dive": ["hrdive.com"],
+  Vox: ["vox.com"],
 };
 
 function list(value) {
@@ -54,6 +72,73 @@ function validHttpUrl(value) {
   } catch {
     return false;
   }
+}
+
+function matchingDomain(hostname, domains) {
+  return domains.find((domain) => hostname === domain || hostname.endsWith(`.${domain}`));
+}
+
+export function reviewedSourcePolicies(sources, category) {
+  const policies = [];
+  const seen = new Set();
+  for (const source of sources.filter((entry) => entry.categories.includes(category))) {
+    const publisherName = source.publisher ?? source.name;
+    if (seen.has(publisherName)) continue;
+    const domains = source.articleDomains ?? PUBLISHER_DOMAINS[publisherName];
+    if (!domains?.length) continue;
+    const sourcePolicy = SOURCE_TIERS[source.tier];
+    if (!sourcePolicy) throw new Error(`${source.name}: unknown source tier ${source.tier}`);
+    policies.push({
+      sourceName: source.name,
+      publisherName,
+      domains,
+      ...sourcePolicy,
+    });
+    seen.add(publisherName);
+  }
+  return policies;
+}
+
+export function groundRetrievedCandidates(candidates, {
+  category, sources, coverageStartsAt, coverageEndsAt,
+}) {
+  const policies = reviewedSourcePolicies(sources, category);
+  const startsAt = Date.parse(coverageStartsAt);
+  const endsAt = Date.parse(coverageEndsAt);
+  const grounded = [];
+  const rejected = [];
+  for (const candidate of candidates) {
+    let url;
+    try {
+      url = new URL(candidate.canonicalUrl);
+    } catch {
+      rejected.push({ candidate, reason: "invalid-url" });
+      continue;
+    }
+    const publishedAt = Date.parse(candidate.publishedAt);
+    if (candidate.category !== category) {
+      rejected.push({ candidate, reason: "wrong-category" });
+      continue;
+    }
+    if (!Number.isFinite(publishedAt) || publishedAt < startsAt || publishedAt > endsAt) {
+      rejected.push({ candidate, reason: "outside-coverage-window" });
+      continue;
+    }
+    const policy = policies.find((entry) => matchingDomain(url.hostname.toLowerCase(), entry.domains));
+    if (!policy) {
+      rejected.push({ candidate, reason: "unreviewed-source-domain" });
+      continue;
+    }
+    grounded.push({
+      ...candidate,
+      category,
+      sourceName: policy.sourceName,
+      publisherName: policy.publisherName,
+      publishedAt: new Date(publishedAt).toISOString(),
+      scores: { ...candidate.scores, sourceQuality: policy.credibilityScore },
+    });
+  }
+  return { candidates: grounded, rejected };
 }
 
 export function parseFeed(xml, source) {
