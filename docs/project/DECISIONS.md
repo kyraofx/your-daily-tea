@@ -448,3 +448,17 @@ Treat duplicate-event and low-value removals as final. Treat a category move as 
 - Internet + Trends receives direct creator, platform, social-media, and internet-culture discovery rather than depending mainly on general technology feeds.
 - The cross-section reviewer can correct categorization without reclassifying an entire qualified desk out of existence.
 - Score thresholds, source caps, the two-per-section publication gate, and published-edition immutability remain unchanged.
+
+## DEC-028 — Add Direct Education and Housing Discovery
+
+- **Status:** Accepted
+
+### Decision
+
+Add reviewed education desks from NPR, BBC, and The New York Times, the New York Times real-estate desk, Inside Higher Ed, and HousingWire to the feed registry for Life + Society discovery. Preserve shared publisher identities and the existing deterministic major/specialist source tiers.
+
+### Consequences
+
+- Life + Society no longer depends mainly on broad national and culture feeds for education and housing news.
+- The larger candidate pool gives grounded final review meaningful alternates when a story is duplicate, low-value, or better assigned elsewhere.
+- The same coverage window, category evaluation, score threshold, publisher caps, and final quality gates apply.

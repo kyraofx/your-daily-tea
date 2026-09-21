@@ -40,5 +40,11 @@
   { "name": "Vox", "url": "https://www.vox.com/rss/index.xml", "tier": "major", "categories": ["life-society", "internet-trends", "other-notable"] },
   { "name": "TechCrunch", "url": "https://techcrunch.com/feed/", "tier": "specialist", "categories": ["tech-ai", "internet-trends"] },
   { "name": "Mashable", "url": "https://mashable.com/feeds/rss/all", "tier": "specialist", "categories": ["internet-trends", "pop-culture"] },
-  { "name": "Social Media Today", "url": "https://www.socialmediatoday.com/feeds/news/", "tier": "specialist", "categories": ["internet-trends"] }
+  { "name": "Social Media Today", "url": "https://www.socialmediatoday.com/feeds/news/", "tier": "specialist", "categories": ["internet-trends"] },
+  { "name": "NPR Education", "publisher": "NPR", "url": "https://feeds.npr.org/1013/rss.xml", "tier": "major", "categories": ["life-society"] },
+  { "name": "BBC News — Education", "publisher": "BBC", "url": "https://feeds.bbci.co.uk/news/education/rss.xml", "tier": "major", "categories": ["life-society"] },
+  { "name": "The New York Times — Education", "publisher": "The New York Times", "url": "https://rss.nytimes.com/services/xml/rss/nyt/Education.xml", "tier": "major", "categories": ["life-society"] },
+  { "name": "The New York Times — Real Estate", "publisher": "The New York Times", "url": "https://rss.nytimes.com/services/xml/rss/nyt/RealEstate.xml", "tier": "major", "categories": ["life-society"] },
+  { "name": "Inside Higher Ed", "url": "https://www.insidehighered.com/rss.xml", "tier": "specialist", "categories": ["life-society"] },
+  { "name": "HousingWire", "url": "https://www.housingwire.com/feed/", "tier": "specialist", "categories": ["life-society", "money-economy"] }
 ]

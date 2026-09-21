@@ -32,6 +32,8 @@ const PUBLISHER_DOMAINS = {
   TechCrunch: ["techcrunch.com"],
   Mashable: ["mashable.com"],
   "Social Media Today": ["socialmediatoday.com"],
+  "Inside Higher Ed": ["insidehighered.com"],
+  HousingWire: ["housingwire.com"],
 };
 
 function list(value) {
