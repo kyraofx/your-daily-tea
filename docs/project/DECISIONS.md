@@ -443,6 +443,8 @@ Treat duplicate-event removals as final. Treat a category move or broad-review l
 
 For a duplicate event represented in multiple tentative sections, keep exactly one reviewed copy. Deterministic placement may replace the reviewer's chosen copy with another reviewed copy only when the swap reduces the edition's total section deficit without creating an equal deficit elsewhere.
 
+A duplicate-event decision is binding only when the referenced supplied pair also matches deterministic canonical-URL or headline/time evidence. Treat an unsupported semantic duplicate label as advisory at the two-story floor, because one uncorroborated whole-edition vote cannot overrule both the specialist desk and deterministic score gate for an entire section.
+
 If a section remains below two after final review and duplicate placement, run one bounded recovery search restricted to its reviewed publisher domains. Exclude all already-reviewed event headlines from the request, ground the response to registry identity and the Pacific coverage window, deduplicate it against both the published archive and current selection, and rerun the normal score and balance rules. The publication gate still fails closed if the recovery pass cannot supply two unique qualifying stories.
 
 ### Consequences

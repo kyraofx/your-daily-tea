@@ -32,7 +32,7 @@ export function headlineSimilarity(left, right) {
   return intersection / (a.size + b.size - intersection);
 }
 
-function sameStory(left, right, threshold) {
+export function sameStory(left, right, threshold = 0.5) {
   const leftUrl = normalizedUrl(left.canonicalUrl);
   const rightUrl = normalizedUrl(right.canonicalUrl);
   if (leftUrl && rightUrl && leftUrl === rightUrl) return true;
