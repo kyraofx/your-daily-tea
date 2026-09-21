@@ -182,7 +182,7 @@ export async function evaluateCandidates(options, fetchImpl = fetch) {
 }
 
 export function retrievalRequest({
-  category, coverageStartsAt, coverageEndsAt, allowedSources = [], model = "gpt-5.6-luna",
+  category, coverageStartsAt, coverageEndsAt, allowedSources = [], excludedStories = [], model = "gpt-5.6-luna",
 }) {
   const brief = CATEGORY_BRIEFS[category];
   if (!brief) throw new Error(`Unknown retrieval category: ${category}`);
@@ -201,6 +201,9 @@ export function retrievalRequest({
       allowedSources.length
         ? `Use only these reviewed publishers and article domains: ${JSON.stringify(allowedSources)}. Do not return any other domain.`
         : "Use reputable sources and preserve exact attribution.",
+      excludedStories.length
+        ? `Do not return these already-reviewed events or materially duplicate coverage of them: ${JSON.stringify(excludedStories.slice(0, 120))}.`
+        : "Avoid materially duplicate coverage within your response.",
       "Do not reproduce article prose. Write an original, factual two-to-four sentence summary.",
       "Use the canonical source URL, an ISO-8601 publication timestamp, and two to five normalized topic names.",
       "Score every dimension independently from 0 to 100. Do not select merely to fill space.",
