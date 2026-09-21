@@ -439,7 +439,7 @@ When feed evaluation returns fewer than two qualifying stories for a section, ru
 
 Send the complete score-qualified candidate pool to grounded whole-edition review, not only the initial balanced selection. Apply every keep, move, and remove decision to that reviewed pool, then run deterministic section, topic, and publisher balancing once more. Preserve same-day duplicates across tentative sections until this review, and add TechCrunch, Mashable, and Social Media Today as reviewed specialist feeds for Internet + Trends discovery.
 
-Treat duplicate-event and low-value removals as final. Treat a category move as advisory when applying every proposed move would erase the source desk below two stories that already passed its category-specific evaluation and deterministic score threshold; in that case, restore the highest-scoring moved candidates needed to retain the floor before final balancing.
+Treat duplicate-event removals as final. Treat a category move or broad-review low-value vote as advisory when applying it would erase the source desk below two stories that already passed its category-specific evaluation and deterministic score threshold; in that case, restore the highest-scoring candidates needed to retain the floor before final balancing. This is two-pass consensus, not filler: no candidate can enter through this arbitration unless the specialist desk already selected it and deterministic validation accepted it.
 
 ### Consequences
 

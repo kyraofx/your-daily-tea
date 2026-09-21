@@ -70,14 +70,28 @@ test("does not let category moves erase an otherwise qualified section", () => {
   assert.equal(selected.filter(({ category }) => category === "money-economy").length, 1);
 });
 
-test("still honors final-review removals when a section becomes underfilled", () => {
+test("still honors duplicate removals when a section becomes underfilled", () => {
   const first = story("https://example.com/first", "life-society", 90);
   const second = story("https://example.com/second", "life-society", 80);
   const selected = applyEditorialDecisions([first, second], [
-    { canonicalUrl: first.canonicalUrl, action: "remove", targetCategory: null },
+    { canonicalUrl: first.canonicalUrl, action: "remove", reason: "duplicate-event", targetCategory: null },
     { canonicalUrl: second.canonicalUrl, action: "keep", targetCategory: null },
   ]);
   assert.equal(selected.length, 1);
+});
+
+test("uses a specialist-approved low-value alternate only to preserve the section floor", () => {
+  const first = story("https://example.com/first", "life-society", 90);
+  const second = story("https://example.com/second", "life-society", 80);
+  const third = story("https://example.com/third", "life-society", 70);
+  const selected = applyEditorialDecisions([first, second, third], [
+    { canonicalUrl: first.canonicalUrl, action: "keep", reason: "keep", targetCategory: null },
+    { canonicalUrl: second.canonicalUrl, action: "remove", reason: "low-value", targetCategory: null },
+    { canonicalUrl: third.canonicalUrl, action: "remove", reason: "low-value", targetCategory: null },
+  ]);
+  assert.equal(selected.length, 2);
+  assert.ok(selected.some(({ canonicalUrl }) => canonicalUrl === first.canonicalUrl));
+  assert.ok(selected.some(({ canonicalUrl }) => canonicalUrl === second.canonicalUrl));
 });
 
 test("grounds editorial story IDs back to exact supplied URLs", async () => {

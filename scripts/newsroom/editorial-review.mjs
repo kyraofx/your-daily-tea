@@ -105,24 +105,36 @@ export function applyEditorialDecisions(stories, decisions, { minimumPerCategory
   const byUrl = new Map(decisions.map((decision) => [decision.canonicalUrl, decision]));
   const retained = stories.flatMap((story) => {
     const decision = byUrl.get(story.canonicalUrl);
-    if (!decision || decision.action === "remove") return [];
+    if (!decision || (decision.action === "remove" && decision.reason !== "low-value")) return [];
     return [{
       ...story,
       originalCategory: story.category,
       category: decision.action === "move" ? decision.targetCategory : story.category,
+      advisoryRemoval: decision.action === "remove" && decision.reason === "low-value",
     }];
   });
-  let selected = selectBalancedEdition(retained.map((story) => ({ ...story, rank: undefined })), CATEGORY_SLUGS);
+  const active = retained.filter((story) => !story.advisoryRemoval);
+  let selected = selectBalancedEdition(active.map((story) => ({ ...story, rank: undefined })), CATEGORY_SLUGS);
   for (const category of CATEGORY_SLUGS) {
     if (retained.filter((story) => story.originalCategory === category).length < minimumPerCategory) continue;
     while (selected.filter((story) => story.category === category).length < minimumPerCategory) {
-      const restoration = retained
+      const restoration = active
         .filter((story) => story.originalCategory === category && story.category !== category)
         .sort((left, right) => right.weightedScore - left.weightedScore)[0];
       if (!restoration) break;
       restoration.category = category;
-      selected = selectBalancedEdition(retained.map((story) => ({ ...story, rank: undefined })), CATEGORY_SLUGS);
+      selected = selectBalancedEdition(active.map((story) => ({ ...story, rank: undefined })), CATEGORY_SLUGS);
+    }
+    while (selected.filter((story) => story.category === category).length < minimumPerCategory) {
+      const restoration = retained
+        .filter((story) => story.advisoryRemoval && story.originalCategory === category)
+        .sort((left, right) => right.weightedScore - left.weightedScore)[0];
+      if (!restoration) break;
+      restoration.advisoryRemoval = false;
+      restoration.category = category;
+      active.push(restoration);
+      selected = selectBalancedEdition(active.map((story) => ({ ...story, rank: undefined })), CATEGORY_SLUGS);
     }
   }
-  return selected.map(({ originalCategory: _originalCategory, ...story }) => story);
+  return selected.map(({ originalCategory: _originalCategory, advisoryRemoval: _advisoryRemoval, ...story }) => story);
 }
