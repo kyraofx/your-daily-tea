@@ -21,7 +21,7 @@ Readers face too much repetitive, low-value news spread across many sources. Fin
 
 - A frozen morning edition that can be read in roughly 10 minutes.
 - Editorial selection based on importance, interestingness, audience relevance, newness, source quality, and momentum.
-- No filler: quiet categories may contain no stories.
+- Complete section coverage without filler: every published section has at least two qualifying stories, or the new edition is held back.
 - A permanent, searchable archive that connects related coverage across dates through topics displayed as hashtags.
 
 ## Core User Journey
@@ -37,7 +37,7 @@ Readers face too much repetitive, low-value news spread across many sources. Fin
 
 - **Respect the cutoff.** Each edition contains only material from its defined 24-hour window.
 - **Curate, do not merely aggregate.** Select what a curious reader would be glad to have learned that morning.
-- **No forced filler.** A subject section may have zero stories.
+- **Complete without filler.** Every new edition needs two qualifying stories in each section; if a section is genuinely too quiet, retain the previous edition rather than lowering the standard.
 - **Reward genuine newness.** Recycled commentary and duplicate coverage do not become separate stories.
 - **Balance importance and interest.** Significant world events remain visible, while surprising or highly relevant stories can also earn space.
 - **Prefer credible, original evidence.** Trending signals aid discovery but do not establish factual truth.
@@ -69,7 +69,7 @@ Readers face too much repetitive, low-value news spread across many sources. Fin
 
 - Reproducing source articles in full.
 - Generating an edition on every page request.
-- Filling a fixed story quota for each section.
+- Publishing weak or duplicate stories solely to meet the two-story section minimum.
 - Retrospectively adding post-cutoff developments to an older edition.
 - Story timelines in the MVP.
 - Personalization, email briefings, and user accounts until further decisions are made.

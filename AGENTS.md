@@ -34,7 +34,7 @@ Treat `main`, Supabase, Sites, both domains, and the GitHub Actions workflow as 
 - Keep exactly 15 sections in the confirmed order; `USA` is first.
 - Do not add a `Top Stories` section.
 - Do not add standard `Why it matters` blocks.
-- Show quiet sections without inventing filler.
+- Never invent filler; if any section has fewer than two qualifying stories, hold the new edition instead of publishing it.
 - Today, Archive, Topics, and Search must remain functional and responsive.
 - Published editions are frozen and immutable.
 - Public edition numbers count successful published editions only.
@@ -48,7 +48,7 @@ The scheduled workflow starts at 6:07 AM in `America/Los_Angeles`. It gathers ca
 - Never bypass the database transition guard.
 - Never overwrite or edit a published edition.
 - Never reduce or remove the fail-closed behavior without explicit approval.
-- Current automatic minimums are 20 stories and 10 populated sections.
+- Current automatic minimums are two qualifying stories in each of all 15 sections (at least 30 stories total).
 - A failed run must leave the previous published edition live.
 - Preserve idempotence for duplicate dates and manual retries.
 - New editions should appear without a website redeployment.

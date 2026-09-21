@@ -40,3 +40,29 @@ test("limits one source across the full edition", () => {
   const selected = selectBalancedEdition(items, categories, { maxPerSourcePerEdition: 3 });
   assert.equal(selected.filter((item) => item.sourceName === "Dominant").length, 3);
 });
+
+test("reserves two stories for a scarce later section before filling earlier sections", () => {
+  const items = [
+    candidate("early", "Shared — Early", "early-shared-one", 100, "Shared"),
+    candidate("early", "Shared — Early", "early-shared-two", 99, "Shared"),
+    candidate("early", "Alternative A", "early-alt-one", 80, "Alternative A"),
+    candidate("early", "Alternative B", "early-alt-two", 79, "Alternative B"),
+    candidate("late", "Shared — Late", "late-one", 90, "Shared"),
+    candidate("late", "Shared — Late", "late-two", 89, "Shared"),
+  ];
+  const selected = selectBalancedEdition(items, ["early", "late"], {
+    maxPerCategory: 2,
+    minimumPerCategory: 2,
+    maxPerSourcePerEdition: 2,
+  });
+  assert.equal(selected.filter((item) => item.category === "early").length, 2);
+  assert.equal(selected.filter((item) => item.category === "late").length, 2);
+  assert.equal(selected.filter((item) => item.publisherName === "Shared").length, 2);
+});
+
+test("does not invent filler when a section has fewer than two eligible stories", () => {
+  const selected = selectBalancedEdition([
+    candidate("sports", "Source A", "only-topic", 90),
+  ], ["sports"]);
+  assert.equal(selected.length, 1);
+});

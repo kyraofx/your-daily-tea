@@ -36,7 +36,7 @@ Every morning, the newsroom workflow:
 7. Fails closed if the edition is too thin or incomplete.
 8. Saves, approves, publishes, and verifies an immutable Supabase edition.
 
-The workflow starts at 6:07 AM in `America/Los_Angeles`, with safe GitHub backup attempts through 7:07 AM. An independent publication watchdog also checks repeatedly from 6:12 through 7:52 AM Pacific and dispatches the same guarded workflow only when the date is still missing. Every attempt first checks whether that date is already published, so backups skip setup and AI generation once the edition is live. Daylight-saving changes are automatic. If generation fails—or produces fewer than 20 stories across 10 populated sections—the previous edition remains live.
+The workflow starts at 6:07 AM in `America/Los_Angeles`, with safe GitHub backup attempts through 7:07 AM. An independent publication watchdog also checks repeatedly from 6:12 through 7:52 AM Pacific and dispatches the same guarded workflow only when the date is still missing. Every attempt first checks whether that date is already published, so backups skip setup and AI generation once the edition is live. Daylight-saving changes are automatic. A new edition publishes only when all 15 sections contain at least two qualifying stories (at least 30 total); otherwise the previous edition remains live rather than filling the gap with weak coverage.
 
 ## Engineering highlights
 

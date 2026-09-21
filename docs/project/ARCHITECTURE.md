@@ -24,7 +24,7 @@ Required capabilities:
 
 The implementation uses the Sites Vinext/React runtime and preserves the supplied HTML design. Public data is read from Supabase through server-side API routes; browser code never receives administrative credentials.
 
-The reader interface is connected to published data through the same public repository used by the API. Today preserves the supplied dark editorial layout, 15-section order, numbered collapsible sections, source attribution, timestamps, and hashtags. Empty sections remain visible so quiet coverage is explicit. Archive loads frozen editions by date, Topics lists and opens real published hashtags, and Search queries published headlines and summaries only.
+The reader interface is connected to published data through the same public repository used by the API. Today preserves the supplied dark editorial layout, 15-section order, numbered collapsible sections, source attribution, timestamps, and hashtags. Older frozen editions may retain historically empty sections; new production editions require at least two qualifying stories in every section. Archive loads frozen editions by date, Topics lists and opens real published hashtags, and Search queries published headlines and summaries only.
 
 ## Backend
 
@@ -36,14 +36,14 @@ Required responsibilities:
 - Deduplicate overlapping coverage and prefer original sources.
 - Compare candidates with archived stories for material newness.
 - Apply credibility checks and weighted editorial scoring.
-- Perform a final selection and diversity pass without fixed filler quotas.
+- Perform a final selection and diversity pass that reserves two qualifying stories per section without adding filler.
 - Generate concise summaries and structured topics.
 - Save and publish an immutable daily edition.
 - Query archived editions by date and stories by topic plus date constraints.
 
 The website API is implemented in TypeScript. The newsroom engine runs as a separate GitHub Actions worker so long-running retrieval and editorial work cannot delay reader requests. GitHub provides the first scheduled trigger; an independent publication watchdog checks the public date endpoint repeatedly during the morning publication window and dispatches the same workflow if GitHub has not started it.
 
-The production runner enforces the Pacific edition window and orchestrates deterministic feed discovery, per-section Luna evaluation, current-pool and published-archive deduplication, balanced selection, and a grounded cross-section editorial pass across all 15 sections. The final pass can only keep, remove, or move supplied URLs; deterministic balance rules then run again. A timezone-aware GitHub schedule starts at 6:07 AM Pacific and makes guarded backup attempts through 7:07 AM. Delayed GitHub attempts remain queued, and an independent watchdog checks at 6:12, 6:32, 6:52, 7:12, 7:32, and 7:52 AM Pacific. Each path checks the public date endpoint first and skips setup and AI generation when that edition is already published. Passing editions are saved, automatically approved, published, and verified; editions below the minimum story or populated-section gates fail closed. Manual persistence remains draft-only.
+The production runner enforces the Pacific edition window and orchestrates deterministic feed discovery, per-section Luna evaluation, current-pool and published-archive deduplication, balanced selection, and a grounded cross-section editorial pass across all 15 sections. Selection gives scarce sections their first two qualifying placements before earlier sections may take third and fourth placements. The final pass can only keep, remove, or move supplied URLs; deterministic balance rules then run again. A timezone-aware GitHub schedule starts at 6:07 AM Pacific and makes guarded backup attempts through 7:07 AM. Delayed GitHub attempts remain queued, and an independent watchdog checks at 6:12, 6:32, 6:52, 7:12, 7:32, and 7:52 AM Pacific. Each path checks the public date endpoint first and skips setup and AI generation when that edition is already published. Passing editions are saved, automatically approved, published, and verified; an edition with fewer than two qualifying stories in any section fails closed. Manual persistence remains draft-only.
 
 ## Database
 
@@ -89,9 +89,9 @@ The OpenAI model is configurable and defaults to the cost-sensitive `gpt-5.6-lun
    - Newness: 15%
    - Source quality: 15%
    - Momentum: 5%
-8. Make a category-level editorial selection, allowing 0–4 stories for most sections.
+8. Make a category-level editorial selection of 2–4 stories per section, reserving the first two placements across all sections before filling additional slots.
 9. Perform a cross-edition diversity check and prevent topic domination.
 10. Write concise briefing copy and assign roughly 2–5 structured topics per story.
-11. Apply the automatic minimum-story and populated-section quality gates.
+11. Require at least two stories in each of all 15 sections (and at least 30 total); hold the edition if any section remains underfilled.
 12. Persist the reviewed edition as a private draft, record automated approval, publish it, and verify its placement count.
 13. Serve the same published edition to all readers and expose it through date/topic archive queries.
