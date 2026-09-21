@@ -1,5 +1,6 @@
 import { CATEGORY_SLUGS, responseText } from "./openai.mjs";
 import { selectBalancedEdition } from "./selection.mjs";
+import { sameStory } from "./dedupe.mjs";
 
 function nullableString(schema = { type: "string" }) {
   return { anyOf: [schema, { type: "null" }] };
@@ -103,15 +104,20 @@ export async function reviewEdition(options, fetchImpl = fetch) {
 
 export function applyEditorialDecisions(stories, decisions, { minimumPerCategory = 2 } = {}) {
   const byUrl = new Map(decisions.map((decision) => [decision.canonicalUrl, decision]));
+  const storyByUrl = new Map(stories.map((story) => [story.canonicalUrl, story]));
   const retained = stories.flatMap((story) => {
     const decision = byUrl.get(story.canonicalUrl);
+    const referencedDuplicate = decision?.duplicateOf ? storyByUrl.get(decision.duplicateOf) : null;
+    const confirmedDuplicate = decision?.reason === "duplicate-event"
+      && referencedDuplicate
+      && sameStory(story, referencedDuplicate);
     if (!decision || (decision.action === "remove" && !["low-value", "duplicate-event"].includes(decision.reason))) return [];
     return [{
       ...story,
       originalCategory: story.category,
       category: decision.action === "move" ? decision.targetCategory : story.category,
-      advisoryRemoval: decision.action === "remove" && decision.reason === "low-value",
-      duplicateRemoval: decision.action === "remove" && decision.reason === "duplicate-event",
+      advisoryRemoval: decision.action === "remove" && (decision.reason === "low-value" || !confirmedDuplicate),
+      duplicateRemoval: decision.action === "remove" && confirmedDuplicate,
       duplicateOf: decision.duplicateOf,
     }];
   });

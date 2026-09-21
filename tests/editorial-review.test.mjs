@@ -5,7 +5,8 @@ import { applyEditorialDecisions, editorialReviewRequest, reviewEdition } from "
 function story(url, category, score = 80) {
   return {
     canonicalUrl: url, category, headline: `Headline ${url}`, summary: "Summary",
-    sourceName: "Source", weightedScore: score, topics: [{ slug: url.split("/").at(-1) }],
+    sourceName: "Source", publishedAt: "2026-09-21T08:00:00.000Z",
+    weightedScore: score, topics: [{ slug: url.split("/").at(-1) }],
   };
 }
 
@@ -71,13 +72,25 @@ test("does not let category moves erase an otherwise qualified section", () => {
 });
 
 test("still honors duplicate removals when a section becomes underfilled", () => {
-  const first = story("https://example.com/first", "life-society", 90);
-  const second = story("https://example.com/second", "life-society", 80);
+  const first = { ...story("https://example.com/first", "life-society", 90), headline: "School district approves student housing" };
+  const second = { ...story("https://example.com/second", "life-society", 80), headline: "School district approves student housing plan" };
   const selected = applyEditorialDecisions([first, second], [
     { canonicalUrl: first.canonicalUrl, action: "remove", reason: "duplicate-event", duplicateOf: second.canonicalUrl, targetCategory: null },
     { canonicalUrl: second.canonicalUrl, action: "keep", targetCategory: null },
   ]);
   assert.equal(selected.length, 1);
+});
+
+test("does not let an unsupported duplicate label erase specialist-approved coverage", () => {
+  const first = { ...story("https://example.com/first", "sports", 90), headline: "Baseball team wins championship" };
+  const second = { ...story("https://example.com/second", "sports", 80), headline: "Tennis player reaches tournament final" };
+  const unrelated = { ...story("https://example.com/unrelated", "usa", 95), headline: "Congress passes transportation bill" };
+  const selected = applyEditorialDecisions([first, second, unrelated], [
+    { canonicalUrl: first.canonicalUrl, action: "remove", reason: "duplicate-event", duplicateOf: unrelated.canonicalUrl, targetCategory: null },
+    { canonicalUrl: second.canonicalUrl, action: "remove", reason: "duplicate-event", duplicateOf: unrelated.canonicalUrl, targetCategory: null },
+    { canonicalUrl: unrelated.canonicalUrl, action: "keep", reason: "keep", duplicateOf: null, targetCategory: null },
+  ]);
+  assert.equal(selected.filter(({ category }) => category === "sports").length, 2);
 });
 
 test("places one copy of duplicate events in the section that reduces coverage deficits", () => {
