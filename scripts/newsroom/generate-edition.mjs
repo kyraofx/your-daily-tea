@@ -112,6 +112,7 @@ const finalDeduplication = deduplicateCandidates(evaluated, archive, { preserveC
 const candidatesPath = resolve(outputDirectory, "candidates.json");
 const dedupeReportPath = resolve(outputDirectory, "dedupe-report.json");
 const selectionReportPath = resolve(outputDirectory, "selection-report.json");
+const recoveryCandidatesPath = resolve(outputDirectory, "recovery-candidates.json");
 const decisionsPath = resolve(outputDirectory, "editorial-decisions.json");
 const reportPath = resolve(outputDirectory, "review-report.json");
 const manifestPath = resolve(outputDirectory, "manifest.json");
@@ -140,13 +141,60 @@ if (!decisions) {
   });
   await writeFile(decisionsPath, `${JSON.stringify(decisions, null, 2)}\n`, { mode: 0o600 });
 }
-const reviewedStories = applyEditorialDecisions(selectionReport.accepted, decisions);
+let reviewedStories = applyEditorialDecisions(selectionReport.accepted, decisions);
+const recoveryStats = [];
+const recoveryCandidates = [];
+for (const category of CATEGORY_SLUGS.filter((slug) => (
+  reviewedStories.filter((story) => story.category === slug).length < 2
+))) {
+  const policies = reviewedSourcePolicies(sources, category);
+  if (policies.length === 0) throw new Error(`${category}: no reviewed source domains configured for post-review recovery`);
+  process.stderr.write(`Post-review recovery: searching reviewed domains for ${category}\n`);
+  const retrieved = await retrieveCategory({
+    category,
+    ...window,
+    allowedSources: policies.map(({ publisherName, domains }) => ({ publisherName, domains })),
+    excludedStories: [...evaluated, ...recoveryCandidates].map(({ headline }) => headline),
+    model: process.env.OPENAI_NEWSROOM_MODEL ?? "gpt-5.6-luna",
+  });
+  const grounded = groundRetrievedCandidates(retrieved, { category, sources, ...window });
+  const unique = deduplicateCandidates(
+    grounded.candidates,
+    [...archive, ...reviewedStories, ...recoveryCandidates],
+    { preserveCategories: true },
+  );
+  recoveryCandidates.push(...unique.candidates);
+  recoveryStats.push({
+    category,
+    discovered: retrieved.length,
+    grounded: grounded.candidates.length,
+    accepted: unique.candidates.length,
+    rejected: [...grounded.rejected, ...unique.rejected],
+  });
+}
+if (recoveryCandidates.length > 0) {
+  const recoveryInput = [
+    ...reviewedStories.map((story) => ({
+      ...story,
+      topics: story.topics.map((topic) => topic.name),
+      rank: undefined,
+      weightedScore: undefined,
+    })),
+    ...recoveryCandidates,
+  ];
+  await writeFile(recoveryCandidatesPath, `${JSON.stringify(recoveryInput, null, 2)}\n`, { mode: 0o600 });
+  const recoveryRun = await execFileAsync(process.execPath, [runner, "--input", recoveryCandidatesPath, "--date", editionDate], {
+    maxBuffer: 10 * 1024 * 1024,
+  });
+  reviewedStories = JSON.parse(recoveryRun.stdout).selected;
+}
 const editorialReview = {
   inputStories: selectionReport.accepted.length,
   finalStories: reviewedStories.length,
   kept: decisions.filter((decision) => decision.action === "keep").length,
   moved: decisions.filter((decision) => decision.action === "move").length,
   removed: decisions.filter((decision) => decision.action === "remove").length,
+  recoveryStats,
 };
 const { accepted: _accepted, ...selectionSummary } = selectionReport;
 const report = { ...selectionSummary, selected: reviewedStories, editorialReview };
@@ -167,6 +215,7 @@ const manifest = {
     dedupeReport: dedupeReportPath,
     selectionReport: selectionReportPath,
     editorialDecisions: decisionsPath,
+    recoveryCandidates: recoveryCandidatesPath,
     reviewReport: reportPath,
   },
 };

@@ -443,6 +443,8 @@ Treat duplicate-event removals as final. Treat a category move or broad-review l
 
 For a duplicate event represented in multiple tentative sections, keep exactly one reviewed copy. Deterministic placement may replace the reviewer's chosen copy with another reviewed copy only when the swap reduces the edition's total section deficit without creating an equal deficit elsewhere.
 
+If a section remains below two after final review and duplicate placement, run one bounded recovery search restricted to its reviewed publisher domains. Exclude all already-reviewed event headlines from the request, ground the response to registry identity and the Pacific coverage window, deduplicate it against both the published archive and current selection, and rerun the normal score and balance rules. The publication gate still fails closed if the recovery pass cannot supply two unique qualifying stories.
+
 ### Consequences
 
 - When final review moves a USA or Sports story, a reviewed alternate can fill the vacated placement instead of leaving the section empty.

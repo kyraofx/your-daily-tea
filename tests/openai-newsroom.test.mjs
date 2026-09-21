@@ -29,6 +29,12 @@ test("retrieval can be restricted to reviewed source domains", () => {
   assert.match(request.input, /npr\.org/);
 });
 
+test("retrieval can exclude already-reviewed events during recovery", () => {
+  const request = retrievalRequest({ ...options, excludedStories: ["Existing event headline"] });
+  assert.match(request.input, /already-reviewed events/);
+  assert.match(request.input, /Existing event headline/);
+});
+
 test("retrieval parses a structured response", async () => {
   const expected = [{ category: "usa", headline: "Test" }];
   const fakeFetch = async (_url, init) => {
