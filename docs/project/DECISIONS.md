@@ -430,3 +430,18 @@ When feed evaluation returns fewer than two qualifying stories for a section, ru
 - Sections whose RSS feeds omit a timely article have one additional discovery path without opening publication to arbitrary sources.
 - The fallback adds model cost only for sections with fewer than two qualifying feed stories.
 - The existing score, diversity, deduplication, editorial review, per-section minimum, database transition, idempotence, and immutability safeguards remain fail closed.
+
+## DEC-027 — Review Alternates Before Final Section Balancing
+
+- **Status:** Accepted
+
+### Decision
+
+Send the complete score-qualified candidate pool to grounded whole-edition review, not only the initial balanced selection. Apply every keep, move, and remove decision to that reviewed pool, then run deterministic section, topic, and publisher balancing once more. Preserve same-day duplicates across tentative sections until this review, and add TechCrunch, Mashable, and Social Media Today as reviewed specialist feeds for Internet + Trends discovery.
+
+### Consequences
+
+- When final review moves a USA or Sports story, a reviewed alternate can fill the vacated placement instead of leaving the section empty.
+- Cross-section duplicates are resolved with whole-edition context before the final balanced selection.
+- Internet + Trends receives direct creator, platform, social-media, and internet-culture discovery rather than depending mainly on general technology feeds.
+- Score thresholds, source caps, the two-per-section publication gate, and published-edition immutability remain unchanged.

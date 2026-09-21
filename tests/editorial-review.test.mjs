@@ -46,6 +46,19 @@ test("applies remove and move decisions while preserving story data", () => {
   assert.equal(selected[0].headline, first.headline);
 });
 
+test("rebalances from reviewed alternates after a selected story moves sections", () => {
+  const first = story("https://example.com/first", "usa", 90);
+  const alternate = story("https://example.com/alternate", "usa", 80);
+  const selected = applyEditorialDecisions([first, alternate], [
+    { canonicalUrl: first.canonicalUrl, action: "move", targetCategory: "politics-policy" },
+    { canonicalUrl: alternate.canonicalUrl, action: "keep", targetCategory: null },
+  ]);
+  assert.deepEqual(selected.map(({ canonicalUrl, category }) => ({ canonicalUrl, category })), [
+    { canonicalUrl: alternate.canonicalUrl, category: "usa" },
+    { canonicalUrl: first.canonicalUrl, category: "politics-policy" },
+  ]);
+});
+
 test("grounds editorial story IDs back to exact supplied URLs", async () => {
   const stories = [story("https://example.com/one", "usa"), story("https://example.com/two", "world")];
   const fakeFetch = async () => ({ ok: true, json: async () => ({
