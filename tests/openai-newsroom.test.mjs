@@ -20,6 +20,15 @@ test("retrieval requests web search and strict structured output", () => {
   assert.match(request.input, /2026-08-18T13:00:00/);
 });
 
+test("retrieval can be restricted to reviewed source domains", () => {
+  const request = retrievalRequest({
+    ...options,
+    allowedSources: [{ publisherName: "NPR", domains: ["npr.org"] }],
+  });
+  assert.match(request.input, /reviewed publishers and article domains/);
+  assert.match(request.input, /npr\.org/);
+});
+
 test("retrieval parses a structured response", async () => {
   const expected = [{ category: "usa", headline: "Test" }];
   const fakeFetch = async (_url, init) => {

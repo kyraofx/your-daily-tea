@@ -53,9 +53,10 @@ The website must present sections in this order:
 ### Retrieval and Selection
 
 - Run targeted, category-specific retrieval passes.
+- When normal feeds produce fewer than two qualifying stories for a section, make at most one supplementary search restricted to reviewed publisher domains and revalidate source, timestamp, and category deterministically.
 - Collect enough candidates to select only worthwhile stories; do not publish a candidate merely because it was retrieved.
 - Verify publication timestamps against the edition window.
-- Merge duplicate coverage into one story and prefer original reporting.
+- Merge duplicate coverage into one story and prefer original reporting; preserve tentative cross-section placements until the whole-edition review determines the final section.
 - Compare candidates with prior archived coverage and require materially new information.
 - Treat social and trend signals as discovery inputs, not sufficient factual verification.
 - Select **2–4 qualifying stories for every section**. Reserve two selection opportunities per section before assigning third and fourth stories. If any section finishes with fewer than two after final review, fail closed and keep the previous edition live; never add filler or weaken another quality rule.

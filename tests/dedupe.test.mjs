@@ -23,6 +23,20 @@ test("keeps the higher-quality version of a current event", () => {
   assert.equal(result.rejected[0].reason, "duplicate-current-event");
 });
 
+test("preserves a current event in different sections until final editorial review", () => {
+  const usa = { ...base, headline: "Ohio plant explosions kill two workers", canonicalUrl: "https://example.com/usa", category: "usa" };
+  const politics = { ...base, headline: "Two workers killed in explosions at Ohio plant", canonicalUrl: "https://example.com/politics", category: "politics-policy" };
+  const result = deduplicateCandidates([usa, politics], [], { preserveCategories: true });
+  assert.equal(result.candidates.length, 2);
+});
+
+test("still deduplicates current events within one section when preserving sections", () => {
+  const lower = { ...base, headline: "Ohio plant explosions kill two workers", canonicalUrl: "https://low.example/story", scores: { sourceQuality: 70 } };
+  const higher = { ...base, headline: "Two workers killed in explosions at Ohio plant", canonicalUrl: "https://high.example/story", scores: { sourceQuality: 95 } };
+  const result = deduplicateCandidates([lower, higher], [], { preserveCategories: true });
+  assert.deepEqual(result.candidates, [higher]);
+});
+
 test("rejects a story already covered by the published archive", () => {
   const candidate = { ...base, headline: "Two workers killed in explosions at Ohio plant", canonicalUrl: "https://new.example/story" };
   const archive = [{ ...base, headline: "Ohio plant explosions kill two workers", canonicalUrl: "https://old.example/story" }];

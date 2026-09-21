@@ -6,8 +6,8 @@ import { promisify } from "node:util";
 import process from "node:process";
 import { fetchPublishedArchive } from "./archive.mjs";
 import { deduplicateCandidates } from "./dedupe.mjs";
-import { collectFeeds } from "./feeds.mjs";
-import { CATEGORY_SLUGS, evaluateCandidates } from "./openai.mjs";
+import { collectFeeds, groundRetrievedCandidates, reviewedSourcePolicies } from "./feeds.mjs";
+import { CATEGORY_SLUGS, evaluateCandidates, retrieveCategory } from "./openai.mjs";
 import { applyEditorialDecisions, reviewEdition } from "./editorial-review.mjs";
 import { coverageWindow } from "./time.mjs";
 
@@ -66,11 +66,32 @@ for (const [index, category] of CATEGORY_SLUGS.entries()) {
   const feedResult = await collectFeeds({ sources, category, ...window });
   const discovery = deduplicateCandidates(feedResult.candidates, archive);
   process.stderr.write(`[${index + 1}/15] ${category}: evaluating ${discovery.candidates.length} candidates with Luna\n`);
-  const selected = await evaluateCandidates({
+  let selected = await evaluateCandidates({
     category,
     candidates: discovery.candidates,
     model: process.env.OPENAI_NEWSROOM_MODEL ?? "gpt-5.6-luna",
   });
+  let fallbackDiscovered = 0;
+  let fallbackGrounded = 0;
+  let fallbackRejected = [];
+  if (selected.length < 2) {
+    const policies = reviewedSourcePolicies(sources, category);
+    if (policies.length === 0) throw new Error(`${category}: no reviewed source domains configured for fallback retrieval`);
+    process.stderr.write(`[${index + 1}/15] ${category}: underfilled; searching reviewed source domains\n`);
+    const retrieved = await retrieveCategory({
+      category,
+      ...window,
+      allowedSources: policies.map(({ publisherName, domains }) => ({ publisherName, domains })),
+      model: process.env.OPENAI_NEWSROOM_MODEL ?? "gpt-5.6-luna",
+    });
+    fallbackDiscovered = retrieved.length;
+    const grounded = groundRetrievedCandidates(retrieved, { category, sources, ...window });
+    fallbackGrounded = grounded.candidates.length;
+    fallbackRejected = grounded.rejected;
+    selected = deduplicateCandidates([...selected, ...grounded.candidates], archive, {
+      preserveCategories: true,
+    }).candidates;
+  }
   await writeFile(checkpoint, `${JSON.stringify(selected, null, 2)}\n`, { mode: 0o600 });
   evaluated.push(...selected);
   categoryStats.push({
@@ -79,12 +100,15 @@ for (const [index, category] of CATEGORY_SLUGS.entries()) {
     discovered: feedResult.candidates.length,
     preEvaluationUnique: discovery.candidates.length,
     evaluated: selected.length,
+    fallbackDiscovered,
+    fallbackGrounded,
+    fallbackRejected,
     feedErrors: feedResult.errors,
   });
   process.stderr.write(`[${index + 1}/15] ${category}: selected ${selected.length}\n`);
 }
 
-const finalDeduplication = deduplicateCandidates(evaluated, archive);
+const finalDeduplication = deduplicateCandidates(evaluated, archive, { preserveCategories: true });
 const candidatesPath = resolve(outputDirectory, "candidates.json");
 const dedupeReportPath = resolve(outputDirectory, "dedupe-report.json");
 const selectionReportPath = resolve(outputDirectory, "selection-report.json");

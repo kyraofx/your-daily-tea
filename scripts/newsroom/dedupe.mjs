@@ -50,7 +50,7 @@ function quality(candidate) {
   return Number.isFinite(sourceQuality) ? sourceQuality : 0;
 }
 
-export function deduplicateCandidates(candidates, archive = [], { threshold = 0.5 } = {}) {
+export function deduplicateCandidates(candidates, archive = [], { threshold = 0.5, preserveCategories = false } = {}) {
   const kept = [];
   const rejected = [];
   const ordered = [...candidates].sort((a, b) => quality(b) - quality(a));
@@ -60,7 +60,10 @@ export function deduplicateCandidates(candidates, archive = [], { threshold = 0.
       rejected.push({ candidate, reason: "covered-in-published-archive", matchedHeadline: archived.headline });
       continue;
     }
-    const duplicate = kept.find((story) => sameStory(candidate, story, threshold));
+    const duplicate = kept.find((story) => (
+      (!preserveCategories || story.category === candidate.category)
+      && sameStory(candidate, story, threshold)
+    ));
     if (duplicate) {
       rejected.push({ candidate, reason: "duplicate-current-event", matchedHeadline: duplicate.headline });
       continue;
