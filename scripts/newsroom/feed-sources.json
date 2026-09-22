@@ -44,6 +44,8 @@
   { "name": "The Guardian — Work & Careers", "publisher": "The Guardian", "url": "https://www.theguardian.com/money/work-and-careers/rss", "tier": "major", "categories": ["jobs-work"] },
   { "name": "The Guardian — US Politics", "publisher": "The Guardian", "url": "https://www.theguardian.com/us-news/us-politics/rss", "tier": "major", "categories": ["politics-policy"] },
   { "name": "The Guardian — Health", "publisher": "The Guardian", "url": "https://www.theguardian.com/society/health/rss", "tier": "major", "categories": ["health-wellness"] },
+  { "name": "The Guardian — Business", "publisher": "The Guardian", "url": "https://www.theguardian.com/uk/business/rss", "tier": "major", "categories": ["money-economy"] },
+  { "name": "Fortune", "url": "https://fortune.com/feed/", "tier": "specialist", "categories": ["money-economy"] },
   { "name": "KFF Health News", "url": "https://kffhealthnews.org/feed/", "tier": "specialist", "categories": ["health-wellness"] },
   { "name": "STAT", "url": "https://www.statnews.com/feed/", "tier": "specialist", "categories": ["health-wellness"] },
   { "name": "Fast Company — Work Life", "publisher": "Fast Company", "url": "https://www.fastcompany.com/work-life/rss", "tier": "specialist", "categories": ["jobs-work"] },
