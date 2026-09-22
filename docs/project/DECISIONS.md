@@ -485,3 +485,20 @@ Permit a canonical URL only once in a complete edition, even when the same feed 
 - A cross-section duplicate cannot cause a late Supabase unique-key failure after editorial review has passed.
 - Existing published story copy remains immutable; retries may reference an existing row but do not overwrite it.
 - If no distinct alternate exists, the section remains short and the edition still fails closed.
+
+## DEC-030 — Add Dedicated Workplace and Labor Discovery
+
+- **Status:** Accepted
+
+### Decision
+
+Add The Guardian's Work & Careers feed, Fast Company's Work Life feed, and the U.S. Department of Labor news-release feed to Jobs + Work discovery. Treat The Guardian as a major newsroom, Fast Company as a specialist publication, and the Department of Labor as a primary source. Also permit relevant Department of Labor releases to be evaluated by Politics + Policy.
+
+Normalize timezone-less ISO timestamps from reviewed feeds as UTC before applying the Pacific coverage boundary. Preserve any explicit timezone or numeric offset supplied by a publisher.
+
+### Consequences
+
+- Jobs + Work receives direct reporting on hiring, careers, workplace practices, labor conditions, and employment policy rather than relying mainly on broad business feeds.
+- Primary government releases can support labor-policy coverage, while category review still rejects routine or low-value announcements.
+- Every candidate still must pass the coverage window, grounded category evaluation, score threshold, deduplication, publisher caps, whole-edition review, and two-story section gate.
+- Local and GitHub runs evaluate timezone-less feed timestamps against the same instant.

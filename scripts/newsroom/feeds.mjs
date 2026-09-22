@@ -28,6 +28,9 @@ const PUBLISHER_DOMAINS = {
   Polygon: ["polygon.com"],
   "GamesIndustry.biz": ["gamesindustry.biz"],
   "HR Dive": ["hrdive.com"],
+  "The Guardian": ["theguardian.com"],
+  "Fast Company": ["fastcompany.com"],
+  "U.S. Department of Labor": ["dol.gov"],
   Vox: ["vox.com"],
   TechCrunch: ["techcrunch.com"],
   Mashable: ["mashable.com"],
@@ -77,6 +80,16 @@ function validHttpUrl(value) {
   } catch {
     return false;
   }
+}
+
+function publishedDate(value) {
+  // Some reviewed RSS feeds emit ISO timestamps without an explicit offset.
+  // Treat those values as UTC so GitHub (UTC) and local Pacific runs apply the
+  // same coverage window instead of silently disagreeing by seven/eight hours.
+  const normalized = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?$/.test(value)
+    ? `${value}Z`
+    : value;
+  return new Date(normalized);
 }
 
 function matchingDomain(hostname, domains) {
@@ -154,7 +167,7 @@ export function parseFeed(xml, source) {
   const atomItems = list(document.feed?.entry);
   return [...rssItems, ...atomItems].flatMap((item) => {
     const rawDate = clean(item.pubDate ?? item.published ?? item.updated ?? item["dc:date"]);
-    const publishedAt = new Date(rawDate);
+    const publishedAt = publishedDate(rawDate);
     const canonicalUrl = link(item);
     const headline = clean(item.title);
     if (!headline || !validHttpUrl(canonicalUrl) || Number.isNaN(publishedAt.getTime())) return [];

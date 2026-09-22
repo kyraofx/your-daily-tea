@@ -26,6 +26,8 @@ The implementation uses the Sites Vinext/React runtime and preserves the supplie
 
 The reader interface is connected to published data through the same public repository used by the API. Today preserves the supplied dark editorial layout, 15-section order, numbered collapsible sections, source attribution, timestamps, and hashtags. Older frozen editions may retain historically empty sections; new production editions require at least two qualifying stories in every section. Archive loads frozen editions by date, Topics lists and opens real published hashtags, and Search queries published headlines and summaries only.
 
+Jobs + Work discovery combines the existing business, gaming-industry, and HR feeds with dedicated Guardian Work & Careers, Fast Company Work Life, and U.S. Department of Labor feeds. These sources remain subject to the same Pacific coverage window, category-specific Luna review, deterministic credibility tier, deduplication, publisher caps, and final quality gate.
+
 ## Backend
 
 Required responsibilities:
