@@ -583,3 +583,17 @@ Add The Guardian Health, KFF Health News, and STAT feeds to Health + Wellness di
 
 - Health + Wellness has independent reporting alternatives when broad national coverage overlaps with another section.
 - Every candidate remains subject to the Pacific window, category review, source scoring, deduplication, publisher caps, and final two-story gate.
+
+## DEC-037 — Require Strong Evidence for Final Duplicate Removal
+
+- **Status:** Accepted
+
+### Decision
+
+Treat a whole-edition duplicate removal as binding only when the normalized canonical URLs match or the two in-window headlines meet a strong 0.70 token-similarity threshold. Continue treating unsupported model duplicate labels as advisory only when needed to preserve a section floor.
+
+### Consequences
+
+- Generic shared terms such as an institution, market, or policy area cannot erase otherwise distinct reporting.
+- Exact URLs and strongly matching event headlines still deduplicate across sections.
+- The two-story gate, one-placement-per-event rule, and fail-closed behavior remain intact.
