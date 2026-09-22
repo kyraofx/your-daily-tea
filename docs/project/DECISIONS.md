@@ -544,3 +544,16 @@ Before optional stories are selected, search the bounded set of valid per-sectio
 - A locally strong publisher choice cannot consume capacity required for another section's second story.
 - The algorithm does not invent candidates or weaken any source, duplicate, topic, or publisher constraint.
 - If a complete two-per-section assignment does not exist, the edition remains held.
+
+## DEC-034 — Expand Dedicated Gaming Discovery
+
+- **Status:** Accepted
+
+### Decision
+
+Add the reviewed Eurogamer, PC Gamer, and Rock Paper Shotgun feeds to Gaming discovery as specialist publishers.
+
+### Consequences
+
+- Gaming has timely alternatives when one of its initially selected stories is removed or moved during whole-edition review.
+- All added candidates remain subject to the Pacific window, grounded category review, score threshold, deduplication, publisher caps, and final two-story gate.
