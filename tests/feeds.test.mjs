@@ -53,6 +53,11 @@ test("decodes numeric HTML entities in feed headlines", () => {
   assert.equal(parseFeed(encoded, source)[0].headline, "Workers: ‘No one is coming’");
 });
 
+test("treats timezone-less ISO feed timestamps as UTC", () => {
+  const timezoneLess = `<rss><channel><item><title>Workplace news</title><link>https://example.com/workplace</link><pubDate>2026-09-21T11:00:00</pubDate></item></channel></rss>`;
+  assert.equal(parseFeed(timezoneLess, source)[0].publishedAt, "2026-09-21T11:00:00.000Z");
+});
+
 test("grounds fallback retrieval to reviewed domains and deterministic source quality", () => {
   const result = groundRetrievedCandidates([{
     category: "usa",

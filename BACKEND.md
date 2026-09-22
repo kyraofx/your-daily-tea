@@ -43,9 +43,11 @@ Use `node scripts/newsroom/run.mjs --input path/to/candidates.json --date YYYY-M
 
 `pnpm newsroom:feeds -- --category usa --date YYYY-MM-DD` performs deterministic, read-only discovery from the configured RSS/Atom registry. It normalizes headlines, canonical URLs, source names, summaries, and timestamps; filters the exact Pacific edition window; removes duplicate URLs; and writes a private candidate file under `work/`. Feed failures are isolated so one unavailable source does not discard the others.
 
-`pnpm newsroom:audit-sources` verifies that every section has at least two configured sources. Add `-- --live` to fetch and parse all feeds; the command fails if a source is unavailable or returns no parseable items. The registry contains 45 feeds and provides 2–11 sources per section, including dedicated internet-culture, social-platform, education, and housing sources.
+`pnpm newsroom:audit-sources` verifies that every section has at least two configured sources. Add `-- --live` to fetch and parse all feeds; the command fails if a source is unavailable or returns no parseable items. The registry contains 48 feeds and provides 2–11 sources per section, including dedicated internet-culture, social-platform, education, housing, workplace, careers, and primary labor sources.
 
 Every source has a deterministic tier: primary (98), major newsroom (92), or specialist publication (88). Feed metadata carries that score into evaluation, and the evaluator grounds Luna's output back to the exact supplied URL, headline, source, publisher identity, and timestamp before overriding the model's source-quality score. Desk-specific feeds from NPR, BBC, and The New York Times share one stable publisher identity. Final selection allows no more than two stories from one publisher in a section and six across a complete edition; it leaves a section short rather than adding publisher-heavy filler.
+
+RSS timestamps that use an ISO date and time but omit a timezone are interpreted as UTC. This keeps the Pacific cutoff deterministic between local runs and GitHub's UTC workers; explicitly offset timestamps retain the publisher's supplied offset.
 
 Category evaluation assigns every supplied feed record a temporary opaque ID such as `candidate-017`. The strict response schema permits Luna to select only one of those IDs; deterministic code then restores the exact feed headline, URL, source, publisher identity, timestamp, and source-quality score. Unknown and duplicate IDs fail closed. Luna never supplies the stored URL or attribution for feed candidates.
 
