@@ -557,3 +557,16 @@ Add the reviewed Eurogamer, PC Gamer, and Rock Paper Shotgun feeds to Gaming dis
 
 - Gaming has timely alternatives when one of its initially selected stories is removed or moved during whole-edition review.
 - All added candidates remain subject to the Pacific window, grounded category review, score threshold, deduplication, publisher caps, and final two-story gate.
+
+## DEC-035 — Expand Dedicated Politics Discovery
+
+- **Status:** Accepted
+
+### Decision
+
+Add NPR Politics and The Guardian's US Politics feed to Politics + Policy discovery, retaining their shared publisher identities and major-newsroom source tier.
+
+### Consequences
+
+- Politics + Policy has timely alternatives when overlapping national coverage is removed during whole-edition review.
+- The Pacific window, category review, deduplication, publisher caps, and final two-story gate remain unchanged.
