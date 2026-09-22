@@ -110,7 +110,7 @@ export function applyEditorialDecisions(stories, decisions, { minimumPerCategory
     const referencedDuplicate = decision?.duplicateOf ? storyByUrl.get(decision.duplicateOf) : null;
     const confirmedDuplicate = decision?.reason === "duplicate-event"
       && referencedDuplicate
-      && sameStory(story, referencedDuplicate);
+      && sameStory(story, referencedDuplicate, 0.7);
     if (!decision || (decision.action === "remove" && !["low-value", "duplicate-event"].includes(decision.reason))) return [];
     return [{
       ...story,

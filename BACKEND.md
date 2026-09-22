@@ -81,4 +81,6 @@ After reviewing the final report, save that exact result with:
 
 The reviewed-report writer accepts only reports carrying final editorial-review metadata, decodes residual HTML entities in display copy, refuses to overwrite an existing edition date, and always inserts `draft`. The manual command remains draft-only. The scheduled command applies the automatic quality gates before advancing the new edition through approval and publication.
 
+Final duplicate removal requires either the same normalized canonical URL or a strong 0.70 headline-token match inside the 48-hour evidence window. Weaker generic overlap remains advisory at the section floor.
+
 The first verified database edition is `2026-08-18`: 41 reviewed placements across 14 non-empty sections. It was saved privately, confirmed invisible through the publishable key, explicitly approved by the owner, and then separately published. Post-publication verification through the publishable key returned exactly one edition and all 41 stories with matching section counts.

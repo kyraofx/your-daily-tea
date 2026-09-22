@@ -93,6 +93,16 @@ test("does not let an unsupported duplicate label erase specialist-approved cove
   assert.equal(selected.filter(({ category }) => category === "sports").length, 2);
 });
 
+test("does not bind a weak generic headline overlap as a final duplicate", () => {
+  const first = { ...story("https://example.com/first", "money-economy", 90), headline: "Federal Reserve cuts rates as economy slows" };
+  const second = { ...story("https://example.com/second", "money-economy", 80), headline: "Federal Reserve holds rates as economy grows" };
+  const selected = applyEditorialDecisions([first, second], [
+    { canonicalUrl: first.canonicalUrl, action: "remove", reason: "duplicate-event", duplicateOf: second.canonicalUrl, targetCategory: null },
+    { canonicalUrl: second.canonicalUrl, action: "keep", reason: "keep", duplicateOf: null, targetCategory: null },
+  ]);
+  assert.equal(selected.filter(({ category }) => category === "money-economy").length, 2);
+});
+
 test("places one copy of duplicate events in the section that reduces coverage deficits", () => {
   const usa = [1, 2, 3, 4].map((number) => story(`https://example.com/usa-${number}`, "usa", 100 - number));
   const sports = [1, 2].map((number) => story(`https://example.com/sports-${number}`, "sports", 90 - number));
