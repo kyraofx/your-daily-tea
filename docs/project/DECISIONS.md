@@ -597,3 +597,16 @@ Treat a whole-edition duplicate removal as binding only when the normalized cano
 - Generic shared terms such as an institution, market, or policy area cannot erase otherwise distinct reporting.
 - Exact URLs and strongly matching event headlines still deduplicate across sections.
 - The two-story gate, one-placement-per-event rule, and fail-closed behavior remain intact.
+
+## DEC-038 — Expand Dedicated Economy Discovery
+
+- **Status:** Accepted
+
+### Decision
+
+Add The Guardian Business and Fortune feeds to Money + Economy discovery. Preserve The Guardian's shared publisher identity and treat Fortune as a specialist business publisher.
+
+### Consequences
+
+- Money + Economy has independent alternates when one of two initial stories overlaps with another section.
+- Existing time, category, score, duplicate, publisher, and publication gates remain unchanged.
