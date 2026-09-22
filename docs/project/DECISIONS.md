@@ -570,3 +570,16 @@ Add NPR Politics and The Guardian's US Politics feed to Politics + Policy discov
 
 - Politics + Policy has timely alternatives when overlapping national coverage is removed during whole-edition review.
 - The Pacific window, category review, deduplication, publisher caps, and final two-story gate remain unchanged.
+
+## DEC-036 — Expand Dedicated Health Discovery
+
+- **Status:** Accepted
+
+### Decision
+
+Add The Guardian Health, KFF Health News, and STAT feeds to Health + Wellness discovery. Preserve The Guardian's shared publisher identity; treat KFF Health News and STAT as specialist health publishers.
+
+### Consequences
+
+- Health + Wellness has independent reporting alternatives when broad national coverage overlaps with another section.
+- Every candidate remains subject to the Pacific window, category review, source scoring, deduplication, publisher caps, and final two-story gate.
