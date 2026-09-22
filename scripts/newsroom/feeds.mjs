@@ -34,6 +34,8 @@ const PUBLISHER_DOMAINS = {
   "The Guardian": ["theguardian.com"],
   "Fast Company": ["fastcompany.com"],
   "U.S. Department of Labor": ["dol.gov"],
+  "KFF Health News": ["kffhealthnews.org"],
+  STAT: ["statnews.com"],
   Vox: ["vox.com"],
   TechCrunch: ["techcrunch.com"],
   Mashable: ["mashable.com"],
