@@ -516,3 +516,17 @@ Allow two materially distinct, specialist-approved stories in one section to sha
 - A broad label such as `AI and work` cannot cause one of two otherwise distinct qualified workplace stories to disappear.
 - Topic repetition cannot be used to fill the third or fourth position in a section.
 - Duplicate coverage and filler remain prohibited, and the final publication gate remains fail closed.
+
+## DEC-032 — Reserve Section Floors by Publisher Scarcity
+
+- **Status:** Accepted
+
+### Decision
+
+When reserving the first two stories for every section, order sections first by the number of distinct publishers still available to them, then by their total selectable candidates, and finally by display order. Keep the existing per-publisher section and edition caps unchanged.
+
+### Consequences
+
+- A section such as Sports that depends on a small publisher pool receives its floor opportunity before broad desks consume those publishers' edition-wide capacity.
+- Broad sections retain their alternative publishers instead of winning shared capacity merely because they have fewer raw candidates.
+- Publisher diversity limits remain fully enforced; a section still fails closed when no permitted allocation can supply two stories.

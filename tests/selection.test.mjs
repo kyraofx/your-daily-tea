@@ -106,3 +106,21 @@ test("gives a partially fillable scarce section priority over broad desks", () =
   assert.equal(selected.filter((item) => item.category === "late").length, 1);
   assert.equal(selected.filter((item) => item.category === "early").length, 2);
 });
+
+test("reserves floor capacity for sections with fewer available publishers", () => {
+  const selected = selectBalancedEdition([
+    candidate("broad", "Shared A — Broad", "broad-a", 100, "Shared A"),
+    candidate("broad", "Shared B — Broad", "broad-b", 99, "Shared B"),
+    candidate("broad", "Broad Alternative", "broad-alt", 80, "Broad Alternative"),
+    candidate("sports", "Shared A — Sports", "sports-a-1", 95, "Shared A"),
+    candidate("sports", "Shared A — Sports", "sports-a-2", 94, "Shared A"),
+    candidate("sports", "Shared B — Sports", "sports-b-1", 93, "Shared B"),
+    candidate("sports", "Shared B — Sports", "sports-b-2", 92, "Shared B"),
+  ], ["broad", "sports"], {
+    maxPerCategory: 2,
+    minimumPerCategory: 2,
+    maxPerSourcePerEdition: 1,
+  });
+  assert.equal(selected.filter((item) => item.category === "sports").length, 2);
+  assert.equal(selected.filter((item) => item.category === "broad").length, 1);
+});
