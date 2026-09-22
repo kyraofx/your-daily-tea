@@ -124,3 +124,22 @@ test("reserves floor capacity for sections with fewer available publishers", () 
   assert.equal(selected.filter((item) => item.category === "sports").length, 2);
   assert.equal(selected.filter((item) => item.category === "broad").length, 1);
 });
+
+test("backtracks publisher choices to find a complete section-floor assignment", () => {
+  const selected = selectBalancedEdition([
+    candidate("first", "Shared A — First", "first-a", 100, "Shared A"),
+    candidate("first", "Shared B — First", "first-b", 90, "Shared B"),
+    candidate("second", "Shared A — Second", "second-a", 100, "Shared A"),
+    candidate("second", "Shared C — Second", "second-c", 90, "Shared C"),
+    candidate("third", "Shared B — Third", "third-b", 100, "Shared B"),
+    candidate("third", "Shared C — Third", "third-c", 90, "Shared C"),
+  ], ["first", "second", "third"], {
+    maxPerCategory: 1,
+    minimumPerCategory: 1,
+    maxPerSourcePerEdition: 1,
+  });
+  assert.equal(selected.filter((item) => item.category === "first").length, 1);
+  assert.equal(selected.filter((item) => item.category === "second").length, 1);
+  assert.equal(selected.filter((item) => item.category === "third").length, 1);
+  assert.equal(new Set(selected.map((item) => item.publisherName)).size, 3);
+});
