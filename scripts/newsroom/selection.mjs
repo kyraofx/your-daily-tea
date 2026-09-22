@@ -47,9 +47,12 @@ export function selectBalancedEdition(accepted, categories, {
   // broad earlier desks from consuming a shared publisher's edition-wide cap.
   const reservationTarget = Math.min(minimumPerCategory, maxPerCategory);
   const reservationOrder = [...categoryList].sort((left, right) => {
-    const leftAvailable = selectable(states.get(left)).length;
-    const rightAvailable = selectable(states.get(right)).length;
-    return leftAvailable - rightAvailable || categoryList.indexOf(left) - categoryList.indexOf(right);
+    const leftSelectable = selectable(states.get(left));
+    const rightSelectable = selectable(states.get(right));
+    const publisherCount = (items) => new Set(items.map((item) => item.publisherName ?? item.sourceName)).size;
+    return publisherCount(leftSelectable) - publisherCount(rightSelectable)
+      || leftSelectable.length - rightSelectable.length
+      || categoryList.indexOf(left) - categoryList.indexOf(right);
   });
   for (const category of reservationOrder) {
     const state = states.get(category);
