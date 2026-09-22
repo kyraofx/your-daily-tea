@@ -502,3 +502,17 @@ Normalize timezone-less ISO timestamps from reviewed feeds as UTC before applyin
 - Primary government releases can support labor-policy coverage, while category review still rejects routine or low-value announcements.
 - Every candidate still must pass the coverage window, grounded category evaluation, score threshold, deduplication, publisher caps, whole-edition review, and two-story section gate.
 - Local and GitHub runs evaluate timezone-less feed timestamps against the same instant.
+
+## DEC-031 — Apply Primary-Topic Diversity Above the Section Floor
+
+- **Status:** Accepted
+
+### Decision
+
+Allow two materially distinct, specialist-approved stories in one section to share a normalized primary topic when both are needed to reach that section's two-story publication floor. Continue enforcing canonical-URL uniqueness, event/headline deduplication, the score threshold, publisher caps, provenance grounding, and whole-edition review. After the floor is filled, a third or fourth story must introduce a different primary topic.
+
+### Consequences
+
+- A broad label such as `AI and work` cannot cause one of two otherwise distinct qualified workplace stories to disappear.
+- Topic repetition cannot be used to fill the third or fourth position in a section.
+- Duplicate coverage and filler remain prohibited, and the final publication gate remains fail closed.
