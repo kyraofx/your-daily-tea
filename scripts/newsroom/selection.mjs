@@ -15,22 +15,22 @@ export function selectBalancedEdition(accepted, categories, {
     sourceCounts: new Map(),
   }]));
 
-  function selectable(state) {
+  function selectable(state, { allowPrimaryTopicRepeat = false } = {}) {
     return state.candidates.filter((item) => {
       if (state.selected.includes(item)) return false;
       if (selectedCanonicalUrls.has(item.canonicalUrl)) return false;
       const publisher = item.publisherName ?? item.sourceName;
       const primaryTopic = item.topics[0]?.slug;
-      if (primaryTopic && state.primaryTopics.has(primaryTopic)) return false;
+      if (!allowPrimaryTopicRepeat && primaryTopic && state.primaryTopics.has(primaryTopic)) return false;
       if ((state.sourceCounts.get(publisher) ?? 0) >= maxPerSourcePerCategory) return false;
       if ((editionSourceCounts.get(publisher) ?? 0) >= maxPerSourcePerEdition) return false;
       return true;
     });
   }
 
-  function addBest(category) {
+  function addBest(category, options) {
     const state = states.get(category);
-    const [item] = selectable(state);
+    const [item] = selectable(state, options);
     if (!item) return false;
     const publisher = item.publisherName ?? item.sourceName;
     const primaryTopic = item.topics[0]?.slug;
@@ -53,7 +53,7 @@ export function selectBalancedEdition(accepted, categories, {
   });
   for (const category of reservationOrder) {
     const state = states.get(category);
-    while (state.selected.length < reservationTarget && addBest(category)) {
+    while (state.selected.length < reservationTarget && addBest(category, { allowPrimaryTopicRepeat: true })) {
       // addBest mutates the state until the floor is reached or candidates run out.
     }
   }

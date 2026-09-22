@@ -82,6 +82,16 @@ test("places one canonical story only once across the edition", () => {
   assert.equal(selected.filter((item) => item.category === "world").length, 2);
 });
 
+test("allows a repeated primary topic only to reach the section floor", () => {
+  const selected = selectBalancedEdition([
+    { ...candidate("jobs-work", "Source A", "ai-and-work", 100), canonicalUrl: "https://example.com/jobs/one" },
+    { ...candidate("jobs-work", "Source B", "ai-and-work", 99), canonicalUrl: "https://example.com/jobs/two" },
+    { ...candidate("jobs-work", "Source C", "ai-and-work", 98), canonicalUrl: "https://example.com/jobs/three" },
+  ], ["jobs-work"], { maxPerCategory: 4, minimumPerCategory: 2 });
+  assert.equal(selected.length, 2);
+  assert.equal(new Set(selected.map((item) => item.canonicalUrl)).size, 2);
+});
+
 test("gives a partially fillable scarce section priority over broad desks", () => {
   const selected = selectBalancedEdition([
     candidate("early", "Shared — Early", "early-shared", 100, "Shared"),
