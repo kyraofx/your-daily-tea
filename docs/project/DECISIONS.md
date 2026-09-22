@@ -530,3 +530,17 @@ When reserving the first two stories for every section, order sections first by 
 - A section such as Sports that depends on a small publisher pool receives its floor opportunity before broad desks consume those publishers' edition-wide capacity.
 - Broad sections retain their alternative publishers instead of winning shared capacity merely because they have fewer raw candidates.
 - Publisher diversity limits remain fully enforced; a section still fails closed when no permitted allocation can supply two stories.
+
+## DEC-033 — Solve Section Floors as One Bounded Assignment
+
+- **Status:** Accepted
+
+### Decision
+
+Before optional stories are selected, search the bounded set of valid per-section floor combinations as one assignment under canonical-URL and publisher caps. Prefer higher-scoring combinations, cap the search, and retain the existing scarcity-ordered fail-closed fallback when no complete assignment can be found.
+
+### Consequences
+
+- A locally strong publisher choice cannot consume capacity required for another section's second story.
+- The algorithm does not invent candidates or weaken any source, duplicate, topic, or publisher constraint.
+- If a complete two-per-section assignment does not exist, the edition remains held.
