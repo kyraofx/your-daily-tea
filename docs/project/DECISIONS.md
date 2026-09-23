@@ -610,3 +610,16 @@ Add The Guardian Business and Fortune feeds to Money + Economy discovery. Preser
 
 - Money + Economy has independent alternates when one of two initial stories overlaps with another section.
 - Existing time, category, score, duplicate, publisher, and publication gates remain unchanged.
+
+## DEC-039 — Expand Dedicated USA Discovery
+
+- **Status:** Accepted
+
+### Decision
+
+Add The Guardian's U.S. News feed to USA discovery while preserving The Guardian's shared publisher identity and major-newsroom source tier.
+
+### Consequences
+
+- USA has an additional direct national-news source when broad desk candidates are moved or removed during whole-edition review.
+- Existing Pacific-window, category-review, score, deduplication, publisher-cap, and two-story publication gates remain unchanged.
