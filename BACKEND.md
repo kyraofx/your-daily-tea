@@ -16,6 +16,8 @@ Failed runs use `failed` and never appear publicly. The scheduled publisher stil
 
 The production workflow records `github-actions-newsroom` in `approved_by` after all review and quality gates pass. Manual draft creation remains available for diagnosis, but it is not the daily production path.
 
+Each OpenAI evaluation, retrieval, and final-review request retries once after an explicitly transient network, rate-limit, or server failure. Deterministic validation, quota, grounding, schema, editorial, and database failures are never retried by this request wrapper.
+
 Before installing dependencies or calling Luna, every scheduled or watchdog-triggered attempt checks the public date endpoint. A `200` response means the edition is already published and the attempt exits successfully without generation cost. A `404` permits generation; any other response fails closed. The workflow's concurrency group prevents overlapping newsroom jobs and retains delayed pending attempts instead of replacing them.
 
 ## Local configuration

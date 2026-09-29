@@ -97,6 +97,33 @@ export function responseText(payload) {
   return null;
 }
 
+const TRANSIENT_OPENAI_CODES = new Set([
+  "internal_error", "server_error", "rate_limit_exceeded", "temporarily_unavailable",
+]);
+const TRANSIENT_OPENAI_STATUSES = new Set([408, 409, 429, 500, 502, 503, 504]);
+
+function isTransientOpenAiResponse(response, payload) {
+  const code = payload?.error?.code ?? payload?.error?.type;
+  if (code === "insufficient_quota") return false;
+  return TRANSIENT_OPENAI_CODES.has(code) || TRANSIENT_OPENAI_STATUSES.has(response.status);
+}
+
+export async function openAiRequest(fetchImpl, init, { retryDelayMs = 1000 } = {}) {
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    try {
+      const response = await fetchImpl("https://api.openai.com/v1/responses", init);
+      const payload = await response.json();
+      if (response.ok || attempt === 1 || !isTransientOpenAiResponse(response, payload)) {
+        return { response, payload };
+      }
+    } catch (error) {
+      if (attempt === 1) throw error;
+    }
+    if (retryDelayMs > 0) await new Promise((resolve) => setTimeout(resolve, retryDelayMs));
+  }
+  throw new Error("OpenAI request exhausted its bounded retry.");
+}
+
 export function evaluationRequest({ category, candidates, model = "gpt-5.6-luna" }) {
   const brief = CATEGORY_BRIEFS[category];
   if (!brief) throw new Error(`Unknown evaluation category: ${category}`);
@@ -166,12 +193,11 @@ export async function evaluateCandidates(options, fetchImpl = fetch) {
   if (options.candidates.length === 0) return [];
   const apiKey = options.apiKey ?? process.env.OPENAI_API_KEY;
   if (!apiKey) throw new Error("OPENAI_API_KEY is required for evaluation.");
-  const response = await fetchImpl("https://api.openai.com/v1/responses", {
+  const { response, payload } = await openAiRequest(fetchImpl, {
     method: "POST",
     headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
     body: JSON.stringify(evaluationRequest(options)),
-  });
-  const payload = await response.json();
+  }, { retryDelayMs: options.retryDelayMs });
   if (!response.ok) {
     const code = payload.error?.code ?? payload.error?.type ?? `http_${response.status}`;
     throw new Error(`OpenAI evaluation failed (${code}): ${payload.error?.message ?? "Unknown error"}`);
@@ -223,12 +249,11 @@ export function retrievalRequest({
 export async function retrieveCategory(options, fetchImpl = fetch) {
   const apiKey = options.apiKey ?? process.env.OPENAI_API_KEY;
   if (!apiKey) throw new Error("OPENAI_API_KEY is required for retrieval.");
-  const response = await fetchImpl("https://api.openai.com/v1/responses", {
+  const { response, payload } = await openAiRequest(fetchImpl, {
     method: "POST",
     headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
     body: JSON.stringify(retrievalRequest(options)),
-  });
-  const payload = await response.json();
+  }, { retryDelayMs: options.retryDelayMs });
   if (!response.ok) {
     const code = payload.error?.code ?? payload.error?.type ?? `http_${response.status}`;
     throw new Error(`OpenAI retrieval failed (${code}): ${payload.error?.message ?? "Unknown error"}`);

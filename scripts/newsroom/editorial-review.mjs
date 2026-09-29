@@ -1,4 +1,4 @@
-import { CATEGORY_SLUGS, responseText } from "./openai.mjs";
+import { CATEGORY_SLUGS, openAiRequest, responseText } from "./openai.mjs";
 import { selectBalancedEdition } from "./selection.mjs";
 import { sameStory } from "./dedupe.mjs";
 
@@ -80,12 +80,11 @@ export async function reviewEdition(options, fetchImpl = fetch) {
   if (options.stories.length === 0) return [];
   const apiKey = options.apiKey ?? process.env.OPENAI_API_KEY;
   if (!apiKey) throw new Error("OPENAI_API_KEY is required for editorial review.");
-  const response = await fetchImpl("https://api.openai.com/v1/responses", {
+  const { response, payload } = await openAiRequest(fetchImpl, {
     method: "POST",
     headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
     body: JSON.stringify(editorialReviewRequest(options)),
-  });
-  const payload = await response.json();
+  }, { retryDelayMs: options.retryDelayMs });
   if (!response.ok) {
     const code = payload.error?.code ?? payload.error?.type ?? `http_${response.status}`;
     throw new Error(`OpenAI editorial review failed (${code}): ${payload.error?.message ?? "Unknown error"}`);
