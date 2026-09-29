@@ -46,15 +46,56 @@ test("retrieval parses a structured response", async () => {
 });
 
 test("retrieval reports quota failures without retrying", async () => {
-  const fakeFetch = async () => ({
-    ok: false,
-    status: 429,
-    json: async () => ({ error: { code: "insufficient_quota", message: "Billing required" } }),
-  });
+  let calls = 0;
+  const fakeFetch = async () => {
+    calls += 1;
+    return {
+      ok: false,
+      status: 429,
+      json: async () => ({ error: { code: "insufficient_quota", message: "Billing required" } }),
+    };
+  };
   await assert.rejects(
     retrieveCategory({ ...options, apiKey: "test-key" }, fakeFetch),
     /insufficient_quota.*Billing required/,
   );
+  assert.equal(calls, 1);
+});
+
+test("evaluation retries one transient network failure", async () => {
+  let calls = 0;
+  const fakeFetch = async () => {
+    calls += 1;
+    if (calls === 1) throw new TypeError("fetch failed");
+    return { ok: true, json: async () => ({ output_text: JSON.stringify({ candidates: [] }) }) };
+  };
+  assert.deepEqual(await evaluateCandidates({
+    category: "usa",
+    candidates: [{ canonicalUrl: "https://example.com/story" }],
+    apiKey: "test-key",
+    retryDelayMs: 0,
+  }, fakeFetch), []);
+  assert.equal(calls, 2);
+});
+
+test("evaluation retries one transient OpenAI server error", async () => {
+  let calls = 0;
+  const fakeFetch = async () => {
+    calls += 1;
+    if (calls === 1) return {
+      ok: false,
+      status: 500,
+      json: async () => ({ error: { code: "internal_error", message: "Internal server error" } }),
+    };
+    return { ok: true, json: async () => ({ output_text: JSON.stringify({ candidates: [] }) }) };
+  };
+  assert.deepEqual(await evaluateCandidates({
+    category: "usa",
+    candidates: [{ canonicalUrl: "https://example.com/story" }],
+    apiKey: "test-key",
+    retryDelayMs: 0,
+  }, fakeFetch), []);
+  assert.equal(calls, 2);
 });
 
 test("evaluation uses supplied candidates without a web-search tool", () => {

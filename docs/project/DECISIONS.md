@@ -643,3 +643,17 @@ Preserve the Pacific coverage window, provenance grounding, deterministic score 
 - No weak or duplicate story is added merely to reach a numeric quota.
 - A report with no selected stories remains invalid and cannot be persisted or published.
 - Existing published editions remain frozen and unchanged.
+
+## DEC-041 — Retry Individual OpenAI Requests Once on Transient Failure
+
+- **Status:** Accepted
+
+### Decision
+
+Retry an individual OpenAI evaluation, retrieval, or final-review request once when it fails with an explicit network exception, temporary server error, or retryable rate-limit response. Do not retry quota exhaustion, invalid schemas, grounding failures, deterministic editorial validation, database transitions, or publication immutability errors.
+
+### Consequences
+
+- A brief OpenAI server or network interruption no longer discards all earlier desk work in the same workflow run.
+- Retry cost and latency remain bounded to one additional request.
+- Persistent or deterministic failures still stop the run and leave the prior published edition live.
