@@ -33,14 +33,14 @@ Every morning, the newsroom workflow:
 4. Evaluates each of the 15 sections with `gpt-5.6-luna`.
 5. Applies deterministic scoring, source-diversity, and section-balance rules.
 6. Runs one grounded cross-section editorial review.
-7. Fails closed if the edition is too thin or incomplete.
+7. Publishes the qualifying reviewed coverage available, even when a quiet section has fewer than two stories.
 8. Saves, approves, publishes, and verifies an immutable Supabase edition.
 
-The workflow starts at 6:07 AM in `America/Los_Angeles`, with safe GitHub backup attempts through 7:07 AM. An independent publication watchdog also checks repeatedly from 6:12 through 7:52 AM Pacific and dispatches the same guarded workflow only when the date is still missing. Every attempt first checks whether that date is already published, so backups skip setup and AI generation once the edition is live. Daylight-saving changes are automatic. A new edition publishes only when all 15 sections contain at least two qualifying stories (at least 30 total); otherwise the previous edition remains live rather than filling the gap with weak coverage.
+The workflow starts at 6:07 AM in `America/Los_Angeles`, with safe GitHub backup attempts through 7:07 AM. An independent publication watchdog also checks repeatedly from 6:12 through 7:52 AM Pacific and dispatches the same guarded workflow only when the date is still missing. Every attempt first checks whether that date is already published, so backups skip setup and AI generation once the edition is live. Daylight-saving changes are automatic. The newsroom still tries to find two strong stories per section, including bounded recovery searches, but a quiet section no longer blocks the complete reviewed edition from publishing.
 
 ## Engineering highlights
 
-- **AI with guardrails:** the model evaluates feed candidates and can run one reviewed-domain search for an underfilled section, while deterministic code controls timestamps, provenance, scoring, source caps, deduplication, and publication thresholds.
+- **AI with guardrails:** the model evaluates feed candidates and can run one reviewed-domain search for an underfilled section, while deterministic code controls timestamps, provenance, scoring, source caps, deduplication, and publication eligibility.
 - **Immutable archive:** Supabase transition guards prevent published editions from being changed retrospectively.
 - **Secure public data:** row-level security exposes published content while keeping drafts and newsroom credentials private.
 - **Reliable automation:** GitHub Actions handles generation, encrypted credentials, queued retries, and diagnostics, while an independent publication watchdog compensates for delayed or dropped GitHub schedules.

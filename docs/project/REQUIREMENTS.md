@@ -59,7 +59,7 @@ The website must present sections in this order:
 - Merge duplicate coverage into one story and prefer original reporting; preserve tentative cross-section placements until the whole-edition review determines the final section.
 - Compare candidates with prior archived coverage and require materially new information.
 - Treat social and trend signals as discovery inputs, not sufficient factual verification.
-- Select **2–4 qualifying stories for every section**. Reserve two selection opportunities per section before assigning third and fourth stories. If any section finishes with fewer than two after final review, fail closed and keep the previous edition live; never add filler or weaken another quality rule.
+- Target **2–4 qualifying stories for every section** and reserve two selection opportunities per section before assigning third and fourth stories. If a section finishes with fewer than two after final review and bounded recovery, publish the qualifying reviewed stories that remain; never add filler or weaken another quality rule.
 - Prevent one topic from dominating the edition and perform a final diversity/editorial pass.
 - Label opinion or analysis when included.
 - Require strong sourcing for extraordinary claims.

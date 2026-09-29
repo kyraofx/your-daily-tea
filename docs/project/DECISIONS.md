@@ -109,7 +109,7 @@ Structured topics support reliable topic/date filtering and future timelines or 
 
 ## DEC-005 — Select with Weighted Editorial Scoring and Hard Rules
 
-- **Status:** Superseded in part by DEC-025
+- **Status:** Accepted; count policy amended by DEC-025 and DEC-040
 
 ### Context
 
@@ -325,11 +325,11 @@ Show readers a consecutive edition number derived from the chronological order o
 
 ## DEC-020 — Automate Daily Publication with Fail-Closed Quality Gates
 
-- **Status:** Superseded in part by DEC-025
+- **Status:** Superseded in part by DEC-025 and DEC-040
 
 ### Decision
 
-Run the complete newsroom workflow every day at 6:07 AM in `America/Los_Angeles`. After deterministic validation and Luna's grounded editorial review, automatically advance a qualifying edition through `draft`, `approved`, and `published`. This decision originally required at least 20 stories across at least 10 populated sections; DEC-025 replaces those thresholds with two qualifying stories in all 15 sections and at least 30 total.
+Run the complete newsroom workflow every day at 6:07 AM in `America/Los_Angeles`. After deterministic validation and Luna's grounded editorial review, automatically advance a qualifying edition through `draft`, `approved`, and `published`. This decision originally required at least 20 stories across at least 10 populated sections; DEC-025 replaced those thresholds with two qualifying stories in all 15 sections, and DEC-040 later removed count-based publication minimums.
 
 ### Consequences
 
@@ -364,7 +364,7 @@ Keep GitHub's timezone-aware schedule, retain all delayed GitHub attempts with a
 ### Consequences
 
 - GitHub is no longer the only clock capable of starting the newsroom.
-- The same generation, editorial review, minimum-story, minimum-section, transition, idempotence, and immutability safeguards apply regardless of which clock starts the run.
+- The same generation, editorial review, transition, idempotence, and immutability safeguards apply regardless of which clock starts the run.
 - Successful publication makes later checks no-ops, avoiding repeat Luna generation.
 - Deterministic or quality-gate failures are reported rather than bypassed or retried indefinitely.
 
@@ -399,7 +399,7 @@ Assign temporary deterministic IDs to the feed candidates sent for category eval
 
 ## DEC-025 — Require Two Qualifying Stories in Every Section
 
-- **Status:** Accepted
+- **Status:** Superseded by DEC-040
 
 ### Decision
 
@@ -623,3 +623,23 @@ Add The Guardian's U.S. News feed to USA discovery while preserving The Guardian
 
 - USA has an additional direct national-news source when broad desk candidates are moved or removed during whole-edition review.
 - Existing Pacific-window, category-review, score, deduplication, publisher-cap, and two-story publication gates remain unchanged.
+
+## DEC-040 — Publish Qualifying Coverage Without Count Minimums
+
+- **Status:** Accepted
+
+### Decision
+
+Continue targeting two qualifying stories in every section through balanced selection and bounded reviewed-domain recovery, but remove the automatic publication minimums for stories per section, populated sections, and total stories. Publish a non-empty final reviewed edition even when one or more quiet sections contain fewer than two stories.
+
+This decision supersedes every earlier requirement or consequence that says a two-story section floor, 15 populated sections, or 30-story total must block publication. Earlier decisions remain as implementation history for the coverage-balancing and recovery mechanisms they introduced.
+
+Preserve the Pacific coverage window, provenance grounding, deterministic score threshold, source and topic diversity rules, duplicate rejection, grounded whole-edition review, database transition guard, idempotence checks, row-level security, and published-edition immutability.
+
+### Consequences
+
+- A quiet Science + Planet, Pop Culture, Sports, Internet + Trends, or other desk no longer suppresses the rest of a valid daily edition.
+- The newsroom still spends its bounded recovery effort trying to broaden underfilled sections before publication.
+- No weak or duplicate story is added merely to reach a numeric quota.
+- A report with no selected stories remains invalid and cannot be persisted or published.
+- Existing published editions remain frozen and unchanged.

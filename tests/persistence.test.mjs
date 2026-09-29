@@ -79,20 +79,27 @@ test("saveReviewedDraft reuses an existing immutable story row", async () => {
   assert.equal(placement.story_id, "existing-story");
 });
 
-test("automatic publication holds a thin edition", () => {
-  assert.throws(() => validateAutomaticPublication(report), /every section needs at least 2 stories/);
+test("automatic publication accepts a thin but fully reviewed edition", () => {
+  assert.deepEqual(validateAutomaticPublication(report), { storyCount: 1, sectionCount: 1 });
 });
 
-test("automatic publication identifies any section with fewer than two stories", () => {
+test("automatic publication still rejects an empty reviewed edition", () => {
+  assert.throws(
+    () => validateAutomaticPublication({ ...report, selected: [] }),
+    /no selected stories/,
+  );
+});
+
+test("automatic publication accepts uneven section counts", () => {
   const selected = SECTION_SLUGS.flatMap((category) => [0, 1].map((rank) => ({
     ...report.selected[0], category, rank: rank + 1,
     canonicalUrl: `https://example.com/${category}-${rank}`,
   })));
   selected.find((story) => story.category === "other-notable").category = "usa";
-  assert.throws(
-    () => validateAutomaticPublication({ ...report, selected }),
-    /other-notable \(1\)/,
-  );
+  assert.deepEqual(validateAutomaticPublication({ ...report, selected }), {
+    storyCount: selected.length,
+    sectionCount: SECTION_SLUGS.length,
+  });
 });
 
 test("automatic publication advances a reviewed edition through both guarded states", async () => {
@@ -122,7 +129,8 @@ test("automatic publication advances a reviewed edition through both guarded sta
   };
   const result = await publishReviewedEdition(fullReport, rest);
   assert.equal(result.status, "published");
-  assert.equal(result.minimumStoriesPerSection, 2);
+  assert.equal(result.storyCount, 30);
+  assert.equal(result.sectionCount, 15);
   assert.equal(calls.some((call) => call.options.body?.includes('"status":"approved"')), true);
   assert.equal(calls.some((call) => call.options.body?.includes('"status":"published"')), true);
 });

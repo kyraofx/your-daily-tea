@@ -195,7 +195,7 @@ export function retrievalRequest({
       "You are a careful research desk for a concise morning news briefing.",
       `Research only this section: ${category}. ${brief}`,
       `Accept only events with source publication times from ${coverageStartsAt} through ${coverageEndsAt}, inclusive.`,
-      "Find two to eight genuinely worthwhile candidates when at least two meet every standard; otherwise return only the qualifying candidates so the publication gate can fail closed.",
+      "Find two to eight genuinely worthwhile candidates when at least two meet every standard; otherwise return only the qualifying candidates and never invent filler.",
       "You must search the web before producing the structured response. Use multiple focused searches when the first search is insufficient.",
       "Prefer primary sources and original reporting. Treat social signals as discovery only.",
       allowedSources.length
