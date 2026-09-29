@@ -128,36 +128,14 @@ export async function saveReviewedDraft(report, rest) {
   }
 }
 
-export function validateAutomaticPublication(report, {
-  minimumStories = 30,
-  minimumSections = 15,
-  minimumStoriesPerSection = 2,
-} = {}) {
+export function validateAutomaticPublication(report) {
   validateReviewedReport(report);
-  const sectionCounts = new Map(EXPECTED_SECTION_SLUGS.map((section) => [section, 0]));
-  for (const story of report.selected) {
-    sectionCounts.set(story.category, (sectionCounts.get(story.category) ?? 0) + 1);
-  }
-  const underfilled = EXPECTED_SECTION_SLUGS
-    .filter((section) => sectionCounts.get(section) < minimumStoriesPerSection);
-  if (underfilled.length) {
-    const details = underfilled.map((section) => `${section} (${sectionCounts.get(section)})`).join(", ");
-    throw new Error(
-      `Quality gate held publication: every section needs at least ${minimumStoriesPerSection} stories; underfilled: ${details}.`,
-    );
-  }
   const sections = new Set(report.selected.map((story) => story.category));
-  if (report.selected.length < minimumStories) {
-    throw new Error(`Quality gate held publication: ${report.selected.length} stories is below the minimum of ${minimumStories}.`);
-  }
-  if (sections.size < minimumSections) {
-    throw new Error(`Quality gate held publication: ${sections.size} populated sections is below the minimum of ${minimumSections}.`);
-  }
-  return { storyCount: report.selected.length, sectionCount: sections.size, minimumStoriesPerSection };
+  return { storyCount: report.selected.length, sectionCount: sections.size };
 }
 
-export async function publishReviewedEdition(report, rest, options = {}) {
-  const quality = validateAutomaticPublication(report, options);
+export async function publishReviewedEdition(report, rest) {
+  const quality = validateAutomaticPublication(report);
   const existing = await rest(`editions?edition_date=eq.${report.editionDate}&select=id,status,edition_date`);
   let edition = existing[0];
 

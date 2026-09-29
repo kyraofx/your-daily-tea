@@ -122,7 +122,7 @@ export function selectBalancedEdition(accepted, categories, {
   // Reserve each section's minimum before filling any section. Solve the floor
   // assignments together so a locally good publisher choice cannot starve a
   // later section. If no complete assignment exists, keep the scarcity-ordered
-  // partial result and let the publication quality gate fail closed.
+  // partial result so every qualifying story remains available for publication.
   const reservationTarget = Math.min(minimumPerCategory, maxPerCategory);
   if (!reserveAllFloors(reservationTarget)) {
     const reservationOrder = [...categoryList].sort((left, right) => {
