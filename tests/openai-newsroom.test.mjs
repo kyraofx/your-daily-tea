@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { evaluateCandidates, evaluationRequest, retrieveCategory, retrievalRequest } from "../scripts/newsroom/openai.mjs";
+import { normalizeTopics } from "../scripts/newsroom/topics.mjs";
 
 const options = {
   category: "usa",
@@ -118,6 +119,24 @@ test("evaluation uses supplied candidates without a web-search tool", () => {
     ["candidate-001"],
   );
   assert.equal(request.text.format.schema.properties.candidates.items.properties.canonicalUrl, undefined);
+  assert.equal(
+    request.text.format.schema.properties.candidates.items.properties.topics.items.minLength,
+    1,
+  );
+});
+
+test("topic normalization drops blank output and preserves two valid topics", () => {
+  assert.deepEqual(normalizeTopics([" Federal courts ", "", "Politics & Policy"]), [
+    { name: "Federal courts", slug: "federal-courts" },
+    { name: "Politics & Policy", slug: "politics-policy" },
+  ]);
+});
+
+test("topic normalization rejects reports with fewer than two valid unique topics", () => {
+  assert.throws(
+    () => normalizeTopics(["Federal courts", " federal courts ", "   "]),
+    /two to five valid unique topics/,
+  );
 });
 
 test("evaluation parses a structured shortlist", async () => {

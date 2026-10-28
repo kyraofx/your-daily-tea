@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import process from "node:process";
 import { selectBalancedEdition } from "./selection.mjs";
+import { normalizeTopics } from "./topics.mjs";
 
 const WEIGHTS = {
   importance: 0.25,
@@ -22,10 +23,6 @@ const CATEGORIES = new Set([
 function argument(name, fallback) {
   const index = process.argv.indexOf(name);
   return index >= 0 ? process.argv[index + 1] : fallback;
-}
-
-function slugify(value) {
-  return value.toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 }
 
 function normalizedUrl(value) {
@@ -93,9 +90,7 @@ function prepare(candidates, editionDate) {
       const weightedScore = score(raw);
       if (weightedScore < 60) throw new Error("below calibration threshold");
       if (!raw.summary?.trim()) throw new Error("summary is required until AI generation is enabled");
-      if (!Array.isArray(raw.topics) || raw.topics.length < 2 || raw.topics.length > 5) {
-        throw new Error("two to five topics are required");
-      }
+      const topics = normalizeTopics(raw.topics);
       seenUrls.add(categoryUrlKey);
       seenHeadlines.add(categoryHeadlineKey);
       accepted.push({
@@ -103,7 +98,7 @@ function prepare(candidates, editionDate) {
         canonicalUrl,
         publishedAt: publishedAt.toISOString(),
         weightedScore,
-        topics: raw.topics.map((name) => ({ name, slug: slugify(name) })),
+        topics,
       });
     } catch (error) {
       rejected.push({ headline: raw.headline ?? "Untitled", reason: error.message });
