@@ -36,7 +36,7 @@ export const CANDIDATE_SCHEMA = {
           canonicalUrl: { type: "string" },
           sourceName: { type: "string" },
           publishedAt: { type: "string" },
-          topics: { type: "array", minItems: 2, maxItems: 5, items: { type: "string" } },
+          topics: { type: "array", minItems: 2, maxItems: 5, items: { type: "string", minLength: 1 } },
           scores: {
             type: "object",
             properties: SCORE_PROPERTIES,
@@ -69,7 +69,7 @@ function evaluatedCandidateSchema(candidateIds) {
           properties: {
             candidateId: { type: "string", enum: candidateIds },
             summary: { type: "string" },
-            topics: { type: "array", minItems: 2, maxItems: 5, items: { type: "string" } },
+            topics: { type: "array", minItems: 2, maxItems: 5, items: { type: "string", minLength: 1 } },
             scores: {
               type: "object",
               properties: SCORE_PROPERTIES,
@@ -147,7 +147,7 @@ export function evaluationRequest({ category, candidates, model = "gpt-5.6-luna"
       "Omit stories that belong more directly in another section. Merge overlapping coverage by choosing the strongest original or most informative source.",
       "Identify every selection only by its supplied candidateId. Never create, alter, or infer an ID.",
       "Write an original factual two-to-four sentence summary using only facts present in the supplied headline and sourceSummary. Do not invent details.",
-      "Assign two to five normalized topic names ordered from most central to least central. Score each dimension independently from 0 to 100. Never lower the standard or select filler to reach two stories.",
+      "Assign two to five distinct, non-empty normalized topic names ordered from most central to least central. Score each dimension independently from 0 to 100. Never lower the standard or select filler to reach two stories.",
       `Feed candidates:\n${JSON.stringify(supplied)}`,
     ].join("\n"),
     text: {

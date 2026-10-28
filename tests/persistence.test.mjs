@@ -61,6 +61,19 @@ test("reviewed reports reject a canonical URL repeated across sections", async (
   );
 });
 
+test("persistence remains fail-closed for malformed topics", async () => {
+  await assert.rejects(
+    saveReviewedDraft({
+      ...report,
+      selected: [{
+        ...report.selected[0],
+        topics: [{ name: "Federal courts", slug: "federal-courts" }, { name: "", slug: "" }],
+      }],
+    }, async () => []),
+    /invalid topics/,
+  );
+});
+
 test("saveReviewedDraft reuses an existing immutable story row", async () => {
   const calls = [];
   const rest = async (path, options = {}) => {
